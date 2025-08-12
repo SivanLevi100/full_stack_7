@@ -1,17 +1,18 @@
+// models/User.js
 const { pool } = require('../config/database');
 const bcrypt = require('bcrypt');
 
 class User {
     static async findAll() {
         const [rows] = await pool.execute(
-            'SELECT id, email, first_name, last_name, phone, address, city, zip_code, role, is_active, created_at FROM users ORDER BY id'
+            'SELECT id, email, full_name, phone, role, created_at FROM users ORDER BY id'
         );
         return rows;
     }
 
     static async findById(id) {
         const [rows] = await pool.execute(
-            'SELECT id, email, first_name, last_name, phone, address, city, zip_code, role, is_active, created_at FROM users WHERE id = ?',
+            'SELECT id, email, full_name, phone, role, created_at FROM users WHERE id = ?',
             [id]
         );
         return rows[0];
@@ -19,28 +20,28 @@ class User {
 
     static async findByEmail(email) {
         const [rows] = await pool.execute(
-            'SELECT id, email, password, first_name, last_name, role, is_active FROM users WHERE email = ?',
+            'SELECT id, email, password, full_name, role FROM users WHERE email = ?',
             [email]
         );
         return rows[0];
     }
 
     static async create(userData) {
-        const { email, password, first_name, last_name, phone, address, city, zip_code, role = 'customer' } = userData;
+        const { email, password, full_name, phone, role = 'customer' } = userData;
         const hashedPassword = await bcrypt.hash(password, 12);
         
         const [result] = await pool.execute(
-            'INSERT INTO users (email, password, first_name, last_name, phone, address, city, zip_code, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [email, hashedPassword, first_name, last_name, phone, address, city, zip_code, role]
+            'INSERT INTO users (email, password, full_name, phone, role) VALUES (?, ?, ?, ?, ?)',
+            [email, hashedPassword, full_name, phone, role]
         );
         return result.insertId;
     }
 
     static async update(id, userData) {
-        const { first_name, last_name, phone, address, city, zip_code } = userData;
+        const { full_name, phone } = userData;
         const [result] = await pool.execute(
-            'UPDATE users SET first_name = ?, last_name = ?, phone = ?, address = ?, city = ?, zip_code = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-            [first_name, last_name, phone, address, city, zip_code, id]
+            'UPDATE users SET full_name = ?, phone = ? WHERE id = ?',
+            [full_name, phone, id]
         );
         return result.affectedRows > 0;
     }
@@ -48,14 +49,9 @@ class User {
     static async updatePassword(id, newPassword) {
         const hashedPassword = await bcrypt.hash(newPassword, 12);
         const [result] = await pool.execute(
-            'UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            'UPDATE users SET password = ? WHERE id = ?',
             [hashedPassword, id]
         );
-        return result.affectedRows > 0;
-    }
-
-    static async delete(id) {
-        const [result] = await pool.execute('UPDATE users SET is_active = FALSE WHERE id = ?', [id]);
         return result.affectedRows > 0;
     }
 
@@ -63,14 +59,6 @@ class User {
         const [rows] = await pool.execute('SELECT password FROM users WHERE id = ?', [id]);
         if (rows.length === 0) return false;
         return await bcrypt.compare(password, rows[0].password);
-    }
-
-    static async toggleActive(id) {
-        const [result] = await pool.execute(
-            'UPDATE users SET is_active = NOT is_active WHERE id = ?',
-            [id]
-        );
-        return result.affectedRows > 0;
     }
 }
 

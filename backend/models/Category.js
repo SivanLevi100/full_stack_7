@@ -18,19 +18,19 @@ class Category {
     }
 
     static async create(categoryData) {
-        const { name, description, image_url } = categoryData;
+        const { name } = categoryData;
         const [result] = await pool.execute(
-            'INSERT INTO categories (name, description, image_url) VALUES (?, ?, ?)',
-            [name, description, image_url]
+            'INSERT INTO categories (name) VALUES (?)',
+            [name]
         );
         return result.insertId;
     }
 
     static async update(id, categoryData) {
-        const { name, description, image_url } = categoryData;
+        const { name } = categoryData;
         const [result] = await pool.execute(
-            'UPDATE categories SET name = ?, description = ?, image_url = ? WHERE id = ?',
-            [name, description, image_url, id]
+            'UPDATE categories SET name = ? WHERE id = ?',
+            [name, id]
         );
         return result.affectedRows > 0;
     }
@@ -42,7 +42,7 @@ class Category {
 
     static async getProductsCount(id) {
         const [rows] = await pool.execute(
-            'SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = TRUE',
+            'SELECT COUNT(*) as count FROM products WHERE category_id = ?',
             [id]
         );
         return rows[0].count;

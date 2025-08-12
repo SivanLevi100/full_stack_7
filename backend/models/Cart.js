@@ -4,37 +4,35 @@ const { pool } = require('../config/database');
 class Cart {
     static async getCartItems(userId) {
         const [rows] = await pool.execute(`
-            SELECT sc.*, p.name, p.price, p.image_url, p.unit,
-                   (sc.quantity * p.price) as total_price,
-                   i.quantity as stock_quantity
-            FROM shopping_cart sc
-            JOIN products p ON sc.product_id = p.id
-            LEFT JOIN inventory i ON p.id = i.product_id
-            WHERE sc.user_id = ? AND p.is_active = TRUE
-            ORDER BY sc.added_at DESC
+            SELECT c.*, p.name, p.price, p.image_url, p.stock_quantity,
+                   (c.quantity * p.price) as total_price
+            FROM cart c
+            JOIN products p ON c.product_id = p.id
+            WHERE c.user_id = ?
+            ORDER BY c.added_at DESC
         `, [userId]);
         return rows;
     }
 
     static async addItem(userId, productId, quantity = 1) {
-        // Check if item already exists in cart
+        // בדוק אם המוצר כבר קיים בעגלה
         const [existing] = await pool.execute(
-            'SELECT id, quantity FROM shopping_cart WHERE user_id = ? AND product_id = ?',
+            'SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?',
             [userId, productId]
         );
 
         if (existing.length > 0) {
-            // Update quantity
+            // עדכן כמות
             const newQuantity = existing[0].quantity + quantity;
             const [result] = await pool.execute(
-                'UPDATE shopping_cart SET quantity = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                'UPDATE cart SET quantity = ? WHERE id = ?',
                 [newQuantity, existing[0].id]
             );
             return result.affectedRows > 0;
         } else {
-            // Add new item
+            // הוסף פריט חדש
             const [result] = await pool.execute(
-                'INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)',
+                'INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)',
                 [userId, productId, quantity]
             );
             return result.insertId;
@@ -42,8 +40,12 @@ class Cart {
     }
 
     static async updateQuantity(userId, productId, quantity) {
+        if (quantity <= 0) {
+            return await this.removeItem(userId, productId);
+        }
+        
         const [result] = await pool.execute(
-            'UPDATE shopping_cart SET quantity = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ? AND product_id = ?',
+            'UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?',
             [quantity, userId, productId]
         );
         return result.affectedRows > 0;
@@ -51,7 +53,7 @@ class Cart {
 
     static async removeItem(userId, productId) {
         const [result] = await pool.execute(
-            'DELETE FROM shopping_cart WHERE user_id = ? AND product_id = ?',
+            'DELETE FROM cart WHERE user_id = ? AND product_id = ?',
             [userId, productId]
         );
         return result.affectedRows > 0;
@@ -59,7 +61,7 @@ class Cart {
 
     static async clearCart(userId) {
         const [result] = await pool.execute(
-            'DELETE FROM shopping_cart WHERE user_id = ?',
+            'DELETE FROM cart WHERE user_id = ?',
             [userId]
         );
         return result.affectedRows > 0;
@@ -67,20 +69,44 @@ class Cart {
 
     static async getCartTotal(userId) {
         const [rows] = await pool.execute(`
-            SELECT SUM(sc.quantity * p.price) as total
-            FROM shopping_cart sc
-            JOIN products p ON sc.product_id = p.id
-            WHERE sc.user_id = ? AND p.is_active = TRUE
+            SELECT SUM(c.quantity * p.price) as total
+            FROM cart c
+            JOIN products p ON c.product_id = p.id
+            WHERE c.user_id = ?
         `, [userId]);
         return rows[0].total || 0;
     }
 
     static async getCartItemsCount(userId) {
         const [rows] = await pool.execute(
-            'SELECT COUNT(*) as count FROM shopping_cart WHERE user_id = ?',
+            'SELECT COUNT(*) as count FROM cart WHERE user_id = ?',
             [userId]
         );
         return rows[0].count;
+    }
+
+    static async validateCart(userId) {
+        // בדוק זמינות מלאי לכל הפריטים בעגלה
+        const [rows] = await pool.execute(`
+            SELECT c.product_id, c.quantity, p.stock_quantity, p.name
+            FROM cart c
+            JOIN products p ON c.product_id = p.id
+            WHERE c.user_id = ?
+        `, [userId]);
+        
+        const unavailable = [];
+        for (const item of rows) {
+            if (item.stock_quantity < item.quantity) {
+                unavailable.push({
+                    product_id: item.product_id,
+                    name: item.name,
+                    requested: item.quantity,
+                    available: item.stock_quantity
+                });
+            }
+        }
+        
+        return unavailable;
     }
 }
 
