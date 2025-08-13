@@ -10,12 +10,27 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+console.log('Loading routers...');
+
 const authRouter = require('./routes/auth');
+console.log('Auth loaded, type:', typeof authRouter);
+
 const usersRouter = require('./routes/users');
+console.log('Users loaded, type:', typeof usersRouter);
+
 const productsRouter = require('./routes/products');
+console.log('Products loaded, type:', typeof productsRouter);
+
 const categoriesRouter = require('./routes/categories');
+console.log('Categories loaded, type:', typeof categoriesRouter);
+
 const ordersRouter = require('./routes/orders');
+console.log('Orders loaded, type:', typeof ordersRouter);
+
 const cartRouter = require('./routes/cart');
+console.log('Cart loaded, type:', typeof cartRouter);
+
+console.log('Setting up routes...');
 
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);

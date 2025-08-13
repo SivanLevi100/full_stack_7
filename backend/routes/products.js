@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
-const upload = require('../middleware/upload');
-
+const { upload } = require('../middleware/upload');
 // קבלת כל המוצרים (עם פילטרים)
 router.get('/', async (req, res) => {
     try {
@@ -108,3 +107,5 @@ router.get('/reports/low-stock', authenticateToken, authorizeRole(['manager']), 
         res.status(500).json({ error: err.message });
     }
 });
+
+module.exports = router;

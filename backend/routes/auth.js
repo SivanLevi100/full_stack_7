@@ -2,17 +2,29 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+
+
 
 // Login
 router.post('/login', async (req, res) => {
     try {
+        console.log('🔑 Login request body:', req.body);
+        
         const { username, password } = req.body;
         
+        console.log('🔍 Login fields:');
+        console.log('username:', username);
+        console.log('password:', password);
+        
         if (!username || !password) {
+            console.log('❌ Missing login fields');
             return res.status(400).json({ error: 'Username and password are required' });
         }
 
-        const user = await User.findByUsername(username);
+        const user = await User.findByEmail(username);
+        console.log('👤 Found user:', user ? 'YES' : 'NO');
+        
         if (!user) {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
@@ -26,9 +38,16 @@ router.post('/login', async (req, res) => {
         const { id, name, username1, email, address } = user;
         const userInfo = { id, name, username1, email, address };
 
+        const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET || 'your_secret_key',
+    { expiresIn: '24h' }
+);
+
         res.json({ 
             message: 'Login successful', 
-            user: userInfo 
+            user: userInfo,
+            token: token
         });
     } catch (error) {
         console.error('Login error:', error);
@@ -39,6 +58,7 @@ router.post('/login', async (req, res) => {
 
 
 // Register
+// Register
 router.post('/register', async (req, res) => {
     try {
         const { username, password, email, name, address } = req.body;
@@ -48,18 +68,21 @@ router.post('/register', async (req, res) => {
         }
 
         // Check if user already exists
-        const existingUser = await User.findByUsername(username);
+        const existingUser = await User.findByEmail(email);  // שני מusername לemail
         if (existingUser) {
-            return res.status(409).json({ error: 'Username already exists' });
+            return res.status(409).json({ error: 'Email already exists' });
         }
 
-        // Create user
+        // Create user - הוסף password!
         const userId = await User.create({
-            name, username, email, address
+            email: email,
+            password: password,      // ← הוסף את זה!
+            full_name: name,
+            phone: address
         });
 
-        // Create password
-        await User.createPassword(userId, password);
+        // הסר את השורה הזו - User.createPassword לא קיים!
+        // await User.createPassword(userId, password);
 
         res.status(201).json({ 
             message: 'User registered successfully',

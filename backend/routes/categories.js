@@ -3,8 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
-const upload = require('../middleware/upload');
-
+const { upload } = require('../middleware/upload');
 // קבלת כל הקטגוריות
 router.get('/', async (req, res) => {
     try {
