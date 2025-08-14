@@ -56,10 +56,19 @@ class User {
     }
 
     static async verifyPassword(id, password) {
-        const [rows] = await pool.execute('SELECT password FROM users WHERE id = ?', [id]);
-        if (rows.length === 0) return false;
-        return await bcrypt.compare(password, rows[0].password);
+    const [rows] = await pool.execute('SELECT password, role FROM users WHERE id = ?', [id]);
+    if (rows.length === 0) return false;
+
+    const user = rows[0];
+
+    // אם מנהל - השוואה פשוטה ל־plain text
+    if (user.role === 'admin') {
+        return user.password === password;
     }
+
+    // אחרת - השוואה עם bcrypt
+    return await bcrypt.compare(password, user.password);
+}
 }
 
 module.exports = User;

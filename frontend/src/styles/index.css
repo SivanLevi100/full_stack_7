@@ -1,0 +1,313 @@
+/* src/styles/index.css - קובץ CSS ראשי מלא */
+
+/* ייבוא כל קבצי ה-CSS בסדר הנכון */
+@import url('./global.css');
+@import url('./auth.css');
+@import url('./navbar.css');
+@import url('./shop.css');
+@import url('./cart.css');
+@import url('./dashboard.css');
+
+/* Reset והגדרות בסיסיות */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #1f2937;
+  background-color: #f9fafb;
+  direction: rtl;
+  min-height: 100vh;
+}
+
+/* משתני CSS גלובליים */
+:root {
+  --primary-green: #059669;
+  --primary-green-light: #10b981;
+  --primary-green-dark: #047857;
+  --primary-green-50: #ecfdf5;
+  --primary-green-100: #d1fae5;
+  --primary-green-200: #a7f3d0;
+  
+  --secondary-blue: #3b82f6;
+  --secondary-blue-light: #60a5fa;
+  --secondary-blue-dark: #2563eb;
+  --secondary-blue-50: #eff6ff;
+  --secondary-blue-100: #dbeafe;
+  --secondary-blue-200: #bfdbfe;
+  
+  --accent-orange: #f97316;
+  --accent-orange-light: #fb923c;
+  --accent-orange-dark: #ea580c;
+  --accent-orange-50: #fff7ed;
+  --accent-orange-100: #ffedd5;
+  
+  --accent-purple: #8b5cf6;
+  --accent-purple-light: #a78bfa;
+  --accent-purple-dark: #7c3aed;
+  
+  --gray-25: #fcfcfd;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  --white: #ffffff;
+  --black: #000000;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --yellow-400: #facc15;
+  --yellow-500: #eab308;
+  --yellow-50: #fefce8;
+  --yellow-100: #fef3c7;
+  --yellow-200: #fef08a;
+  --yellow-800: #92400e;
+  
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+}
+
+/* Classes שחסרות לאפליקציה */
+.min-h-screen { min-height: 100vh; }
+.container { 
+  width: 100%; 
+  max-width: 1280px; 
+  margin: 0 auto; 
+  padding: 0 1rem; 
+}
+
+/* Layout classes */
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+
+/* Background classes */
+.bg-gray-50 { background-color: var(--gray-50); }
+.bg-white { background-color: var(--white); }
+.bg-blue-600 { background-color: var(--secondary-blue); }
+.bg-purple-600 { background-color: var(--accent-purple); }
+.bg-green-600 { background-color: var(--primary-green); }
+.bg-gray-100 { background-color: var(--gray-100); }
+.bg-gray-200 { background-color: var(--gray-200); }
+.bg-gray-300 { background-color: var(--gray-300); }
+.bg-blue-700 { background-color: var(--secondary-blue-dark); }
+.bg-blue-500 { background-color: var(--secondary-blue); }
+.bg-orange-500 { background-color: var(--accent-orange); }
+
+/* Gradient backgrounds */
+.bg-gradient-to-r { 
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)); 
+}
+.from-blue-600 { 
+  --tw-gradient-from: var(--secondary-blue); 
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(59, 130, 246, 0)); 
+}
+.to-purple-600 { --tw-gradient-to: var(--accent-purple); }
+.from-green-600 { 
+  --tw-gradient-from: var(--primary-green); 
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(5, 150, 105, 0)); 
+}
+.to-blue-600 { --tw-gradient-to: var(--secondary-blue); }
+
+/* Text colors */
+.text-white { color: var(--white); }
+.text-blue-100 { color: rgba(219, 234, 254, 1); }
+.text-gray-600 { color: var(--gray-600); }
+.text-gray-500 { color: var(--gray-500); }
+.text-gray-400 { color: var(--gray-400); }
+.text-gray-300 { color: var(--gray-300); }
+.text-gray-900 { color: var(--gray-900); }
+.text-gray-700 { color: var(--gray-700); }
+.text-blue-600 { color: var(--secondary-blue); }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+
+/* Font weights */
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+
+/* Spacing */
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+
+/* Border radius */
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: 9999px; }
+
+/* Shadows */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* Grid */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.gap-6 { gap: 1.5rem; }
+.gap-4 { gap: 1rem; }
+
+/* Positioning */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.top-2 { top: 0.5rem; }
+.right-2 { right: 0.5rem; }
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+
+/* Sizing */
+.w-full { width: 100%; }
+.h-48 { height: 12rem; }
+.h-16 { height: 4rem; }
+.h-32 { width: 8rem; height: 8rem; }
+.w-32 { width: 8rem; }
+
+/* Border */
+.border { border: 1px solid var(--gray-200); }
+.border-gray-200 { border-color: var(--gray-200); }
+.border-gray-300 { border-color: var(--gray-300); }
+.border-b-2 { border-bottom-width: 2px; }
+
+/* Text alignment */
+.text-center { text-align: center; }
+
+/* Focus and hover states */
+.focus\:ring-2:focus { 
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color); 
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color); 
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000); 
+}
+.focus\:ring-blue-500:focus { --tw-ring-opacity: 1; --tw-ring-color: rgba(59, 130, 246, var(--tw-ring-opacity)); }
+.focus\:border-transparent:focus { border-color: transparent; }
+
+.hover\:bg-gray-200:hover { background-color: var(--gray-200); }
+.hover\:bg-blue-700:hover { background-color: var(--secondary-blue-dark); }
+.hover\:text-gray-800:hover { color: var(--gray-800); }
+
+/* Transitions */
+.transition-colors { 
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; 
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); 
+  transition-duration: 150ms; 
+}
+.transition-shadow { 
+  transition-property: box-shadow; 
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); 
+  transition-duration: 150ms; 
+}
+.transition-transform { 
+  transition-property: transform; 
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); 
+  transition-duration: 150ms; 
+}
+
+/* Animations */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+
+/* Object fit */
+.object-cover { object-fit: cover; }
+
+/* Duration */
+.duration-300 { transition-duration: 300ms; }
+
+/* Group hover */
+.group:hover .group-hover\:scale-105 { transform: scale(1.05); }
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:flex-row { flex-direction: row; }
+}
+
+@media (min-width: 1280px) {
+  .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Specific fixes for the issues you mentioned */
+
+/* Dashboard specific fixes */
+.dashboard-welcome {
+  background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--accent-purple) 50%, var(--primary-green) 100%) !important;
+  color: var(--white) !important;
+}
+
+.dashboard-welcome-title {
+  color: var(--white) !important;
+}
+
+.dashboard-welcome-subtitle {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Shop page header fix */
+.shop-header,
+.bg-gradient-to-r.from-blue-600.to-purple-600 {
+  background: linear-gradient(135deg, var(--secondary-blue), var(--accent-purple)) !important;
+  color: var(--white) !important;
+}
+
+/* Main app background */
+.App {
+  min-height: 100vh;
+  background-color: var(--gray-50);
+}
+
+/* Make sure text is visible */
+.text-blue-100 {
+  color: rgba(191, 219, 254, 1) !important;
+}
+
+/* Authentication pages fix */
+.auth-container {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 50%, var(--accent-orange) 100%) !important;
+}

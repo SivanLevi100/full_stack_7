@@ -1,4 +1,4 @@
-// src/services/api.js
+// src/services/api.js - תיקון לשלוח email במקום email
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -29,41 +29,74 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // אם ה-token לא תקף, נקה אותו ונתב להתחברות
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
-    
-    // הצגת הודעת שגיאה
-    const errorMessage = error.response?.data?.error || 'שגיאה לא צפויה';
-    toast.error(errorMessage);
-    
     return Promise.reject(error);
   }
 );
 
-// שירותי אימות
+// שירותי אימות - מתוקן לשלוח email
 export const authAPI = {
-  login: async (username, password) => {
-    const response = await api.post('/auth/login', { username, password });
-    return response.data;
+  // התחברות - מתוקן לשלוח email (האימייל כ-email)
+  login: async (email, password) => {
+    try {
+      console.log('🔐 Attempting login with:', { email, password: '***' });
+      
+      const response = await api.post('/auth/login', { 
+        email,  // ✅ שולח את האימייל כ-email
+        password 
+      });
+      
+      console.log('✅ Login successful:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Login failed:', error.response?.data || error.message);
+      throw error;
+    }
   },
   
   register: async (userData) => {
-    const response = await api.post('/auth/register', userData);
-    return response.data;
+    try {
+      console.log('📝 Attempting registration with:', userData);
+      
+      // ודא שיש email (השתמש באימייל כ-email אם לא קיים)
+      const registrationData = {
+        ...userData,
+        email: userData.email || userData.email,
+        role: userData.role || 'customer'
+      };
+      
+      const response = await api.post('/auth/register', registrationData);
+      
+      console.log('✅ Registration successful:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Registration failed:', error.response?.data || error.message);
+      throw error;
+    }
   },
   
   getCurrentUser: async () => {
-    const response = await api.get('/auth/me');
-    return response.data;
+    try {
+      const response = await api.get('/auth/me');
+      return response.data;
+    } catch (error) {
+      console.error('❌ Get current user failed:', error.response?.data || error.message);
+      throw error;
+    }
   },
   
   logout: async () => {
-    await api.post('/auth/logout');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   }
 };
 
@@ -170,7 +203,7 @@ export const cartAPI = {
 // שירותי הזמנות
 export const ordersAPI = {
   getAll: async (filters = {}) => {
-    const params = new URLSearchParams(filters);
+    params = new URLSearchParams(filters);
     const response = await api.get(`/orders?${params}`);
     return response.data;
   },

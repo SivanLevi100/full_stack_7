@@ -8,7 +8,10 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute, { AuthRedirect } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
-import './styles/auth.css';
+
+import './styles/index.css';
+
+
 
 // Import pages
 import Login from './pages/Login';

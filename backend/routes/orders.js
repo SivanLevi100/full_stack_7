@@ -4,7 +4,7 @@ const Order = require('../models/Order');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
 // קבלת כל ההזמנות (מנהלים בלבד) עם פילטרים
-router.get('/', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.get('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const filters = {
             user_id: req.query.user_id,
@@ -26,7 +26,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         const order = await Order.findById(req.params.id);
         if (!order) return res.status(404).json({ message: 'Order not found' });
 
-        if (req.user.role !== 'manager' && order.user_id !== req.user.id) {
+        if (req.user.role !== 'admin' && order.user_id !== req.user.id) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -78,7 +78,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // עדכון סטטוס הזמנה (מנהלים בלבד)
-router.put('/:id/status', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.put('/:id/status', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { status } = req.body;
         if (!status) return res.status(400).json({ error: 'Status is required' });
@@ -95,7 +95,7 @@ router.put('/:id/status', authenticateToken, authorizeRole(['manager']), async (
 });
 
 // עדכון סטטוס תשלום הזמנה (מנהלים בלבד)
-router.put('/:id/payment-status', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.put('/:id/payment-status', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { payment_status } = req.body;
         if (!payment_status) return res.status(400).json({ error: 'Payment status is required' });
@@ -112,7 +112,7 @@ router.put('/:id/payment-status', authenticateToken, authorizeRole(['manager']),
 });
 
 // מחיקת הזמנה (מנהלים בלבד)
-router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         // למודל שלך אין פונקציית מחיקה, אפשר להוסיף או לשנות סטטוס למחוק (soft delete)
         // כאן נניח שתוסיף פונקציה delete או update סטטוס ל"deleted"

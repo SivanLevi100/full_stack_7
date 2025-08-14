@@ -4,45 +4,43 @@ const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-
-
 // Login
 router.post('/login', async (req, res) => {
     try {
         console.log('🔑 Login request body:', req.body);
         
-        const { username, password } = req.body;
+        const { email, password } = req.body;
         
         console.log('🔍 Login fields:');
-        console.log('username:', username);
+        console.log('email:', email);
         console.log('password:', password);
         
-        if (!username || !password) {
+        if (!email || !password) {
             console.log('❌ Missing login fields');
-            return res.status(400).json({ error: 'Username and password are required' });
+            return res.status(400).json({ error: 'Email and password are required' });
         }
 
-        const user = await User.findByEmail(username);
+        const user = await User.findByEmail(email);
         console.log('👤 Found user:', user ? 'YES' : 'NO');
         
         if (!user) {
-            return res.status(401).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
 
         const isValidPassword = await User.verifyPassword(user.id, password);
         if (!isValidPassword) {
-            return res.status(401).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Remove sensitive information
-        const { id, name, username1, email, address } = user;
-        const userInfo = { id, name, username1, email, address };
+        // הימנע מהגדרה כפולה של email
+        const { id, full_name, phone, role } = user;
+        const userInfo = { id, full_name, email: user.email, phone, role };
 
         const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET || 'your_secret_key',
-    { expiresIn: '24h' }
-);
+            { id: user.id, email: user.email, role: user.role },
+            process.env.JWT_SECRET || 'your_secret_key',
+            { expiresIn: '24h' }
+        );
 
         res.json({ 
             message: 'Login successful', 
@@ -55,34 +53,26 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
-
-// Register
 // Register
 router.post('/register', async (req, res) => {
     try {
-        const { username, password, email, name, address } = req.body;
+        const { email, password } = req.body;
         
-        if (!username || !password || !email || !name) {
-            return res.status(400).json({ error: 'Username, password, email, and name are required' });
+        if (!password || !email) {
+            return res.status(400).json({ error: 'Password and email are required' });
         }
 
         // Check if user already exists
-        const existingUser = await User.findByEmail(email);  // שני מusername לemail
+        const existingUser = await User.findByEmail(email);
         if (existingUser) {
             return res.status(409).json({ error: 'Email already exists' });
         }
 
-        // Create user - הוסף password!
+        // Create user
         const userId = await User.create({
             email: email,
-            password: password,      // ← הוסף את זה!
-            full_name: name,
-            phone: address
+            password: password
         });
-
-        // הסר את השורה הזו - User.createPassword לא קיים!
-        // await User.createPassword(userId, password);
 
         res.status(201).json({ 
             message: 'User registered successfully',
@@ -94,14 +84,13 @@ router.post('/register', async (req, res) => {
     }
 });
 
-//להסיר
+// להסיר – מיועד למנוע גישה ב־GET
 router.get('/login', (req, res) => {
-  res.send('Login route is POST only. Use POST with JSON body.');
-});
-//להסיר
-router.get('/register', (req, res) => {
-  res.send('Register route is POST only. Use POST with JSON body.');
+    res.send('Login route is POST only. Use POST with JSON body.');
 });
 
+router.get('/register', (req, res) => {
+    res.send('Register route is POST only. Use POST with JSON body.');
+});
 
 module.exports = router;

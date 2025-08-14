@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  ShoppingCart, 
-  Menu, 
-  X, 
-  Home, 
-  Package, 
-  Users, 
-  FileText, 
+import {
+  ShoppingCart,
+  Menu,
+  X,
+  Home,
+  Package,
+  Users,
+  FileText,
   Settings,
   LogOut,
   User,
@@ -18,6 +18,7 @@ import {
   Search
 } from 'lucide-react';
 import { cartAPI } from '../services/api';
+
 
 const Navbar = () => {
   const { user, isAdmin, logout } = useAuth();
@@ -88,11 +89,10 @@ const Navbar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  location.pathname === item.path 
-                    ? 'bg-blue-100 text-blue-700' 
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${location.pathname === item.path
+                    ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                }`}
+                  }`}
               >
                 {item.icon}
                 {item.label}
@@ -103,11 +103,10 @@ const Navbar = () => {
             {!isAdmin() && (
               <Link
                 to="/cart"
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 relative ${
-                  location.pathname === '/cart' 
-                    ? 'bg-green-100 text-green-700' 
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 relative ${location.pathname === '/cart'
+                    ? 'bg-green-100 text-green-700'
                     : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
-                }`}
+                  }`}
               >
                 <ShoppingCart className="h-5 w-5" />
                 עגלה
@@ -148,13 +147,12 @@ const Navbar = () => {
                   <div className="px-4 py-2 border-b border-gray-200">
                     <p className="text-sm font-medium text-gray-900">{user?.full_name}</p>
                     <p className="text-xs text-gray-500">{user?.email}</p>
-                    <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${
-                      isAdmin() ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-                    }`}>
+                    <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${isAdmin() ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
                       {isAdmin() ? 'מנהל' : 'לקוח'}
                     </span>
                   </div>
-                  
+
                   <Link
                     to="/profile"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -163,7 +161,7 @@ const Navbar = () => {
                     <User className="h-4 w-4" />
                     הפרופיל שלי
                   </Link>
-                  
+
                   {isAdmin() && (
                     <Link
                       to="/settings"
@@ -174,7 +172,7 @@ const Navbar = () => {
                       הגדרות
                     </Link>
                   )}
-                  
+
                   <button
                     onClick={() => {
                       setShowUserMenu(false);
@@ -224,11 +222,10 @@ const Navbar = () => {
                 key={item.path}
                 to={item.path}
                 onClick={closeMenu}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
-                  location.pathname === item.path
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${location.pathname === item.path
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                }`}
+                  }`}
               >
                 {item.icon}
                 {item.label}
@@ -237,10 +234,7 @@ const Navbar = () => {
 
             {/* פרופיל נייד */}
             <div className="border-t border-gray-200 pt-4 mt-4">
-              <div className="px-4 py-2 text-sm text-gray-600">
-                מחובר כ: <span className="font-medium">{user?.full_name}</span>
-              </div>
-              
+
               <Link
                 to="/profile"
                 onClick={closeMenu}
@@ -249,7 +243,7 @@ const Navbar = () => {
                 <User className="h-5 w-5" />
                 הפרופיל שלי
               </Link>
-              
+
               {isAdmin() && (
                 <Link
                   to="/settings"
@@ -260,7 +254,7 @@ const Navbar = () => {
                   הגדרות
                 </Link>
               )}
-              
+
               <button
                 onClick={() => {
                   closeMenu();

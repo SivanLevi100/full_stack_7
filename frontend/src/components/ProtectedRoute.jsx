@@ -63,3 +63,4 @@ export const AuthRedirect = ({ children }) => {
 };
 
 export default ProtectedRoute;
+
