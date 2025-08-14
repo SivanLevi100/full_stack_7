@@ -33,7 +33,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // יצירת קטגוריה חדשה (מנהלים בלבד)
-router.post('/', authenticateToken, authorizeRole(['manager']), upload.single('image'), async (req, res) => {
+router.post('/', authenticateToken, authorizeRole(['admin']), upload.single('image'), async (req, res) => {
     try {
         const categoryData = { ...req.body };
         if (req.file) {
@@ -50,7 +50,7 @@ router.post('/', authenticateToken, authorizeRole(['manager']), upload.single('i
 });
 
 // עדכון קטגוריה (מנהלים בלבד)
-router.put('/:id', authenticateToken, authorizeRole(['manager']), upload.single('image'), async (req, res) => {
+router.put('/:id', authenticateToken, authorizeRole(['admin']), upload.single('image'), async (req, res) => {
     try {
         const categoryData = { ...req.body };
         if (req.file) {
@@ -69,7 +69,7 @@ router.put('/:id', authenticateToken, authorizeRole(['manager']), upload.single(
 });
 
 // מחיקת קטגוריה (מנהלים בלבד)
-router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const success = await Category.delete(req.params.id);
         if (!success) return res.status(404).json({ message: 'Category not found' });
@@ -81,7 +81,7 @@ router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req,
 });
 
 // קבלת קטגוריות עם מספר המוצרים שלהן (מנהלים בלבד)
-router.get('/reports/products-count', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.get('/reports/products-count', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const categoriesReport = await Category.getCategoriesWithProductsCount();
         res.json(categoriesReport);

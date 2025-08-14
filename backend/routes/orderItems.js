@@ -5,7 +5,7 @@ const OrderItem = require('../models/OrderItem');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
 // קבלת כל פריטי ההזמנה (מנהלים בלבד)
-router.get('/', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.get('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const filters = {
             order_id: req.query.order_id,
@@ -20,7 +20,7 @@ router.get('/', authenticateToken, authorizeRole(['manager']), async (req, res) 
 });
 
 // קבלת פריט הזמנה לפי ID (מנהלים בלבד)
-router.get('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.get('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const item = await OrderItem.findById(req.params.id);
         if (!item) return res.status(404).json({ message: 'Order item not found' });
@@ -32,7 +32,7 @@ router.get('/:id', authenticateToken, authorizeRole(['manager']), async (req, re
 });
 
 // הוספת פריט להזמנה (מנהלים בלבד)
-router.post('/', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.post('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { order_id, product_id, quantity, unit_price } = req.body;
         if (!order_id || !product_id || !quantity || !unit_price) {
@@ -49,7 +49,7 @@ router.post('/', authenticateToken, authorizeRole(['manager']), async (req, res)
 });
 
 // עדכון פריט הזמנה (מנהלים בלבד)
-router.put('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.put('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const updated = await OrderItem.update(req.params.id, req.body);
         if (!updated) return res.status(404).json({ message: 'Order item not found or no changes made' });
@@ -63,7 +63,7 @@ router.put('/:id', authenticateToken, authorizeRole(['manager']), async (req, re
 });
 
 // מחיקת פריט הזמנה (מנהלים בלבד)
-router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const deleted = await OrderItem.delete(req.params.id);
         if (!deleted) return res.status(404).json({ message: 'Order item not found' });
@@ -81,7 +81,7 @@ router.get('/order/:orderId', authenticateToken, async (req, res) => {
         const orderId = req.params.orderId;
 
         // מנהל יכול לראות הכול, משתמש רגיל רק אם זה שלו
-        if (req.user.role !== 'manager') {
+        if (req.user.role !== 'admin') {
             const [orderCheck] = await pool.execute('SELECT user_id FROM orders WHERE id = ?', [orderId]);
             if (!orderCheck.length || orderCheck[0].user_id !== req.user.id) {
                 return res.status(403).json({ error: 'Access denied' });

@@ -37,7 +37,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // יצירת מוצר חדש (מנהלים בלבד)
-router.post('/', authenticateToken, authorizeRole(['manager']), upload.single('image'), async (req, res) => {
+router.post('/', authenticateToken, authorizeRole(['admin']), upload.single('image'), async (req, res) => {
     try {
         const productData = { ...req.body };
         if (req.file) {
@@ -54,7 +54,7 @@ router.post('/', authenticateToken, authorizeRole(['manager']), upload.single('i
 });
 
 // עדכון מוצר (מנהלים בלבד)
-router.put('/:id', authenticateToken, authorizeRole(['manager']), upload.single('image'), async (req, res) => {
+router.put('/:id', authenticateToken, authorizeRole(['admin']), upload.single('image'), async (req, res) => {
     try {
         const productData = { ...req.body };
         if (req.file) {
@@ -73,7 +73,7 @@ router.put('/:id', authenticateToken, authorizeRole(['manager']), upload.single(
 });
 
 // מחיקת מוצר (מנהלים בלבד)
-router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const success = await Product.delete(req.params.id);
         if (!success) return res.status(404).json({ message: 'Product not found' });
@@ -85,7 +85,7 @@ router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req,
 });
 
 // עדכון מלאי (מנהלים בלבד)
-router.put('/:id/stock', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.put('/:id/stock', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { quantity } = req.body;
         const success = await Product.updateStock(req.params.id, quantity);
@@ -98,7 +98,7 @@ router.put('/:id/stock', authenticateToken, authorizeRole(['manager']), async (r
 });
 
 // קבלת מוצרים עם מלאי נמוך (מנהלים בלבד)
-router.get('/reports/low-stock', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.get('/reports/low-stock', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const products = await Product.getLowStockProducts();
         res.json(products);

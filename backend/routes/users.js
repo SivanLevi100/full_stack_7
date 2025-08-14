@@ -6,7 +6,7 @@ const User = require('../models/User');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
 // קבלת כל המשתמשים (מנהלים בלבד)
-router.get('/', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.get('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const users = await User.findAll();
         res.json(users);
@@ -20,7 +20,7 @@ router.get('/', authenticateToken, authorizeRole(['manager']), async (req, res) 
 router.get('/:id', authenticateToken, async (req, res) => {
     try {
         // רק מנהל או המשתמש עצמו יכולים לראות פרטים
-        if (req.user.role !== 'manager' && req.user.id !== parseInt(req.params.id)) {
+        if (req.user.role !== 'admin' && req.user.id !== parseInt(req.params.id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -34,7 +34,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 // יצירת משתמש חדש (מנהלים בלבד)
-router.post('/', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.post('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const userId = await User.create(req.body);
         const user = await User.findById(userId);
@@ -49,7 +49,7 @@ router.post('/', authenticateToken, authorizeRole(['manager']), async (req, res)
 router.put('/:id', authenticateToken, async (req, res) => {
     try {
         // רק מנהל או המשתמש עצמו יכולים לעדכן
-        if (req.user.role !== 'manager' && req.user.id !== parseInt(req.params.id)) {
+        if (req.user.role !== 'admin' && req.user.id !== parseInt(req.params.id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -65,7 +65,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // מחיקת משתמש (מנהלים בלבד)
-router.delete('/:id', authenticateToken, authorizeRole(['manager']), async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const success = await User.delete(req.params.id);
         if (!success) return res.status(404).json({ message: 'User not found' });
