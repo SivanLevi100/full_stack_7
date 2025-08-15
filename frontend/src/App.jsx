@@ -20,6 +20,9 @@ import Dashboard from './pages/Dashboard';
 import Shop from './pages/customer/Shop';
 import Cart from './pages/customer/Cart';
 
+import MyOrders from './pages/customer/MyOrders';
+
+
 // Layout component
 const Layout = ({ children }) => (
   <div className="min-h-screen bg-gray-50">
@@ -72,6 +75,16 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+
+
+             <Route path="/my-orders" element={
+              <ProtectedRoute>
+                <Layout>
+                  <MyOrders />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
 
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
