@@ -12,7 +12,7 @@ import {
   Tag,
   Truck
 } from 'lucide-react';
-import { cartAPI, ordersAPI } from '../../services/api';
+import { cartAPI, ordersAPI, productsAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const Cart = () => {
@@ -34,7 +34,8 @@ const Cart = () => {
   const loadCart = async () => {
     try {
       setLoading(true);
-      const data = await cartAPI.getItems();
+      const data = await cartAPI.getItems(); //בעיה כאן - לא מקבל את העגלה מהשרת
+      //const data = await productsAPIAPI.getAll();
       setCartData(data);
     } catch (error) {
       console.error('Error loading cart:', error);
