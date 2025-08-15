@@ -17,8 +17,8 @@ import './styles/index.css';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Shop from './pages/Shop';
-import Cart from './pages/Cart';
+import Shop from './pages/customer/Shop';
+import Cart from './pages/customer/Cart';
 
 // Layout component
 const Layout = ({ children }) => (

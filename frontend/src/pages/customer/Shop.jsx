@@ -1,7 +1,7 @@
 // src/pages/Shop.js
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, ShoppingCart, Plus, Minus, Star, X } from 'lucide-react';
-import { productsAPI, categoriesAPI, cartAPI } from '../services/api';
+import { productsAPI, categoriesAPI, cartAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const Shop = () => {

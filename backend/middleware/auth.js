@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 // Middleware לאותנטיקציה - בדיקת token
-const authenticateToken = (req, res, next) => {
+/*const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -15,6 +15,28 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ error: 'Invalid or expired token' });
         }
         req.user = user; // שמירת פרטי המשתמש בבקשה
+        next();
+    });
+};*/
+const authenticateToken = (req, res, next) => {
+    console.log('Headers:', req.headers);
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    console.log('Token found:', token);
+
+    if (!token) {
+        console.log('No token sent!');
+        return res.status(401).json({ error: 'Access token required' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_key', (err, user) => {
+        if (err) {
+            console.log('Token invalid or expired:', err);
+            return res.status(403).json({ error: 'Invalid or expired token' });
+        }
+        req.user = user;
+        console.log('Token valid, user:', user);
         next();
     });
 };

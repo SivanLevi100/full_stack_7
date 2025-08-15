@@ -1,6 +1,6 @@
 // src/pages/CustomerDashboard.jsx - דף בקרה לקונה
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { 
   ShoppingCart, 
@@ -20,7 +20,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import { ordersAPI, productsAPI, cartAPI } from '../services/api';
+import { ordersAPI, productsAPI, cartAPI } from '../../services/api';
 
 const CustomerDashboard = () => {
   const { user } = useAuth();

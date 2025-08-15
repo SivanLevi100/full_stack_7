@@ -1,6 +1,6 @@
 // src/pages/AdminDashboard.jsx - דף בקרה למנהל
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { 
   ShoppingCart, 
@@ -21,7 +21,7 @@ import {
   Calendar,
   Zap
 } from 'lucide-react';
-import { ordersAPI, productsAPI, usersAPI } from '../services/api';
+import { ordersAPI, productsAPI, usersAPI } from '../../services/api';
 
 const AdminDashboard = () => {
   const { user } = useAuth();

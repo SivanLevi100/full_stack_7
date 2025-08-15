@@ -12,7 +12,7 @@ import {
   Tag,
   Truck
 } from 'lucide-react';
-import { cartAPI, ordersAPI } from '../services/api';
+import { cartAPI, ordersAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const Cart = () => {

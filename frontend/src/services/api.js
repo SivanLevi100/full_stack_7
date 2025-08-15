@@ -43,12 +43,12 @@ export const authAPI = {
   login: async (email, password) => {
     try {
       console.log('🔐 Attempting login with:', { email, password: '***' });
-      
-      const response = await api.post('/auth/login', { 
+
+      const response = await api.post('/auth/login', {
         email,  // ✅ שולח את האימייל כ-email
-        password 
+        password
       });
-      
+
       console.log('✅ Login successful:', response.data);
       return response.data;
     } catch (error) {
@@ -56,20 +56,20 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   register: async (userData) => {
     try {
       console.log('📝 Attempting registration with:', userData);
-      
+
       // ודא שיש email (השתמש באימייל כ-email אם לא קיים)
       const registrationData = {
         ...userData,
         email: userData.email || userData.email,
         role: userData.role || 'customer'
       };
-      
+
       const response = await api.post('/auth/register', registrationData);
-      
+
       console.log('✅ Registration successful:', response.data);
       return response.data;
     } catch (error) {
@@ -77,7 +77,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   getCurrentUser: async () => {
     try {
       const response = await api.get('/auth/me');
@@ -87,7 +87,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   logout: async () => {
     try {
       await api.post('/auth/logout');
@@ -107,35 +107,35 @@ export const productsAPI = {
     const response = await api.get(`/products?${params}`);
     return response.data;
   },
-  
+
   getById: async (id) => {
     const response = await api.get(`/products/${id}`);
     return response.data;
   },
-  
+
   create: async (productData) => {
     const response = await api.post('/products', productData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   },
-  
+
   update: async (id, productData) => {
     const response = await api.put(`/products/${id}`, productData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   },
-  
+
   delete: async (id) => {
     await api.delete(`/products/${id}`);
   },
-  
+
   updateStock: async (id, quantity) => {
     const response = await api.put(`/products/${id}/stock`, { quantity });
     return response.data;
   },
-  
+
   getLowStock: async () => {
     const response = await api.get('/products/reports/low-stock');
     return response.data;
@@ -148,22 +148,22 @@ export const categoriesAPI = {
     const response = await api.get('/categories');
     return response.data;
   },
-  
+
   getById: async (id) => {
     const response = await api.get(`/categories/${id}`);
     return response.data;
   },
-  
+
   create: async (categoryData) => {
     const response = await api.post('/categories', categoryData);
     return response.data;
   },
-  
+
   update: async (id, categoryData) => {
     const response = await api.put(`/categories/${id}`, categoryData);
     return response.data;
   },
-  
+
   delete: async (id) => {
     await api.delete(`/categories/${id}`);
   }
@@ -175,25 +175,26 @@ export const cartAPI = {
     const response = await api.get('/cart');
     return response.data;
   },
-  
+
   addItem: async (productId, quantity = 1) => {
     const response = await api.post('/cart/add', { product_id: productId, quantity });
+    console.log(response);
     return response.data;
   },
-  
+
   updateQuantity: async (productId, quantity) => {
     const response = await api.put('/cart/update', { product_id: productId, quantity });
     return response.data;
   },
-  
+
   removeItem: async (productId) => {
     await api.delete(`/cart/remove/${productId}`);
   },
-  
+
   clear: async () => {
     await api.delete('/cart/clear');
   },
-  
+
   getCount: async () => {
     const response = await api.get('/cart/count');
     return response.data;
@@ -207,22 +208,22 @@ export const ordersAPI = {
     const response = await api.get(`/orders?${params}`);
     return response.data;
   },
-  
+
   getById: async (id) => {
     const response = await api.get(`/orders/${id}`);
     return response.data;
   },
-  
+
   create: async (orderData) => {
     const response = await api.post('/orders', orderData);
     return response.data;
   },
-  
+
   updateStatus: async (id, status) => {
     const response = await api.put(`/orders/${id}/status`, { status });
     return response.data;
   },
-  
+
   getMyOrders: async () => {
     const response = await api.get('/orders/my/orders');
     return response.data;
@@ -235,17 +236,17 @@ export const usersAPI = {
     const response = await api.get('/users');
     return response.data;
   },
-  
+
   getById: async (id) => {
     const response = await api.get(`/users/${id}`);
     return response.data;
   },
-  
+
   update: async (id, userData) => {
     const response = await api.put(`/users/${id}`, userData);
     return response.data;
   },
-  
+
   changePassword: async (id, passwords) => {
     const response = await api.put(`/users/${id}/password`, passwords);
     return response.data;
