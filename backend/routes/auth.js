@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
 // Register
 router.post('/register', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password,full_name, phone} = req.body;
         
         if (!password || !email) {
             return res.status(400).json({ error: 'Password and email are required' });
@@ -71,9 +71,12 @@ router.post('/register', async (req, res) => {
         // Create user
         const userId = await User.create({
             email: email,
-            password: password
+            password: password,
+            full_name: full_name,
+            phone: phone 
         });
 
+      
         res.status(201).json({ 
             message: 'User registered successfully',
             userId: userId

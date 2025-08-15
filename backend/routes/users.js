@@ -33,8 +33,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// יצירת משתמש חדש (מנהלים בלבד)
-router.post('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
+// יצירת משתמש חדש 
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const userId = await User.create(req.body);
         const user = await User.findById(userId);

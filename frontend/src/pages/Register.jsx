@@ -77,11 +77,11 @@ const handleSubmit = async (e) => {
     if (!validateForm()) return;
 
     const userData = {
-        username: formData.email,    // או username נפרד
+       // username: formData.email,    // או username נפרד
         email: formData.email,
         password: formData.password,
-        name: formData.full_name,
-        address: formData.phone || ''  // ודא שזה לא undefined
+        full_name: formData.full_name,
+        phone: formData.phone || ''  // ודא שזה לא undefined
     };
     
     console.log('🚀 Frontend sending:', userData);
