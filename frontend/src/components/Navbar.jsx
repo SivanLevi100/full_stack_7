@@ -66,6 +66,7 @@ const Navbar = () => {
   const customerMenuItems = [
     { path: '/dashboard', label: 'דאשבורד', icon: <Home className="h-5 w-5" /> },
     { path: '/shop', label: 'חנות', icon: <Store className="h-5 w-5" /> },
+    { path: '/my-cart', label: 'סל קניות שלי',icon: <ShoppingCart className="h-5 w-5" /> },
     { path: '/my-orders', label: 'ההזמנות שלי', icon: <FileText className="h-5 w-5" /> },
   ];
 

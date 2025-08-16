@@ -173,8 +173,6 @@ export const categoriesAPI = {
 export const cartAPI = {
   getItems: async () => {
     const response = await api.get('/cart');
-    console.log("cartAPI - getitems"); /////////////////////////////////////////////////
-    console.log(response.data);/////////////////////////////////////
     return response.data;
   },
 
@@ -218,6 +216,9 @@ export const ordersAPI = {
 
   create: async (orderData) => {
     const response = await api.post('/orders', orderData);
+    console.log("from ordersAPI");
+    console.log(orderData);
+    console.log(response);
     return response.data;
   },
 
@@ -231,6 +232,42 @@ export const ordersAPI = {
     return response.data;
   }
 };
+
+
+// שירותי פריטי הזמנות
+export const orderItemsAPI = {
+  getAll: async (filters = {}) => {
+    const params = new URLSearchParams(filters);
+    const response = await api.get(`/orderItems?${params}`);
+    return response.data;
+  },
+
+  getById: async (id) => {
+    const response = await api.get(`/orderItems/${id}`);
+    return response.data;
+  },
+
+  create: async (itemData) => {
+    const response = await api.post('/orderItems', itemData);
+    return response.data;
+  },
+
+  update: async (id, itemData) => {
+    const response = await api.put(`/orderItems/${id}`, itemData);
+    return response.data;
+  },
+
+  delete: async (id) => {
+    const response = await api.delete(`/orderItems/${id}`);
+    return response.data;
+  },
+
+  getByOrder: async (orderId) => {
+    const response = await api.get(`/orderItems/order/${orderId}`);
+    return response.data;
+  }
+};
+
 
 // שירותי משתמשים
 export const usersAPI = {

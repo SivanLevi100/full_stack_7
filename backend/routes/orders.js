@@ -40,7 +40,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 // יצירת הזמנה חדשה (רק למשתמש עצמו)
-router.post('/', authenticateToken, async (req, res) => {
+/*router.post('/', authenticateToken, async (req, res) => {
     try {
         const orderData = {
             user_id: req.user.id,
@@ -75,7 +75,48 @@ router.post('/', authenticateToken, async (req, res) => {
         console.error('Create order error:', err);
         res.status(500).json({ error: err.message });
     }
+});*/
+
+
+// יצירת הזמנה חדשה (רק למשתמש עצמו)
+router.post('/', authenticateToken, async (req, res) => {
+    console.log("from serverrrrrrrrrrrrrrrrrr");
+    console.log('User ID:', req.user.id);
+    console.log('Request body:', req.body);
+    try {
+        const orderData = {
+            user_id: req.user.id,
+            order_number: `ORD-${Date.now()}`, // מספר הזמנה ייחודי
+            total_amount: req.body.total_amount,
+            status: 'pending', // סטטוס ראשוני
+            order_date: new Date().toISOString()
+        };
+
+        const { orderId, orderNumber } = await Order.create(orderData);
+
+        // הוספת פריטי הזמנה אם יש
+        if (Array.isArray(req.body.items)) {
+            for (const item of req.body.items) {
+                await Order.addOrderItem({
+                    order_id: orderId,
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price
+                });
+            }
+        }
+
+
+        const order = await Order.findById(orderId);
+        const items = await Order.getOrderItems(orderId);
+        res.status(201).json({ ...order, items, orderNumber });
+       
+    } catch (err) {
+        console.error('Create order error:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
+
 
 // עדכון סטטוס הזמנה (מנהלים בלבד)
 router.put('/:id/status', authenticateToken, authorizeRole(['admin']), async (req, res) => {

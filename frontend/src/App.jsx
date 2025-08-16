@@ -22,6 +22,10 @@ import Cart from './pages/customer/Cart';
 import MyOrders from './pages/customer/MyOrders';
 import MyCart from './pages/customer/MyCart';
 import Payment from './pages/customer/Payment';
+import Products from './pages/admin/Products';
+import Categories from './pages/admin/Categories';
+import Orders from './pages/admin/Orders';
+import Users from './pages/admin/Users';
 
 
 
@@ -70,7 +74,7 @@ function App() {
               </ProtectedRoute>
             } />
 
-            
+
             <Route path="/my-cart" element={
               <ProtectedRoute>
                 <Layout>
@@ -80,7 +84,7 @@ function App() {
             } />
 
 
-             <Route path="/my-orders" element={
+            <Route path="/my-orders" element={
               <ProtectedRoute>
                 <Layout>
                   <MyOrders />
@@ -96,12 +100,47 @@ function App() {
               </ProtectedRoute>
             } />
 
-            
+            <Route path="/products" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Products />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/categories" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Categories />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Orders />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+
+            <Route path="/users" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Users  />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+
+
+
 
 
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            
+
             {/* 404 */}
             <Route path="*" element={
               <div className="min-h-screen flex items-center justify-center">

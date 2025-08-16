@@ -294,7 +294,8 @@ const AdminDashboard = () => {
           title="הוסף מוצר חדש"
           description="הוסף מוצרים חדשים למערכת"
           icon={<Plus className="h-6 w-6" />}
-          link="/products/new"
+          //link="/products/new"
+          link="/products"
           color="bg-green-500"
         />
         <AdminQuickAction

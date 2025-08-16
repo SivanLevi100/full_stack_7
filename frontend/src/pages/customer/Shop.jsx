@@ -35,7 +35,7 @@ const Shop = () => {
         productsAPI.getAll(),
         categoriesAPI.getAll()
       ]);
-      
+
       setProducts(productsData);
       setCategories(categoriesData);
     } catch (error) {
@@ -50,7 +50,7 @@ const Shop = () => {
     let filtered = [...products];
 
     if (filters.category) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         product.category_id === parseInt(filters.category)
       );
     }
@@ -62,13 +62,13 @@ const Shop = () => {
     }
 
     if (filters.minPrice) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         parseFloat(product.price) >= parseFloat(filters.minPrice)
       );
     }
 
     if (filters.maxPrice) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         parseFloat(product.price) <= parseFloat(filters.maxPrice)
       );
     }
@@ -289,15 +289,9 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
           </div>
         )}
         {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <img src={`http://localhost:3000${product.image_url}`} alt={product.name} className="h-48 object-cover mb-2 rounded" />
         ) : (
-          <div className="w-full h-48 flex items-center justify-center text-gray-400">
-            <ShoppingCart className="h-16 w-16" />
-          </div>
+          <div className="h-48 bg-gray-200 flex items-center justify-center mb-2">No Image</div>
         )}
       </div>
 
