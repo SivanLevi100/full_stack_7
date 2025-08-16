@@ -173,6 +173,8 @@ export const categoriesAPI = {
 export const cartAPI = {
   getItems: async () => {
     const response = await api.get('/cart');
+    console.log("cartAPI - getitems"); /////////////////////////////////////////////////
+    console.log(response.data);/////////////////////////////////////
     return response.data;
   },
 

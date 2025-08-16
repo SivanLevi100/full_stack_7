@@ -102,8 +102,9 @@ const Navbar = () => {
             {/* עגלת קניות ללקוחות */}
             {!isAdmin() && (
               <Link
-                to="/cart"
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 relative ${location.pathname === '/cart'
+                //to="/cart"
+                to="my-cart"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 relative ${location.pathname === '/my-cart'
                     ? 'bg-green-100 text-green-700'
                     : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
                   }`}
@@ -193,7 +194,8 @@ const Navbar = () => {
             {/* עגלה נייד */}
             {!isAdmin() && (
               <Link
-                to="/cart"
+                //to="/cart"
+                to="my-cart"
                 className="relative p-2 text-gray-600 hover:text-green-600 transition-colors"
               >
                 <ShoppingCart className="h-6 w-6" />

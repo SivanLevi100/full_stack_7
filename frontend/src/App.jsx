@@ -19,8 +19,10 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Shop from './pages/customer/Shop';
 import Cart from './pages/customer/Cart';
-
 import MyOrders from './pages/customer/MyOrders';
+import MyCart from './pages/customer/MyCart';
+import Payment from './pages/customer/Payment';
+
 
 
 // Layout component
@@ -68,10 +70,11 @@ function App() {
               </ProtectedRoute>
             } />
 
-            <Route path="/cart" element={
+            
+            <Route path="/my-cart" element={
               <ProtectedRoute>
                 <Layout>
-                  <Cart />
+                  <MyCart />
                 </Layout>
               </ProtectedRoute>
             } />
@@ -84,6 +87,16 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+
+            <Route path="/payment" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Payment />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            
 
 
             {/* Default redirect */}

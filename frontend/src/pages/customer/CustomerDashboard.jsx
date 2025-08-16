@@ -152,7 +152,8 @@ const CustomerDashboard = () => {
           value={customerStats.cartItems}
           icon={<ShoppingCart className="h-8 w-8" />}
           color="from-purple-500 to-purple-600"
-          link="/cart"
+          //link="/cart"
+          link="/my-cart"
           urgent={customerStats.cartItems > 0}
         />
       </div>
@@ -240,7 +241,8 @@ const CustomerDashboard = () => {
           title="עגלת הקניות"
           description={`${customerStats.cartItems} פריטים בעגלה`}
           icon={<Package className="h-6 w-6" />}
-          link="/cart"
+          //link="/cart"
+          link="/my-cart"
           color="bg-green-500"
           badge={customerStats.cartItems > 0 ? customerStats.cartItems : null}
         />

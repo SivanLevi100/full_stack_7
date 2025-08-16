@@ -16,6 +16,7 @@ import { cartAPI, ordersAPI, productsAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const Cart = () => {
+  console.log("🚀 Cart component rendered!");
   const [cartData, setCartData] = useState({ items: [], total: 0 });
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState({});

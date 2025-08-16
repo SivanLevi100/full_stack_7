@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
 
   // בדיקה אם המשתמש מחובר בעת טעינת האפליקציה
   useEffect(() => {
