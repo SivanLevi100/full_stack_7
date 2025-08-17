@@ -124,6 +124,7 @@ export const productsAPI = {
     const response = await api.put(`/products/${id}`, productData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+    console.log("response update productsAPI ",response);
     return response.data;
   },
 
@@ -203,9 +204,14 @@ export const cartAPI = {
 
 // שירותי הזמנות
 export const ordersAPI = {
-  getAll: async (filters = {}) => {
+  /*+getAll: async (filters = {}) => {
     params = new URLSearchParams(filters);
     const response = await api.get(`/orders?${params}`);
+    return response.data;
+  },*/
+  getAll: async () => {
+    const response = await api.get(`/orders`);
+    console.log("response.data", response.data)
     return response.data;
   },
 

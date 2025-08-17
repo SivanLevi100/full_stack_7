@@ -22,10 +22,12 @@ import Cart from './pages/customer/Cart';
 import MyOrders from './pages/customer/MyOrders';
 import MyCart from './pages/customer/MyCart';
 import Payment from './pages/customer/Payment';
+
 import Products from './pages/admin/Products';
 import Categories from './pages/admin/Categories';
 import Orders from './pages/admin/Orders';
 import Users from './pages/admin/Users';
+import OrderDetails from './pages/admin/OrderDetails';
 
 
 
@@ -128,10 +130,23 @@ function App() {
             <Route path="/users" element={
               <ProtectedRoute>
                 <Layout>
-                  <Users  />
+                  <Users />
                 </Layout>
               </ProtectedRoute>
             } />
+
+            <Route
+              path="/order-details/:orderId"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <OrderDetails />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+
+
 
 
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
 // קבלת כל ההזמנות (מנהלים בלבד) עם פילטרים
@@ -39,50 +40,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// יצירת הזמנה חדשה (רק למשתמש עצמו)
-/*router.post('/', authenticateToken, async (req, res) => {
-    try {
-        const orderData = {
-            user_id: req.user.id,
-            total_amount: req.body.total_amount,
-            discount_amount: req.body.discount_amount || 0,
-            tax_amount: req.body.tax_amount || 0,
-            delivery_fee: req.body.delivery_fee || 0,
-            delivery_address: req.body.delivery_address,
-            delivery_phone: req.body.delivery_phone,
-            notes: req.body.notes,
-            payment_method: req.body.payment_method,
-        };
 
-        const orderId = await Order.create(orderData);
 
-        // הוספת פריטי הזמנה אם יש
-        if (Array.isArray(req.body.items)) {
-            for (const item of req.body.items) {
-                await Order.addOrderItem({
-                    order_id: orderId,
-                    product_id: item.product_id,
-                    quantity: item.quantity,
-                    unit_price: item.unit_price
-                });
-            }
-        }
-
-        const order = await Order.findById(orderId);
-        const items = await Order.getOrderItems(orderId);
-        res.status(201).json({ ...order, items });
-    } catch (err) {
-        console.error('Create order error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});*/
 
 
 // יצירת הזמנה חדשה (רק למשתמש עצמו)
 router.post('/', authenticateToken, async (req, res) => {
-    console.log("from serverrrrrrrrrrrrrrrrrr");
-    console.log('User ID:', req.user.id);
-    console.log('Request body:', req.body);
+
     try {
         const orderData = {
             user_id: req.user.id,
@@ -97,20 +61,25 @@ router.post('/', authenticateToken, async (req, res) => {
         // הוספת פריטי הזמנה אם יש
         if (Array.isArray(req.body.items)) {
             for (const item of req.body.items) {
+                // הוספת פריט להזמנה
                 await Order.addOrderItem({
                     order_id: orderId,
                     product_id: item.product_id,
                     quantity: item.quantity,
                     unit_price: item.unit_price
                 });
+
+                // עדכון מלאי המוצר
+                const product = await Product.findById(item.product_id); // נניח שיש פונקציה שמביאה את המוצר
+                const newStock = product.stock_quantity - item.quantity;
+                await Product.updateStock(item.product_id, newStock);
             }
         }
-
 
         const order = await Order.findById(orderId);
         const items = await Order.getOrderItems(orderId);
         res.status(201).json({ ...order, items, orderNumber });
-       
+
     } catch (err) {
         console.error('Create order error:', err);
         res.status(500).json({ error: err.message });

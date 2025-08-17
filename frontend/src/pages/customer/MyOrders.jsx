@@ -16,6 +16,8 @@ const MyOrders = () => {
     try {
       setLoading(true);
       const data = await ordersAPI.getMyOrders(); // ⬅️ מחזיר רק את ההזמנות של המשתמש הנוכחי
+      console.log("🟢 Raw data from server:", data); // <-- כאן נדפיס את הנתונים
+      
       setOrders(data);
     } catch (error) {
       console.error('Error loading my orders:', error);
@@ -57,8 +59,8 @@ const MyOrders = () => {
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">{order.id}</td>
-                  <td className="px-6 py-4">{new Date(order.created_at).toLocaleDateString('he-IL')}</td>
-                  <td className="px-6 py-4">₪{parseFloat(order.total_price).toFixed(2)}</td>
+                  <td className="px-6 py-4">{new Date(order.created_at).toLocaleString()}</td>
+                  <td className="px-6 py-4">₪{Number(order.total_amount)}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
