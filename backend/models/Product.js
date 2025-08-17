@@ -56,9 +56,18 @@ class Product {
         return rows[0];
     }
 
+    static async delete(id) {
+    const [result] = await pool.execute(
+        'DELETE FROM products WHERE id = ?',
+        [id]
+    );
+    return result.affectedRows > 0;
+}
+
+/*
     static async create(productData) {
         const { name, category_id, price, image_url, stock_quantity = 0 } = productData;
-        
+
         const [result] = await pool.execute(
             'INSERT INTO products (name, category_id, price, image_url, stock_quantity) VALUES (?, ?, ?, ?, ?)',
             [name, category_id, price, image_url, stock_quantity]
@@ -66,14 +75,55 @@ class Product {
 
         return result.insertId;
     }
+    */
+
+    static async create(productData) {
+    const { name, category_id, price, image_url = null, stock_quantity = 0 } = productData;
+
+    const [result] = await pool.execute(
+        'INSERT INTO products (name, category_id, price, image_url, stock_quantity) VALUES (?, ?, ?, ?, ?)',
+        [name, category_id, price, image_url, stock_quantity]
+    );
+
+    return result.insertId;
+}
+
 
     static async update(id, productData) {
-        const { name, category_id, price, image_url, stock_quantity } = productData;
-        
+        // בונים אובייקט עם השדות הקיימים בלבד
+        const productDataToUpdate = {
+            name: productData.name,
+            category_id: productData.category_id,
+            price: productData.price,
+            stock_quantity: productData.stock_quantity
+        };
+
+        // אם נשלחה תמונה חדשה, מעדכנים את image_url
+        if (productData.image_url) {
+            productDataToUpdate.image_url = productData.image_url;
+        }
+
+        // בונים מערך שדות ופרמטרים
+        const fields = [];
+        const params = [];
+        for (const [key, value] of Object.entries(productDataToUpdate)) {
+            if (value !== undefined) { // עובר רק על שדות שמוגדרים
+                fields.push(`${key} = ?`);
+                params.push(value);
+            }
+        }
+
+        if (fields.length === 0) {
+            return false; // אין שדות לעדכן
+        }
+
+        params.push(id);
+
         const [result] = await pool.execute(
-            'UPDATE products SET name = ?, category_id = ?, price = ?, image_url = ?, stock_quantity = ? WHERE id = ?',
-            [name, category_id, price, image_url, stock_quantity, id]
+            `UPDATE products SET ${fields.join(', ')} WHERE id = ?`,
+            params
         );
+
         return result.affectedRows > 0;
     }
 

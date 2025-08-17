@@ -75,11 +75,12 @@ const Products = () => {
     const handleSave = async () => {
         try {
             const data = new FormData();
-            data.append('name', formData.name);
-            data.append('category_id', formData.category_id);
-            data.append('price', formData.price);
-            data.append('stock_quantity', formData.stock_quantity);
+            data.append('name', formData.name ?? '');
+            data.append('category_id', formData.category_id ?? null);
+            data.append('price', formData.price ?? 0);
+            data.append('stock_quantity', formData.stock_quantity ?? 0);
             if (formData.image) data.append('image', formData.image);
+
 
             let savedProduct;
             if (editingProduct) {

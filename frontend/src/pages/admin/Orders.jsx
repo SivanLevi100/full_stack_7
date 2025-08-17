@@ -73,7 +73,7 @@ const Orders = () => {
                                     <thead>
                                         <tr className="bg-gray-100 text-gray-700">
                                             <th className="p-3 border">ID</th>
-                                            <th className="p-3 border">כמות פריטים</th>
+                                            <th className="p-3 border">כמות מוצרים</th>
                                             <th className="p-3 border">תאריך ההזמנה</th>
                                             <th className="p-3 border">מחיר כולל</th>
                                             <th className="p-3 border">סטטוס</th>
@@ -87,7 +87,30 @@ const Orders = () => {
                                                 <td className="p-3 border">{order.total_items}</td>
                                                 <td className="p-3 border">{new Date(order.order_date).toLocaleString()}</td>
                                                 <td className="p-3 border">₪{Number(order.total_amount)}</td>
-                                                <td className="p-3 border">{order.status}</td>
+                                                <td className="p-3 border">
+                                                    <select
+                                                        value={order.status}
+                                                        onChange={async (e) => {
+                                                            const newStatus = e.target.value;
+                                                            try {
+                                                                await ordersAPI.updateStatus(order.id, newStatus);
+                                                                // עדכון סטטוס בלוקל סטייט
+                                                                setOrders(prev =>
+                                                                    prev.map(o => o.id === order.id ? { ...o, status: newStatus } : o)
+                                                                );
+                                                                toast.success('סטטוס ההזמנה עודכן בהצלחה');
+                                                            } catch (error) {
+                                                                console.error('Error updating order status:', error);
+                                                                toast.error('שגיאה בעדכון סטטוס ההזמנה');
+                                                            }
+                                                        }}
+                                                        className="border px-2 py-1 rounded">
+                                                        <option value="pending">Pending</option>
+                                                        <option value="delivered">delivered</option>
+                                                        <option value="confirmed">confirmed</option>
+                                                    </select>
+                                                </td>
+
                                                 <td className="p-3 border">
                                                     <Link
                                                         to={`/order-details/${order.id}`}

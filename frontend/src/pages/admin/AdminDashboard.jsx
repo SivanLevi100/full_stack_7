@@ -170,7 +170,7 @@ const AdminDashboard = () => {
           urgent={stats.pendingOrders > 5}
         />
         <AdminStatCard
-          title="מוצרים במלאי נמוך"
+          title="מוצרים במלאי נמוך (מתחת ל 10)"
           value={stats.lowStockProducts}
           icon={<AlertTriangle className="h-8 w-8" />}
           color="from-orange-500 to-red-500"

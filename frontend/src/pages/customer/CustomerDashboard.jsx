@@ -142,13 +142,14 @@ const CustomerDashboard = () => {
           urgent={customerStats.pendingOrders > 0}
         />
         <CustomerStatCard
-          title="סך כל הקניות"
+          title="סך כל הקניות עם סטטוס delivered"
           value={`₪${customerStats.totalSpent.toLocaleString()}`}
+          //value={`₪${Number(customerStats.totalSpent)}`}
           icon={<CreditCard className="h-8 w-8" />}
           color="from-green-500 to-green-600"
         />
         <CustomerStatCard
-          title="פריטים בעגלה"
+          title="מוצרים בעגלה"
           value={customerStats.cartItems}
           icon={<ShoppingCart className="h-8 w-8" />}
           color="from-purple-500 to-purple-600"
@@ -239,7 +240,7 @@ const CustomerDashboard = () => {
         />
         <CustomerQuickAction
           title="עגלת הקניות"
-          description={`${customerStats.cartItems} פריטים בעגלה`}
+          description={`${customerStats.cartItems} מוצרים בעגלה`}
           icon={<Package className="h-6 w-6" />}
           //link="/cart"
           link="/my-cart"

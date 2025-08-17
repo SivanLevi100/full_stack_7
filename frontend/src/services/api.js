@@ -124,7 +124,6 @@ export const productsAPI = {
     const response = await api.put(`/products/${id}`, productData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    console.log("response update productsAPI ",response);
     return response.data;
   },
 
@@ -179,7 +178,6 @@ export const cartAPI = {
 
   addItem: async (productId, quantity = 1) => {
     const response = await api.post('/cart/add', { product_id: productId, quantity });
-    console.log(response);
     return response.data;
   },
 
@@ -211,7 +209,6 @@ export const ordersAPI = {
   },*/
   getAll: async () => {
     const response = await api.get(`/orders`);
-    console.log("response.data", response.data)
     return response.data;
   },
 
@@ -222,9 +219,6 @@ export const ordersAPI = {
 
   create: async (orderData) => {
     const response = await api.post('/orders', orderData);
-    console.log("from ordersAPI");
-    console.log(orderData);
-    console.log(response);
     return response.data;
   },
 

@@ -37,6 +37,7 @@ const Navbar = () => {
   const loadCartCount = async () => {
     try {
       const response = await cartAPI.getCount();
+      console.log("count cart",response.count);/////////////
       setCartCount(response.count);
     } catch (error) {
       console.error('Error loading cart count:', error);
