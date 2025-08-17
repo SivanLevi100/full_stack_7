@@ -304,7 +304,9 @@ const AdminDashboard = () => {
           icon={<BarChart3 className="h-6 w-6" />}
           link="/reports"
           color="bg-blue-500"
+          
         />
+
         <AdminQuickAction
           title="נהל משתמשים"
           description="הוסף ועדכן פרטי לקוחות"
@@ -352,7 +354,7 @@ const AdminDashboard = () => {
 
 // רכיב כרטיס סטטיסטיקה מתקדם למנהל
 const AdminStatCard = ({ title, value, icon, color, change, changeType, link, urgent }) => (
-  <div className={`bg-gradient-to-r ${color} text-white rounded-xl p-6 shadow-lg relative overflow-hidden ${urgent ? 'ring-2 ring-red-300 animate-pulse' : ''}`}>
+  <div  className={`bg-gradient-to-r ${color} text-white rounded-xl p-6 shadow-lg relative overflow-hidden ${urgent ? 'ring-2 ring-red-300 animate-pulse' : ''}`}>
     <div className="absolute top-0 right-0 w-20 h-20 bg-white bg-opacity-10 rounded-full -mr-10 -mt-10"></div>
     <div className="relative z-10">
       <div className="flex items-center justify-between mb-4">

@@ -343,7 +343,7 @@ const CustomerOrderItem = ({ order }) => (
 );
 
 // רכיב מוצר מועדף
-const CustomerFavoriteItem = ({ product }) => (
+/*const CustomerFavoriteItem = ({ product }) => (
   <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors cursor-pointer">
     <div className="aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
       {product.image_url ? (
@@ -357,7 +357,26 @@ const CustomerFavoriteItem = ({ product }) => (
     <h4 className="font-medium text-sm text-gray-900 truncate">{product.name}</h4>
     <p className="text-green-600 font-bold text-sm">₪{parseFloat(product.price).toFixed(2)}</p>
   </div>
+);*/
+const CustomerFavoriteItem = ({ product }) => (
+  <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors cursor-pointer w-32">
+    {product.image_url ? (
+      <img
+        src={`http://localhost:3000${product.image_url}`}
+        alt={product.name}
+        className="h-24 w-full object-cover mb-2 rounded"
+      />
+    ) : (
+      <div className="h-24 w-full bg-gray-200 flex items-center justify-center mb-2 rounded">
+        No Image
+      </div>
+    )}
+    <h4 className="font-medium text-sm text-gray-900 truncate">{product.name}</h4>
+    <p className="text-green-600 font-bold text-sm">₪{parseFloat(product.price).toFixed(2)}</p>
+  </div>
 );
+
+
 
 // רכיב כרטיס מוצר
 const CustomerProductCard = ({ product }) => (

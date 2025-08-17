@@ -29,6 +29,8 @@ import Orders from './pages/admin/Orders';
 import Users from './pages/admin/Users';
 import OrderDetails from './pages/admin/OrderDetails';
 
+import Reports from './pages/admin/Reports';
+
 
 
 
@@ -147,6 +149,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+             <Route path="/reports" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Reports  />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+
+            
 
              
 

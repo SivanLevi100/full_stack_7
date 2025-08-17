@@ -59,7 +59,7 @@ const MyOrders = () => {
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">{order.id}</td>
-                  <td className="px-6 py-4">{new Date(order.created_at).toLocaleString()}</td>
+                  <td className="px-6 py-4">{new Date(order.order_date).toLocaleDateString('he-IL')}</td>
                   <td className="px-6 py-4">₪{Number(order.total_amount)}</td>
                   <td className="px-6 py-4">
                     <span
