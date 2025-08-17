@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { orderItemsAPI, productsAPI } from '../../services/api'; // נניח שיש שירות productsAPI
 import toast from 'react-hot-toast';
 
@@ -91,6 +91,15 @@ const OrderDetails = () => {
 
     return (
         <div className="p-6 bg-white rounded-xl shadow space-y-6">
+            {/* כפתור חזרה עם Link */}
+            <Link
+                to="/orders"
+                className="inline-block bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+            >
+                ← חזרה להזמנות
+            </Link>
+
+
             <h1 className="text-2xl font-bold mb-4">פרטי הזמנה #{orderId}</h1>
 
             <table className="min-w-full border-collapse">
