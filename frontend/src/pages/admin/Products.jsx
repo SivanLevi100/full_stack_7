@@ -9,7 +9,6 @@ const Products = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // מודל להוספה/עריכה
     const [modalOpen, setModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [formData, setFormData] = useState({
@@ -18,6 +17,15 @@ const Products = () => {
         price: '',
         stock_quantity: '',
         image: null,
+    });
+
+    // --- סינון ---
+    const [filters, setFilters] = useState({
+        category_id: '',
+        minPrice: '',
+        maxPrice: '',
+        minStock: '',
+        maxStock: '',
     });
 
     useEffect(() => {
@@ -41,14 +49,48 @@ const Products = () => {
         }
     };
 
-    // פתיחת המודל להוספה
+    // --- סינון לפי שדות ---
+   
+   // --- סינון לפי שדות ---
+let filteredProducts = products.filter(p => {
+    const matchCategory = filters.category_id ? p.category_id === parseInt(filters.category_id) : true;
+
+    // המרת מחירים למספרים
+    const productPrice = parseFloat(p.price);
+    const minPrice = filters.minPrice ? parseFloat(filters.minPrice) : null;
+    const maxPrice = filters.maxPrice ? parseFloat(filters.maxPrice) : null;
+
+    const matchPriceMin = minPrice != null ? productPrice >= minPrice : true;
+    const matchPriceMax = maxPrice != null ? productPrice <= maxPrice : true;
+
+    // סינון מלאי
+    const matchStockMin = filters.stockMin != null ? p.stock_quantity >= filters.stockMin : true;
+    const matchStockMax = filters.stockMax != null ? p.stock_quantity <= filters.stockMax : true;
+
+    return matchCategory && matchPriceMin && matchPriceMax && matchStockMin && matchStockMax;
+});
+
+
+    // --- מיון לפי מחיר ---
+    if (filters.priceSort === 'asc') {
+        filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    } else if (filters.priceSort === 'desc') {
+        filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    }
+
+
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({ ...prev, [name]: value }));
+    };
+
+    // --- פתיחת מודל ---
     const openAddModal = () => {
         setEditingProduct(null);
         setFormData({ name: '', category_id: '', price: '', stock_quantity: '', image: null });
         setModalOpen(true);
     };
-
-    // פתיחת המודל לעריכה
     const openEditModal = (product) => {
         setEditingProduct(product);
         setFormData({
@@ -61,7 +103,7 @@ const Products = () => {
         setModalOpen(true);
     };
 
-    // טיפול בשינוי שדות
+    // --- שינוי שדות ---
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
@@ -71,7 +113,7 @@ const Products = () => {
         }
     };
 
-    // שמירה (הוספה או עריכה)
+    // --- שמירה ---
     const handleSave = async () => {
         try {
             const data = new FormData();
@@ -80,7 +122,6 @@ const Products = () => {
             data.append('price', formData.price ?? 0);
             data.append('stock_quantity', formData.stock_quantity ?? 0);
             if (formData.image) data.append('image', formData.image);
-
 
             let savedProduct;
             if (editingProduct) {
@@ -99,7 +140,7 @@ const Products = () => {
         }
     };
 
-    // מחיקה
+    // --- מחיקה ---
     const handleDelete = async (id) => {
         if (!window.confirm('בטוח שאתה רוצה למחוק את המוצר הזה?')) return;
         try {
@@ -133,7 +174,71 @@ const Products = () => {
                 </button>
             </div>
 
-            {products.length === 0 ? (
+            {/* --- סינון --- */}
+            <div className="flex gap-4 flex-wrap bg-gray-100 p-4 rounded items-center">
+                <select
+                    name="category_id"
+                    value={filters.category_id}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border border-gray-300 rounded"
+                >
+                    <option value="">כל הקטגוריות</option>
+                    {categories.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                </select>
+                <input
+                    type="number"
+                    name="minPrice"
+                    placeholder="מחיר מינימום"
+                    value={filters.minPrice}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border border-gray-300 rounded"
+                />
+                <input
+                    type="number"
+                    name="maxPrice"
+                    placeholder="מחיר מקסימום"
+                    value={filters.maxPrice}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border border-gray-300 rounded"
+                />
+                {/* --- סינון מלאי עם כפתורים בצד --- */}
+                <div className="flex items-center gap-2">
+                    <input
+                        type="number"
+                        name="stock"
+                        placeholder="מלאי"
+                        value={filters.stock ?? ''}
+                        onChange={handleFilterChange}
+                        className="w-24 px-3 py-2 border border-gray-300 rounded"
+                    />
+                    <button
+                        onClick={() => setFilters(prev => ({ ...prev, stockMin: parseInt(filters.stock) || 0, stockMax: null }))}
+                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        title="מכאן ומעלה"
+                    >
+                        ↑
+                    </button>
+                    <button
+                        onClick={() => setFilters(prev => ({ ...prev, stockMax: parseInt(filters.stock) || 0, stockMin: null }))}
+                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        title="מכאן ומטה"
+                    >
+                        ↓
+                    </button>
+                </div>
+
+
+                <button
+                    onClick={() => setFilters({ category_id: '', minPrice: '', maxPrice: '', minStock: '', maxStock: '' })}
+                    className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded transition-colors"
+                >
+                    איפוס סינון
+                </button>
+            </div>
+
+            {filteredProducts.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <AlertCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <p className="text-gray-500 text-lg">אין מוצרים להצגה</p>
@@ -151,7 +256,7 @@ const Products = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map(product => (
+                        {filteredProducts.map(product => (
                             <tr key={product.id} className="border-t border-gray-200 hover:bg-gray-50">
                                 <td className="px-4 py-2">
                                     {product.image_url ? (
@@ -166,14 +271,14 @@ const Products = () => {
                                 <td className="px-4 py-2">{product.stock_quantity}</td>
                                 <td className="px-4 py-2 flex gap-2">
                                     <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                        className="flex items-center gap-1 px-2 py-1 bg-yellow-500 text-black rounded hover:bg-yellow-600"
                                         onClick={() => openEditModal(product)}
                                     >
                                         <Edit className="h-4 w-4" />
                                         עריכה
                                     </button>
                                     <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                                        className="flex items-center gap-1 px-2 py-1 bg-red-600 text-black rounded hover:bg-red-700"
                                         onClick={() => handleDelete(product.id)}
                                     >
                                         <Trash2 className="h-4 w-4" />

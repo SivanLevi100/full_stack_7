@@ -12,7 +12,7 @@ class Order {
         `;
         const params = [];
         let whereConditions = [];
-        
+
         if (filters.user_id) {
             whereConditions.push('o.user_id = ?');
             params.push(filters.user_id);
@@ -60,9 +60,9 @@ class Order {
 
     static async create(orderData) {
         const { user_id, total_amount } = orderData;
-        
+
         const orderNumber = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-        
+
         const [result] = await pool.execute(
             'INSERT INTO orders (user_id, order_number, total_amount) VALUES (?, ?, ?)',
             [user_id, orderNumber, total_amount]
@@ -90,7 +90,7 @@ class Order {
 
     static async addOrderItem(orderItemData) {
         const { order_id, product_id, quantity, unit_price } = orderItemData;
-        
+
         const [result] = await pool.execute(
             'INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)',
             [order_id, product_id, quantity, unit_price]
@@ -127,7 +127,7 @@ class Order {
     // פונקציה חדשה: יצירת הזמנה מהעגלה
     static async createFromCart(userId) {
         const connection = await pool.getConnection();
-        
+
         try {
             await connection.beginTransaction();
 
@@ -190,6 +190,69 @@ class Order {
             connection.release();
         }
     }
+
+    static async delete(id) {
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+
+            // שליפת פריטי ההזמנה כדי לעדכן מלאי
+            const [items] = await connection.execute(
+                'SELECT product_id, quantity FROM order_items WHERE order_id = ?',
+                [id]
+            );
+
+            // החזרת מלאי לכל מוצר
+            for (const item of items) {
+                await connection.execute(
+                    'UPDATE products SET stock_quantity = stock_quantity + ? WHERE id = ?',
+                    [item.quantity, item.product_id]
+                );
+            }
+
+            // מחיקת פריטי הזמנה
+            await connection.execute('DELETE FROM order_items WHERE order_id = ?', [id]);
+
+
+            //או לעדכן סטטוס updateStatus לבוטל
+            // מחיקת ההזמנה עצמה
+            const [result] = await connection.execute(
+                'DELETE FROM orders WHERE id = ?',
+                [id]
+            );
+
+            await connection.commit();
+            return result.affectedRows > 0;
+        } catch (err) {
+            await connection.rollback();
+            throw err;
+        } finally {
+            connection.release();
+        }
+    }
+    //פונק עזר
+    static async updateTotals(orderId) {
+        // מחשב מחדש את הסכום הכולל ואת סה"כ הפריטים
+        const [rows] = await pool.execute(
+            `SELECT 
+                SUM(quantity) as total_items, 
+                SUM(quantity * unit_price) as total_amount
+             FROM order_items 
+             WHERE order_id = ?`,
+            [orderId]
+        );
+
+        const total_items = rows[0].total_items || 0;
+        const total_amount = rows[0].total_amount || 0;
+
+        await pool.execute(
+            `UPDATE orders 
+             SET total_items = ?, total_amount = ? 
+             WHERE id = ?`,
+            [total_items, total_amount, orderId]
+        );
+    }
+
 }
 
 module.exports = Order;

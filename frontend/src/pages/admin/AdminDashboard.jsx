@@ -231,9 +231,6 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-semibold">הזמנות אחרונות</h3>
             <div className="flex gap-2">
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-                <Filter className="h-4 w-4" />
-              </button>
               <Link 
                 to="/orders"
                 className="text-blue-600 hover:text-blue-700 flex items-center gap-1 text-sm font-medium"

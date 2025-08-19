@@ -105,6 +105,40 @@ router.put('/:id', authenticateToken, authorizeRole(['admin']), async (req, res)
         res.status(500).json({ error: err.message });
     }
 });
+/*router.put('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
+    try {
+        const { quantity, unit_price } = req.body;
+
+        const existingItem = await OrderItem.findById(req.params.id);
+        if (!existingItem) {
+            return res.status(404).json({ message: 'Order item not found' });
+        }
+
+        // עדכון פריט
+        await OrderItem.update(req.params.id, { quantity, unit_price });
+
+        // חישוב הפרש הכמויות
+        const quantityDifference = quantity - existingItem.quantity;
+
+        // עדכון מלאי בטבלת products
+        const product = await Product.findById(existingItem.product_id);
+        const newStock = product.stock_quantity - quantityDifference;
+        await Product.updateStock(existingItem.product_id, newStock);
+
+        // עדכון totals בטבלת orders
+        const Order = require('../models/Order');
+        await Order.updateTotals(existingItem.order_id);
+
+        const updatedItem = await OrderItem.findById(req.params.id);
+        res.json(updatedItem);
+
+    } catch (err) {
+        console.error('Update order item error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});*/
+
+
 
 
 // מחיקת פריט הזמנה (מנהלים בלבד)
@@ -119,6 +153,33 @@ router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, r
         res.status(500).json({ error: err.message });
     }
 });
+
+/*router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
+    try {
+        const existingItem = await OrderItem.findById(req.params.id);
+        if (!existingItem) {
+            return res.status(404).json({ message: 'Order item not found' });
+        }
+
+        // החזרת מלאי למוצר שנמחק
+        const product = await Product.findById(existingItem.product_id);
+        const newStock = product.stock_quantity + existingItem.quantity;
+        await Product.updateStock(existingItem.product_id, newStock);
+
+        // מחיקת הפריט מהטבלה
+        await OrderItem.delete(req.params.id);
+
+        // עדכון totals בטבלת orders
+        const Order = require('../models/Order');
+        await Order.updateTotals(existingItem.order_id);
+
+        res.json({ message: 'Order item deleted successfully' });
+    } catch (err) {
+        console.error('Delete order item error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+*/
 
 // קבלת כל הפריטים של הזמנה מסוימת (מנהל או המשתמש שהזמין)
 router.get('/order/:orderId', authenticateToken, async (req, res) => {

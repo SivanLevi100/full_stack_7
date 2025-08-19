@@ -116,27 +116,7 @@ const OrderDetails = () => {
                     {items.map(item => (
                         <tr key={item.id} className="text-center hover:bg-gray-50">
                             <td className="border p-2">
-                                {editingItem?.id === item.id ? (
-                                    <select
-                                        value={editingItem.product_id}
-                                        onChange={(e) => {
-                                            const selectedProduct = products.find(p => p.id === Number(e.target.value));
-                                            setEditingItem({
-                                                ...editingItem,
-                                                product_id: selectedProduct.id,
-                                                name: selectedProduct.name,
-                                                unit_price: selectedProduct.price,
-                                            });
-                                        }}
-                                    >
-                                        <option value="">בחר מוצר</option>
-                                        {products.map(p => (
-                                            <option key={p.id} value={p.id}>{p.name}</option>
-                                        ))}
-                                    </select>
-                                ) : (
-                                    item.name
-                                )}
+                                {item.name} {/* שם המוצר לא ניתן לעריכה */}
                             </td>
                             <td className="border p-2">
                                 {editingItem?.id === item.id ? (
@@ -144,40 +124,35 @@ const OrderDetails = () => {
                                         type="number"
                                         value={editingItem.quantity}
                                         onChange={(e) => setEditingItem({ ...editingItem, quantity: Number(e.target.value) })}
+                                        className="border p-1 rounded w-24"
                                     />
                                 ) : (
                                     item.quantity
                                 )}
                             </td>
                             <td className="border p-2">
-                                {editingItem?.id === item.id ? (
-                                    <input
-                                        type="number"
-                                        value={editingItem.unit_price}
-                                        readOnly
-                                        className="bg-gray-100"
-                                    />
-                                ) : (
-                                    `₪${Number(item.unit_price)}`
-                                )}
+                                ₪{Number(item.unit_price)} {/* מחיר ליחידה קריא בלבד */}
                             </td>
-                            <td className="border p-2">₪{(Number(item.unit_price) * item.quantity).toFixed(2)}</td>
+                            <td className="border p-2">
+                                ₪{(Number(item.unit_price) * item.quantity).toFixed(2)}
+                            </td>
                             <td className="border p-2 space-x-2">
                                 {editingItem?.id === item.id ? (
                                     <>
-                                        <button onClick={handleSaveEdit} className="bg-green-500 text-white px-2 py-1 rounded">שמור</button>
-                                        <button onClick={() => setEditingItem(null)} className="bg-gray-300 px-2 py-1 rounded">ביטול</button>
+                                        <button onClick={handleSaveEdit} className="bg-green-500 text-black px-2 py-1 rounded">שמור</button>
+                                        <button onClick={() => setEditingItem(null)} className="bg-gray-300 text-black px-2 py-1 rounded">ביטול</button>
                                     </>
                                 ) : (
                                     <>
                                         <button onClick={() => handleEdit(item)} className="bg-yellow-400 px-2 py-1 rounded">ערוך</button>
-                                        <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white px-2 py-1 rounded">מחק</button>
+                                        <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-black px-2 py-1 rounded">מחק</button>
                                     </>
                                 )}
                             </td>
                         </tr>
                     ))}
                 </tbody>
+
             </table>
 
             {/* טופס הוספת פריט חדש */}

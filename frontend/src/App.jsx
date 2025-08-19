@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute, { AuthRedirect } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 import './styles/index.css';
 
@@ -42,6 +43,8 @@ const Layout = ({ children }) => (
     <main className="container mx-auto px-4 py-6">
       {children}
     </main>
+     <Footer />
+    
   </div>
 );
 

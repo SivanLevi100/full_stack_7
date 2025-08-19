@@ -29,7 +29,7 @@ class User {
     static async create(userData) {
         const { email, password, full_name, phone, role = 'customer' } = userData;
         const hashedPassword = await bcrypt.hash(password, 12);
-        
+
         const [result] = await pool.execute(
             'INSERT INTO users (email, password, full_name, phone, role) VALUES (?, ?, ?, ?, ?)',
             [email, hashedPassword, full_name, phone, role]
@@ -56,19 +56,28 @@ class User {
     }
 
     static async verifyPassword(id, password) {
-    const [rows] = await pool.execute('SELECT password, role FROM users WHERE id = ?', [id]);
-    if (rows.length === 0) return false;
+        const [rows] = await pool.execute('SELECT password, role FROM users WHERE id = ?', [id]);
+        if (rows.length === 0) return false;
 
-    const user = rows[0];
+        const user = rows[0];
 
-    // אם מנהל - השוואה פשוטה ל־plain text
-    if (user.role === 'admin') {
-        return user.password === password;
+        // אם מנהל - השוואה פשוטה ל־plain text
+        if (user.role === 'admin') {
+            return user.password === password;
+        }
+
+        // אחרת - השוואה עם bcrypt
+        return await bcrypt.compare(password, user.password);
     }
 
-    // אחרת - השוואה עם bcrypt
-    return await bcrypt.compare(password, user.password);
-}
+    static async delete(id) {
+        const [result] = await pool.execute(
+            'DELETE FROM users WHERE id = ?',
+            [id]
+        );
+        return result.affectedRows > 0;
+    }
+
 }
 
 module.exports = User;

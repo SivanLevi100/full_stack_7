@@ -120,14 +120,14 @@ const Categories = () => {
                 <td className="px-4 py-2">{category.name}</td>
                 <td className="px-4 py-2 flex gap-2">
                   <button
-                    className="flex items-center gap-1 px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    className="flex items-center gap-1 px-2 py-1 bg-yellow-500 text-black rounded hover:bg-yellow-600"
                     onClick={() => openEditModal(category)}
                   >
                     <Edit className="h-4 w-4" />
                     עריכה
                   </button>
                   <button
-                    className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    className="flex items-center gap-1 px-2 py-1 bg-red-600 text-black rounded hover:bg-red-700"
                     onClick={() => handleDelete(category.id)}
                   >
                     <Trash2 className="h-4 w-4" />
