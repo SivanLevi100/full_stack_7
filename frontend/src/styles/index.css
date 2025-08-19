@@ -7,6 +7,10 @@
 @import url('./shop.css');
 @import url('./cart.css');
 @import url('./dashboard.css');
+@import url('./customer-dashboard.css');
+@import url('./customer-orders.css');
+@import url('./customer-payment.css');
+
 
 /* Reset והגדרות בסיסיות */
 * {
@@ -22,6 +26,12 @@ body {
   background-color: #f9fafb;
   direction: rtl;
   min-height: 100vh;
+  
+  padding-top: 70px;
+}
+
+body:has(.auth-container) {
+  padding-top: 0;
 }
 
 /* משתני CSS גלובליים */
@@ -97,6 +107,7 @@ body {
   max-width: 1280px; 
   margin: 0 auto; 
   padding: 0 1rem; 
+  
 }
 
 /* Layout classes */
@@ -307,7 +318,3 @@ body {
   color: rgba(191, 219, 254, 1) !important;
 }
 
-/* Authentication pages fix */
-.auth-container {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 50%, var(--accent-orange) 100%) !important;
-}

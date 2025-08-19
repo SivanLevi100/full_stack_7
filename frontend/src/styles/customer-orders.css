@@ -1,0 +1,238 @@
+/* ===== ORDERS PAGE STYLES ===== */
+
+/* פילטרי הזמנות */
+.orders-filters-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.orders-filters-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.orders-filters-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: end;
+}
+
+.orders-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+.orders-summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.orders-summary-text {
+  color: var(--gray-600);
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: var(--gray-100);
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+}
+
+.orders-empty-description {
+  color: var(--gray-600);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* רשת ההזמנות */
+.orders-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* כרטיס הזמנה */
+.order-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-100);
+  transition: all 0.3s ease;
+  animation: orderCardSlideIn 0.4s ease-out;
+}
+
+.order-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-green-200);
+}
+
+@keyframes orderCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.order-card-main-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 250px;
+}
+
+.order-card-icon {
+  width: 3rem;
+  height: 3rem;
+  background: var(--primary-green-100);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.order-card-details {
+  flex: 1;
+}
+
+.order-card-number {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.order-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.order-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.order-card-status-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.order-status-badge.status-pending {
+  background: var(--yellow-100);
+  color: var(--yellow-800);
+  border: 1px solid var(--yellow-200);
+}
+
+.order-status-badge.status-confirmed {
+  background: var(--secondary-blue-100);
+  color: var(--secondary-blue-800);
+  border: 1px solid var(--secondary-blue-200);
+}
+
+.order-status-badge.status-delivered {
+  background: var(--primary-green-100);
+  color: var(--primary-green-800);
+  border: 1px solid var(--primary-green-200);
+}
+
+.order-status-badge.status-cancelled {
+  background: var(--red-100);
+  color: var(--red-800);
+  border: 1px solid var(--red-200);
+}
+
+.order-card-amount {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.order-amount-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-green);
+}
+
+.order-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.order-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.order-action-btn--view {
+  background: var(--primary-green-100);
+  color: var(--primary-green-dark);
+  border: 1px solid var(--primary-green-200);
+}
+
+.order-action-btn--view:hover {
+  background: var(--primary-green-200);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}

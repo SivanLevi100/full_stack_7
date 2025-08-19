@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, ShoppingCart, Mail, Lock, User, Phone } from 'lucide-react';
+import { Eye, EyeOff, ShoppingCart, Mail, Lock, User, Phone,Plus } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -71,215 +71,224 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     const userData = {
-       // username: formData.email,    // או username נפרד
-        email: formData.email,
-        password: formData.password,
-        full_name: formData.full_name,
-        phone: formData.phone || ''  // ודא שזה לא undefined
+      // username: formData.email,    // או username נפרד
+      email: formData.email,
+      password: formData.password,
+      full_name: formData.full_name,
+      phone: formData.phone || ''  // ודא שזה לא undefined
     };
-    
+
     console.log('🚀 Frontend sending:', userData);
-    
+
     setLoading(true);
     try {
-        await register(userData);
-        navigate('/login');
+      await register(userData);
+      navigate('/login');
     } catch (error) {
-        console.error('Register error:', error);
+      console.error('Register error:', error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* לוגו וכותרת */}
-        <div className="text-center mb-8">
-          <div className="mx-auto h-16 w-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-            <ShoppingCart className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            הרשמה למערכת
-          </h1>
-          <p className="text-gray-600">
-            צרו חשבון חדש במערכת ניהול הסופרמרקט
-          </p>
+    <div className="auth-container">
+      <div className="auth-card">
+        {/* לוגו זהה לLogin */}
+        <div className="auth-logo">
+          <ShoppingCart className="h-16 w-16 text-white" />
         </div>
 
+        {/* כותרות */}
+        <h1 className="auth-title">
+          מרקט פלוס
+          <Plus className="h-1 w-1   text-blue-600  " />
+        </h1>
+        <h2 className="auth-welcome">הצטרפו אלינו</h2>
+        <p className="auth-subtitle">צרו חשבון חדש במערכת ניהול הסופרמרקט המתקדמת</p>
+
+        {/* הודעת שגיאה כללית */}
+        {errors.general && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-sm font-medium">{errors.general}</p>
+          </div>
+        )}
+
         {/* טופס הרשמה */}
-        <div className="card">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* שם מלא */}
-            <div className="form-group">
-              <label htmlFor="full_name" className="form-label">
-                <User className="inline h-4 w-4 ml-2" />
-                שם מלא
-              </label>
+        <form onSubmit={handleSubmit} className="auth-form">
+          {/* שם מלא */}
+          <div className="auth-input-group">
+            <label htmlFor="full_name" className="auth-label">
+              <User className="h-4 w-4" />
+              שם מלא
+            </label>
+            <div className="relative">
+              <User className="auth-input-icon h-5 w-5" />
               <input
                 type="text"
                 id="full_name"
                 name="full_name"
                 value={formData.full_name}
                 onChange={handleChange}
-                className={`form-input ${errors.full_name ? 'border-red-500' : ''}`}
+                className={`auth-input auth-input-with-icon ${errors.full_name ? 'error' : ''}`}
                 placeholder="הכניסו את השם המלא שלכם"
                 autoComplete="name"
+                disabled={loading}
               />
-              {errors.full_name && (
-                <p className="form-error">{errors.full_name}</p>
-              )}
             </div>
+            {errors.full_name && <div className="auth-error">{errors.full_name}</div>}
+          </div>
 
-            {/* אימייל */}
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                <Mail className="inline h-4 w-4 ml-2" />
-                כתובת אימייל
-              </label>
+          {/* אימייל */}
+          <div className="auth-input-group">
+            <label htmlFor="email" className="auth-label">
+              <Mail className="h-4 w-4" />
+              כתובת אימייל
+            </label>
+            <div className="relative">
+              <Mail className="auth-input-icon h-5 w-5" />
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`form-input ${errors.email ? 'border-red-500' : ''}`}
+                className={`auth-input auth-input-with-icon ${errors.email ? 'error' : ''}`}
                 placeholder="הכניסו את כתובת האימייל שלכם"
                 autoComplete="email"
+                disabled={loading}
               />
-              {errors.email && (
-                <p className="form-error">{errors.email}</p>
-              )}
             </div>
+            {errors.email && <div className="auth-error">{errors.email}</div>}
+          </div>
 
-            {/* טלפון */}
-            <div className="form-group">
-              <label htmlFor="phone" className="form-label">
-                <Phone className="inline h-4 w-4 ml-2" />
-                מספר טלפון
-              </label>
+          {/* טלפון */}
+          <div className="auth-input-group">
+            <label htmlFor="phone" className="auth-label">
+              <Phone className="h-4 w-4" />
+              מספר טלפון
+            </label>
+            <div className="relative">
+              <Phone className="auth-input-icon h-5 w-5" />
               <input
                 type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`form-input ${errors.phone ? 'border-red-500' : ''}`}
+                className={`auth-input auth-input-with-icon ${errors.phone ? 'error' : ''}`}
                 placeholder="05X-XXXXXXX"
                 autoComplete="tel"
+                disabled={loading}
               />
-              {errors.phone && (
-                <p className="form-error">{errors.phone}</p>
-              )}
             </div>
-
-            {/* סיסמה */}
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                <Lock className="inline h-4 w-4 ml-2" />
-                סיסמה
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={`form-input pl-12 ${errors.password ? 'border-red-500' : ''}`}
-                  placeholder="בחרו סיסמה חזקה"
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="form-error">{errors.password}</p>
-              )}
-            </div>
-
-            {/* אישור סיסמה */}
-            <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
-                <Lock className="inline h-4 w-4 ml-2" />
-                אישור סיסמה
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className={`form-input pl-12 ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                  placeholder="הכניסו שוב את הסיסמה"
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="form-error">{errors.confirmPassword}</p>
-              )}
-            </div>
-
-            {/* כפתור הרשמה */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-primary w-full"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  נרשם...
-                </>
-              ) : (
-                'הירשם'
-              )}
-            </button>
-          </form>
-
-          {/* קישור להתחברות */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              כבר יש לכם חשבון?{' '}
-              <Link 
-                to="/login" 
-                className="text-green-600 hover:text-green-500 font-medium"
-              >
-                התחברו כאן
-              </Link>
-            </p>
+            {errors.phone && <div className="auth-error">{errors.phone}</div>}
           </div>
+
+          {/* סיסמה */}
+          <div className="auth-input-group">
+            <label htmlFor="password" className="auth-label">
+              <Lock className="h-4 w-4" />
+              סיסמה
+            </label>
+            <div className="relative">
+              <Lock className="auth-input-icon h-5 w-5" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`auth-input auth-input-with-icon ${errors.password ? 'error' : ''}`}
+                placeholder="בחרו סיסמה חזקה ובטוחה"
+                autoComplete="new-password"
+                disabled={loading}
+                style={{ paddingLeft: '3.5rem' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="auth-password-toggle"
+                disabled={loading}
+                aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+            {errors.password && <div className="auth-error">{errors.password}</div>}
+          </div>
+
+          {/* אישור סיסמה */}
+          <div className="auth-input-group">
+            <label htmlFor="confirmPassword" className="auth-label">
+              <Lock className="h-4 w-4" />
+              אישור סיסמה
+            </label>
+            <div className="relative">
+              <Lock className="auth-input-icon h-5 w-5" />
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className={`auth-input auth-input-with-icon ${errors.confirmPassword ? 'error' : ''}`}
+                placeholder="הכניסו שוב את הסיסמה"
+                autoComplete="new-password"
+                disabled={loading}
+                style={{ paddingLeft: '3.5rem' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="auth-password-toggle"
+                disabled={loading}
+                aria-label={showConfirmPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+              >
+                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+            {errors.confirmPassword && <div className="auth-error">{errors.confirmPassword}</div>}
+          </div>
+
+          {/* כפתור הרשמה */}
+          <button 
+            type="submit" 
+            disabled={loading} 
+            className="auth-button"
+            aria-label="הירשם למערכת"
+          >
+            {loading ? (
+              <>
+                <div className="loading-spinner" aria-hidden="true"></div>
+                נרשם למערכת...
+              </>
+            ) : (
+              <>
+                <span>הירשם למרקט פלוס</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* קישור להתחברות */}
+        <div className="auth-link">
+          כבר יש לכם חשבון במרקט פלוס?{' '}
+          <Link to="/login">התחברו כאן</Link>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default Register;
