@@ -1,104 +1,11 @@
-// // src/pages/MyOrders.js
-// import React, { useState, useEffect } from 'react';
-// import { ordersAPI } from '../../services/api';
-// import { Loader2, Package } from 'lucide-react';
-// import toast from 'react-hot-toast';
-
-// const MyOrders = () => {
-//   const [orders, setOrders] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     loadOrders();
-//   }, []);
-
-//   const loadOrders = async () => {
-//     try {
-//       setLoading(true);
-//       const data = await ordersAPI.getMyOrders(); // ⬅️ מחזיר רק את ההזמנות של המשתמש הנוכחי
-//       console.log("🟢 Raw data from server:", data); // <-- כאן נדפיס את הנתונים
-      
-//       setOrders(data);
-//     } catch (error) {
-//       console.error('Error loading my orders:', error);
-//       toast.error('שגיאה בטעינת ההזמנות שלי');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="flex items-center justify-center min-h-screen">
-//         <Loader2 className="animate-spin h-12 w-12 text-blue-500" />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="space-y-6">
-//       {/* כותרת */}
-//       <div className="bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl p-6">
-//         <h1 className="text-3xl font-bold mb-2">ההזמנות שלי</h1>
-//         <p className="text-green-100">צפה בכל ההזמנות שביצעת</p>
-//       </div>
-
-//       {/* טבלה או הודעה */}
-//       {orders.length > 0 ? (
-//         <div className="bg-white rounded-xl shadow overflow-hidden">
-//           <table className="min-w-full divide-y divide-gray-200">
-//             <thead className="bg-gray-50">
-//               <tr>
-//                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">#</th>
-//                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">תאריך</th>
-//                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">סכום</th>
-//                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">סטטוס</th>
-//               </tr>
-//             </thead>
-//             <tbody className="divide-y divide-gray-200">
-//               {orders.map((order) => (
-//                 <tr key={order.id} className="hover:bg-gray-50">
-//                   <td className="px-6 py-4">{order.id}</td>
-//                   <td className="px-6 py-4">{new Date(order.order_date).toLocaleDateString('he-IL')}</td>
-//                   <td className="px-6 py-4">₪{Number(order.total_amount)}</td>
-//                   <td className="px-6 py-4">
-//                     <span
-//                       className={`px-3 py-1 rounded-full text-xs font-medium ${
-//                         order.status === 'completed'
-//                           ? 'bg-green-100 text-green-700'
-//                           : order.status === 'pending'
-//                           ? 'bg-yellow-100 text-yellow-700'
-//                           : 'bg-red-100 text-red-700'
-//                       }`}
-//                     >
-//                       {order.status}
-//                     </span>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       ) : (
-//         <div className="text-center py-12 bg-white rounded-xl shadow">
-//           <Package className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-//           <p className="text-gray-500 text-lg">אין הזמנות להצגה</p>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default MyOrders;
-
-// src/pages/MyOrders.jsx - עמוד הזמנות משופר
+// src/pages/MyOrders.jsx
 import React, { useState, useEffect } from 'react';
 import { ordersAPI } from '../../services/api';
-import { 
-  Loader2, 
-  Package, 
-  ShoppingCart, 
-  Calendar, 
+import {
+  Loader2,
+  Package,
+  ShoppingCart,
+  Calendar,
   CreditCard,
   Clock,
   CheckCircle,
@@ -111,9 +18,13 @@ import toast from 'react-hot-toast';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // --- מצב למודל פרטי ההזמנה ---
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -139,53 +50,38 @@ const MyOrders = () => {
 
   const applyFilters = () => {
     let filtered = [...orders];
-    
     if (statusFilter !== 'all') {
       filtered = filtered.filter(order => order.status === statusFilter);
     }
-    
-    // מיון לפי תאריך - החדשות בראש
     filtered.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
-    
     setFilteredOrders(filtered);
   };
 
   const getStatusInfo = (status) => {
     const statusMap = {
-      pending: {
-        text: 'ממתינה',
-        icon: Clock,
-        color: 'status-pending',
-        bgColor: 'bg-yellow-100',
-        textColor: 'text-yellow-800',
-        iconColor: 'text-yellow-600'
-      },
-      confirmed: {
-        text: 'אושרה',
-        icon: CheckCircle,
-        color: 'status-confirmed',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-800',
-        iconColor: 'text-blue-600'
-      },
-      delivered: {
-        text: 'נמסרה',
-        icon: CheckCircle,
-        color: 'status-delivered',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-800',
-        iconColor: 'text-green-600'
-      },
-      cancelled: {
-        text: 'בוטלה',
-        icon: XCircle,
-        color: 'status-cancelled',
-        bgColor: 'bg-red-100',
-        textColor: 'text-red-800',
-        iconColor: 'text-red-600'
-      }
+      pending: { text: 'ממתינה', icon: Clock, color: 'status-pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800', iconColor: 'text-yellow-600' },
+      confirmed: { text: 'אושרה', icon: CheckCircle, color: 'status-confirmed', bgColor: 'bg-blue-100', textColor: 'text-blue-800', iconColor: 'text-blue-600' },
+      delivered: { text: 'נמסרה', icon: CheckCircle, color: 'status-delivered', bgColor: 'bg-green-100', textColor: 'text-green-800', iconColor: 'text-green-600' },
+      cancelled: { text: 'בוטלה', icon: XCircle, color: 'status-cancelled', bgColor: 'bg-red-100', textColor: 'text-red-800', iconColor: 'text-red-600' },
     };
     return statusMap[status] || statusMap.pending;
+  };
+
+  // --- הפעלת מודל פרטי ההזמנה ---
+  const handleViewDetails = async (orderId) => {
+    try {
+      const orderDetails = await ordersAPI.getById(orderId);
+      setSelectedOrder(orderDetails);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error fetching order details:', error);
+      toast.error('שגיאה בטעינת פרטי ההזמנה');
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedOrder(null);
   };
 
   if (loading) {
@@ -204,9 +100,7 @@ const MyOrders = () => {
         <div className="shop-header">
           <div className="shop-header-content">
             <h1 className="shop-header-title">ההזמנות שלי</h1>
-            <p className="shop-header-subtitle">
-              צפה בכל ההזמנות שביצעת ועקוב אחר הסטטוס שלהן
-            </p>
+            <p className="shop-header-subtitle">צפה בכל ההזמנות שביצעת ועקוב אחר הסטטוס שלהן</p>
           </div>
         </div>
 
@@ -218,7 +112,7 @@ const MyOrders = () => {
               סינון הזמנות
             </div>
           </div>
-          
+
           <div className="orders-filters-content">
             <div className="orders-filter-group">
               <label className="shop-filter-label">סטטוס הזמנה</label>
@@ -231,14 +125,12 @@ const MyOrders = () => {
                 <option value="pending">ממתינות</option>
                 <option value="confirmed">מאושרות</option>
                 <option value="delivered">נמסרו</option>
-                
+                <option value="cancelled">בוטלו</option>
               </select>
             </div>
-            
+
             <div className="orders-summary">
-              <span className="orders-summary-text">
-                נמצאו {filteredOrders.length} הזמנות
-              </span>
+              <span className="orders-summary-text">נמצאו {filteredOrders.length} הזמנות</span>
             </div>
           </div>
         </div>
@@ -247,7 +139,7 @@ const MyOrders = () => {
         {filteredOrders.length > 0 ? (
           <div className="orders-grid">
             {filteredOrders.map((order) => (
-              <OrderCard key={order.id} order={order} getStatusInfo={getStatusInfo} />
+              <OrderCard key={order.id} order={order} getStatusInfo={getStatusInfo} onViewDetails={handleViewDetails} />
             ))}
           </div>
         ) : (
@@ -281,13 +173,49 @@ const MyOrders = () => {
             )}
           </div>
         )}
+
+        {/* מודל פרטי ההזמנה */}
+        {showModal && selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-xl w-full max-w-md relative">
+              <h2 className="text-xl font-bold mb-4">פרטי הזמנה #{selectedOrder.id}</h2>
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-bold"
+              >
+                X
+              </button>
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border p-2 text-right">פריט</th>
+                    <th className="border p-2 text-right">כמות</th>
+                    <th className="border p-2 text-right">מחיר</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.items.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border p-2">{item.name}</td>
+                      <td className="border p-2">{item.quantity}</td>
+                      <td className="border p-2">₪{Number(item.unit_price).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+
+
       </div>
     </div>
   );
 };
 
 // רכיב כרטיס הזמנה
-const OrderCard = ({ order, getStatusInfo }) => {
+const OrderCard = ({ order, getStatusInfo, onViewDetails }) => {
   const statusInfo = getStatusInfo(order.status);
   const StatusIcon = statusInfo.icon;
 
@@ -308,7 +236,7 @@ const OrderCard = ({ order, getStatusInfo }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="order-card-status-section">
           <div className={`order-status-badge ${statusInfo.color}`}>
             <StatusIcon className="h-4 w-4" />
@@ -320,9 +248,12 @@ const OrderCard = ({ order, getStatusInfo }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="order-card-actions">
-        <button className="order-action-btn order-action-btn--view">
+        <button
+          className="order-action-btn order-action-btn--view"
+          onClick={() => onViewDetails(order.id)}
+        >
           <Eye className="h-4 w-4" />
           צפה בפרטים
         </button>

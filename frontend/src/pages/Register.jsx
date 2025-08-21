@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, ShoppingCart, Mail, Lock, User, Phone,Plus } from 'lucide-react';
+import { Eye, EyeOff, ShoppingCart, Mail, Lock, User, Phone, Plus } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +9,8 @@ const Register = () => {
     password: '',
     confirmPassword: '',
     full_name: '',
-    phone: ''
+    phone: '',
+    role: 'customer' // ברירת מחדל
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,7 +26,6 @@ const Register = () => {
       ...prev,
       [name]: value
     }));
-    // ניקוי שגיאה של השדה
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -67,6 +67,10 @@ const Register = () => {
       newErrors.confirmPassword = 'הסיסמאות לא תואמות';
     }
 
+    if (!formData.role) {
+      newErrors.role = 'יש לבחור תפקיד';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,12 +81,14 @@ const Register = () => {
     if (!validateForm()) return;
 
     const userData = {
-      // username: formData.email,    // או username נפרד
       email: formData.email,
       password: formData.password,
       full_name: formData.full_name,
-      phone: formData.phone || ''  // ודא שזה לא undefined
+      phone: formData.phone || '',
+      role: formData.role
     };
+
+    console.log('formData.roleeeeeeeeeeeeeeeeeeeeeeeeee',formData.role);
 
     console.log('🚀 Frontend sending:', userData);
 
@@ -92,6 +98,7 @@ const Register = () => {
       navigate('/login');
     } catch (error) {
       console.error('Register error:', error);
+      setErrors(prev => ({ ...prev, general: 'שגיאה בהרשמה. נסו שוב.' }));
     } finally {
       setLoading(false);
     }
@@ -100,28 +107,25 @@ const Register = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        {/* לוגו זהה לLogin */}
         <div className="auth-logo">
           <ShoppingCart className="h-16 w-16 text-white" />
         </div>
 
-        {/* כותרות */}
         <h1 className="auth-title">
           מרקט פלוס
-          <Plus className="h-1 w-1   text-blue-600  " />
+          <Plus className="h-1 w-1 text-blue-600" />
         </h1>
         <h2 className="auth-welcome">הצטרפו אלינו</h2>
         <p className="auth-subtitle">צרו חשבון חדש במערכת ניהול הסופרמרקט המתקדמת</p>
 
-        {/* הודעת שגיאה כללית */}
         {errors.general && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-700 text-sm font-medium">{errors.general}</p>
           </div>
         )}
 
-        {/* טופס הרשמה */}
         <form onSubmit={handleSubmit} className="auth-form">
+
           {/* שם מלא */}
           <div className="auth-input-group">
             <label htmlFor="full_name" className="auth-label">
@@ -191,6 +195,25 @@ const Register = () => {
             {errors.phone && <div className="auth-error">{errors.phone}</div>}
           </div>
 
+          {/* תפקיד */}
+          <div className="auth-input-group">
+            <label htmlFor="role" className="auth-label">
+              תפקיד
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={`auth-input ${errors.role ? 'error' : ''}`}
+              disabled={loading}
+            >
+              <option value="customer">לקוח</option>
+              <option value="admin">מנהל</option>
+            </select>
+            {errors.role && <div className="auth-error">{errors.role}</div>}
+          </div>
+
           {/* סיסמה */}
           <div className="auth-input-group">
             <label htmlFor="password" className="auth-label">
@@ -257,10 +280,9 @@ const Register = () => {
             {errors.confirmPassword && <div className="auth-error">{errors.confirmPassword}</div>}
           </div>
 
-          {/* כפתור הרשמה */}
-          <button 
-            type="submit" 
-            disabled={loading} 
+          <button
+            type="submit"
+            disabled={loading}
             className="auth-button"
             aria-label="הירשם למערכת"
           >
@@ -280,7 +302,6 @@ const Register = () => {
           </button>
         </form>
 
-        {/* קישור להתחברות */}
         <div className="auth-link">
           כבר יש לכם חשבון במרקט פלוס?{' '}
           <Link to="/login">התחברו כאן</Link>
@@ -289,6 +310,5 @@ const Register = () => {
     </div>
   );
 };
-
 
 export default Register;

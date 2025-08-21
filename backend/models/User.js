@@ -28,6 +28,7 @@ class User {
 
     static async create(userData) {
         const { email, password, full_name, phone, role = 'customer' } = userData;
+        console.log("||role BACKENDDDDDD",role)
         const hashedPassword = await bcrypt.hash(password, 12);
 
         const [result] = await pool.execute(
@@ -64,11 +65,9 @@ class User {
         return await bcrypt.compare(password, user.password);
     }
 
-        
 
 
-
-//work
+//work admin@supermarket.com  hashed_password
 
     /*static async verifyPassword(id, password) {
         const [rows] = await pool.execute('SELECT password, role FROM users WHERE id = ?', [id]);

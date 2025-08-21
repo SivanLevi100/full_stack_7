@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Register
-router.post('/register', async (req, res) => {
+/*router.post('/register', async (req, res) => {
     try {
         const { email, password,full_name, phone} = req.body;
         
@@ -85,6 +85,41 @@ router.post('/register', async (req, res) => {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+});*/
+
+
+router.post('/register', async (req, res) => {
+    try {
+        const { email, password,full_name, phone,role} = req.body;
+        
+        if (!password || !email) {
+            return res.status(400).json({ error: 'Password and email are required' });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findByEmail(email);
+        if (existingUser) {
+            return res.status(409).json({ error: 'Email already exists' });
+        }
+
+        // Create user
+        const userId = await User.create({
+            email: email,
+            password: password,
+            full_name: full_name,
+            phone: phone,
+            role: role
+        });
+
+      
+        res.status(201).json({ 
+            message: 'User registered successfully',
+            userId: userId
+        });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 // להסיר – מיועד למנוע גישה ב־GET
@@ -95,5 +130,9 @@ router.get('/login', (req, res) => {
 router.get('/register', (req, res) => {
     res.send('Register route is POST only. Use POST with JSON body.');
 });
+
+
+
+
 
 module.exports = router;

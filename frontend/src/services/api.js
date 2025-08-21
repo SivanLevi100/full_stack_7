@@ -304,13 +304,6 @@ export const usersAPI = {
     const response = await api.put(`/users/${id}/password`, passwords);
     return response.data;
   }
-/* changePassword: async (userId, passwords, token) => {
-  const response = await api.put(`/users/${userId}/password`, passwords, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return response.data;
-}*/
-
 };
 
 export default api;
