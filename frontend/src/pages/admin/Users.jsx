@@ -52,7 +52,8 @@ const Users = () => {
       loadUsers();
     } catch (err) {
       console.error(err);
-      toast.error('שגיאה במחיקת המשתמש');
+      //toast.error('שגיאה במחיקת המשתמש');
+      toast.error('שגיאה במחיקת משתמש - יש לו הזמנות');
     }
   };
 
@@ -74,31 +75,31 @@ const Users = () => {
     }
   };*/
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const userData = {
-      email: formData.email,
-      password: formData.password,
-      full_name: formData.full_name,
-      phone: formData.phone || '',  // ודא שזה לא undefined
-      role: formData.role
-    };
+    e.preventDefault();
+    try {
+      const userData = {
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.full_name,
+        phone: formData.phone || '',  // ודא שזה לא undefined
+        role: formData.role
+      };
 
-    if (editingUser) {
-      await usersAPI.update(editingUser.id, userData);
-      toast.success('משתמש עודכן בהצלחה');
-    } else {
-      await usersAPI.create(userData);
-      toast.success('משתמש נוצר בהצלחה');
+      if (editingUser) {
+        await usersAPI.update(editingUser.id, userData);
+        toast.success('משתמש עודכן בהצלחה');
+      } else {
+        await usersAPI.create(userData);
+        toast.success('משתמש נוצר בהצלחה');
+      }
+
+      setModalOpen(false);
+      loadUsers();
+    } catch (err) {
+      console.error(err);
+      toast.error('שגיאה בשמירת המשתמש');
     }
-
-    setModalOpen(false);
-    loadUsers();
-  } catch (err) {
-    console.error(err);
-    toast.error('שגיאה בשמירת המשתמש');
-  }
-};
+  };
 
 
   if (loading) {
@@ -158,10 +159,38 @@ const Users = () => {
                   <td className="p-3 border">{user.phone || '-'}</td>
                   <td className="p-3 border">{user.role}</td>
                   <td className="p-3 border">{new Date(user.created_at).toLocaleDateString()}</td>
+                
+
                   <td className="p-3 border flex justify-center gap-2">
-                    <button onClick={() => openEditModal(user)} className="text-yellow-500 hover:text-yellow-700"><Edit className="h-4 w-4" /></button>
-                    <button onClick={() => handleDelete(user.id)} className="text-red-500 hover:text-red-700"><Trash2 className="h-4 w-4" /></button>
+                    {/* כפתור עריכה */}
+                    <button
+                      onClick={() => openEditModal(user)}
+                      className="flex items-center justify-center w-8 h-8 text-yellow-500 hover:text-yellow-700"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+
+                    {/* כפתור מחיקה */}
+                    <button
+                      onClick={() => {
+                        if (user.role === 'admin') {
+                          toast.error('לא ניתן למחוק משתמש מנהל');
+                          return;
+                        }
+                        handleDelete(user.id);
+                      }}
+                      className={`flex items-center justify-center w-8 h-8 text-red-500  hover:text-red-700`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </td>
+
+
+
+
+
+
+
                 </tr>
               ))}
             </tbody>

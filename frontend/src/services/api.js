@@ -196,6 +196,7 @@ export const cartAPI = {
 
   getCount: async () => {
     const response = await api.get('/cart/count');
+    console.log("getCount Cart",response.data);
     return response.data;
   }
 };
@@ -299,9 +300,17 @@ export const usersAPI = {
   },
 
   changePassword: async (id, passwords) => {
+    console.log("user.id:apiiiiii", typeof id);
     const response = await api.put(`/users/${id}/password`, passwords);
     return response.data;
   }
+/* changePassword: async (userId, passwords, token) => {
+  const response = await api.put(`/users/${userId}/password`, passwords, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+}*/
+
 };
 
 export default api;

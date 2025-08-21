@@ -178,12 +178,12 @@
 
 // src/pages/MyCart.jsx - עמוד עגלה משופר
 import React, { useState, useEffect } from 'react';
-import { 
-  ShoppingCart, 
-  Plus, 
-  Minus, 
-  Trash2, 
-  CreditCard, 
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  Trash2,
+  CreditCard,
   ArrowUpRight,
   Package,
   Truck,
@@ -242,7 +242,22 @@ const MyCart = () => {
     }
   };
 
+  /*const removeItem = async (productId) => {
+    setUpdatingItems(prev => ({ ...prev, [productId]: true }));
+    try {
+      await cartAPI.removeItem(productId);
+      await loadCart();
+      toast.success('הפריט הוסר מהעגלה');
+    } catch (error) {
+      console.error('Error removing item:', error);
+      toast.error('שגיאה בהסרת הפריט');
+    } finally {
+      setUpdatingItems(prev => ({ ...prev, [productId]: false }));
+    }
+  };*/
   const removeItem = async (productId) => {
+    if (!window.confirm('בטוח שאתה רוצה למחוק את המוצר הזה?')) return;
+
     setUpdatingItems(prev => ({ ...prev, [productId]: true }));
     try {
       await cartAPI.removeItem(productId);
@@ -255,6 +270,8 @@ const MyCart = () => {
       setUpdatingItems(prev => ({ ...prev, [productId]: false }));
     }
   };
+
+
 
   if (loading) {
     return (
@@ -273,7 +290,7 @@ const MyCart = () => {
           <div className="cart-header-content">
             <h1 className="cart-title">העגלה שלי</h1>
             <p className="cart-subtitle">
-              {cart.items.length > 0 
+              {cart.items.length > 0
                 ? `${cart.items.length} מוצרים נבחרו עבורך`
                 : 'העגלה שלך ריקה כרגע'
               }
@@ -302,7 +319,7 @@ const MyCart = () => {
                 מוצרים בעגלה
                 <span className="cart-items-count">{cart.items.length}</span>
               </div>
-              
+
               <div className="cart-items-list">
                 {cart.items.map(item => (
                   <CartItem
@@ -338,7 +355,7 @@ const MyCart = () => {
                       {shippingCost === 0 ? 'חינם' : `₪${shippingCost.toFixed(2)}`}
                     </span>
                   </div>
-                  
+
                   {/* הודעת משלוח */}
                   {isEligibleForFreeShipping ? (
                     <div className="cart-delivery-info cart-delivery-success">
@@ -368,7 +385,7 @@ const MyCart = () => {
                     המשך לתשלום
                     <ArrowUpRight className="h-4 w-4" />
                   </Link>
-                  
+
                   <Link to="/shop" className="cart-continue-shopping">
                     <ShoppingCart className="h-4 w-4" />
                     המשך קנייה
@@ -429,7 +446,7 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
       {/* פרטי המוצר */}
       <div className="cart-item-details">
         <h3 className="cart-item-name">{item.name}</h3>
-        
+
         <div className="cart-item-price-info">
           <div className="cart-item-unit-price">
             מחיר ליחידה: ₪{unitPrice.toFixed(2)}
@@ -460,11 +477,11 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
           >
             <Minus className="h-4 w-4" />
           </button>
-          
+
           <span className="cart-quantity-display" aria-label={`כמות: ${quantity}`}>
             {quantity}
           </span>
-          
+
           <button
             onClick={handleIncrement}
             disabled={isUpdating || quantity >= item.stock_quantity}

@@ -78,13 +78,14 @@ router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, r
 
 // שינוי סיסמה
 router.put('/:id/password', authenticateToken, async (req, res) => {
+   
     try {
         if (req.user.id !== parseInt(req.params.id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
         const { currentPassword, newPassword } = req.body;
-        
+        console.log("ffffffffffffffff",currentPassword, newPassword );
         // Verify current password
         const isValid = await User.verifyPassword(req.params.id, currentPassword);
         if (!isValid) {
@@ -98,5 +99,7 @@ router.put('/:id/password', authenticateToken, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+
 
 module.exports = router;

@@ -1,297 +1,7 @@
-// // src/components/Navbar.js
-// import React, { useState, useEffect } from 'react';
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import { useAuth } from '../contexts/AuthContext';
-// import {
-//   ShoppingCart,
-//   Menu,
-//   X,
-//   Home,
-//   Package,
-//   Users,
-//   FileText,
-//   Settings,
-//   LogOut,
-//   User,
-//   Store,
-//   Bell,
-//   Search
-// } from 'lucide-react';
-// import { cartAPI } from '../services/api';
-
-
-// const Navbar = () => {
-//   const { user, isAdmin, logout } = useAuth();
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const [cartCount, setCartCount] = useState(0);
-//   const [showUserMenu, setShowUserMenu] = useState(false);
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (user && !isAdmin()) {
-//       loadCartCount();
-//     }
-//   }, [user, isAdmin]);
-
-//   const loadCartCount = async () => {
-//     try {
-//       const response = await cartAPI.getCount();
-//       console.log("count cart",response.count);/////////////
-//       setCartCount(response.count);
-//     } catch (error) {
-//       console.error('Error loading cart count:', error);
-//     }
-//   };
-
-//   const handleLogout = async () => {
-//     try {
-//       await logout();
-//       navigate('/login');
-//     } catch (error) {
-//       console.error('Logout error:', error);
-//     }
-//   };
-
-//   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-//   const closeMenu = () => setIsMenuOpen(false);
-
-//   const adminMenuItems = [
-//     { path: '/dashboard', label: 'דאשבורד', icon: <Home className="h-5 w-5" /> },
-//     { path: '/products', label: 'מוצרים', icon: <Package className="h-5 w-5" /> },
-//     { path: '/categories', label: 'קטגוריות', icon: <Store className="h-5 w-5" /> },
-//     { path: '/orders', label: 'הזמנות', icon: <FileText className="h-5 w-5" /> },
-//     { path: '/users', label: 'משתמשים', icon: <Users className="h-5 w-5" /> },
-//   ];
-
-//   const customerMenuItems = [
-//     { path: '/dashboard', label: 'דאשבורד', icon: <Home className="h-5 w-5" /> },
-//     { path: '/shop', label: 'חנות', icon: <Store className="h-5 w-5" /> },
-//     { path: '/my-cart', label: 'סל קניות שלי',icon: <ShoppingCart className="h-5 w-5" /> },
-//     { path: '/my-orders', label: 'ההזמנות שלי', icon: <FileText className="h-5 w-5" /> },
-//   ];
-
-//   const menuItems = isAdmin() ? adminMenuItems : customerMenuItems;
-
-//   return (
-//     <nav className="bg-white shadow-lg sticky top-0 z-50">
-//       <div className="container mx-auto px-4">
-//         <div className="flex items-center justify-between h-16">
-//           {/* לוגו */}
-//           <Link to="/dashboard" className="flex items-center gap-3 text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
-//             <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-//               <ShoppingCart className="h-6 w-6 text-white" />
-//             </div>
-//             <span className="hidden sm:block">סופרמרקט</span>
-//           </Link>
-
-//           {/* תפריט דסקטופ */}
-//           <div className="hidden lg:flex items-center space-x-8 space-x-reverse">
-//             {menuItems.map(item => (
-//               <Link
-//                 key={item.path}
-//                 to={item.path}
-//                 className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${location.pathname === item.path
-//                     ? 'bg-blue-100 text-blue-700'
-//                     : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-//                   }`}
-//               >
-//                 {item.icon}
-//                 {item.label}
-//               </Link>
-//             ))}
-
-//             {/* עגלת קניות ללקוחות */}
-//             {!isAdmin() && (
-//               <Link
-//                 //to="/cart"
-//                 to="my-cart"
-//                 className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 relative ${location.pathname === '/my-cart'
-//                     ? 'bg-green-100 text-green-700'
-//                     : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
-//                   }`}
-//               >
-//                 <ShoppingCart className="h-5 w-5" />
-//                 עגלה
-//                 {cartCount > 0 && (
-//                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-//                     {cartCount > 99 ? '99+' : cartCount}
-//                   </span>
-//                 )}
-//               </Link>
-//             )}
-//           </div>
-
-//           {/* אזור משתמש */}
-//           <div className="hidden lg:flex items-center gap-4">
-//             {/* הודעות */}
-//             <button className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
-//               <Bell className="h-5 w-5" />
-//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-//                 3
-//               </span>
-//             </button>
-
-//             {/* תפריט משתמש */}
-//             <div className="relative">
-//               <button
-//                 onClick={() => setShowUserMenu(!showUserMenu)}
-//                 className="flex items-center gap-2 p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-//               >
-//                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-//                   <User className="h-4 w-4 text-white" />
-//                 </div>
-//                 <span className="font-medium">{user?.full_name}</span>
-//               </button>
-
-//               {/* תפריט נפתח */}
-//               {showUserMenu && (
-//                 <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-//                   <div className="px-4 py-2 border-b border-gray-200">
-//                     <p className="text-sm font-medium text-gray-900">{user?.full_name}</p>
-//                     <p className="text-xs text-gray-500">{user?.email}</p>
-//                     <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${isAdmin() ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-//                       }`}>
-//                       {isAdmin() ? 'מנהל' : 'לקוח'}
-//                     </span>
-//                   </div>
-
-//                   <Link
-//                     to="/profile"
-//                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-//                     onClick={() => setShowUserMenu(false)}
-//                   >
-//                     <User className="h-4 w-4" />
-//                     הפרופיל שלי
-//                   </Link>
-
-//                   {isAdmin() && (
-//                     <Link
-//                       to="/settings"
-//                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-//                       onClick={() => setShowUserMenu(false)}
-//                     >
-//                       <Settings className="h-4 w-4" />
-//                       הגדרות
-//                     </Link>
-//                   )}
-
-//                   <button
-//                     onClick={() => {
-//                       setShowUserMenu(false);
-//                       handleLogout();
-//                     }}
-//                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-//                   >
-//                     <LogOut className="h-4 w-4" />
-//                     יציאה
-//                   </button>
-//                 </div>
-//               )}
-//             </div>
-//           </div>
-
-//           {/* כפתור תפריט נייד */}
-//           <div className="lg:hidden flex items-center gap-2">
-//             {/* עגלה נייד */}
-//             {!isAdmin() && (
-//               <Link
-//                 //to="/cart"
-//                 to="my-cart"
-//                 className="relative p-2 text-gray-600 hover:text-green-600 transition-colors"
-//               >
-//                 <ShoppingCart className="h-6 w-6" />
-//                 {cartCount > 0 && (
-//                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-//                     {cartCount > 99 ? '99+' : cartCount}
-//                   </span>
-//                 )}
-//               </Link>
-//             )}
-
-//             <button
-//               onClick={toggleMenu}
-//               className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
-//             >
-//               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* תפריט נייד */}
-//         {isMenuOpen && (
-//           <div className="lg:hidden border-t border-gray-200 py-4 space-y-2">
-//             {menuItems.map(item => (
-//               <Link
-//                 key={item.path}
-//                 to={item.path}
-//                 onClick={closeMenu}
-//                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${location.pathname === item.path
-//                     ? 'bg-blue-100 text-blue-700'
-//                     : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-//                   }`}
-//               >
-//                 {item.icon}
-//                 {item.label}
-//               </Link>
-//             ))}
-
-//             {/* פרופיל נייד */}
-//             <div className="border-t border-gray-200 pt-4 mt-4">
-
-//               <Link
-//                 to="/profile"
-//                 onClick={closeMenu}
-//                 className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-//               >
-//                 <User className="h-5 w-5" />
-//                 הפרופיל שלי
-//               </Link>
-
-//               {isAdmin() && (
-//                 <Link
-//                   to="/settings"
-//                   onClick={closeMenu}
-//                   className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-//                 >
-//                   <Settings className="h-5 w-5" />
-//                   הגדרות
-//                 </Link>
-//               )}
-
-//               <button
-//                 onClick={() => {
-//                   closeMenu();
-//                   handleLogout();
-//                 }}
-//                 className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
-//               >
-//                 <LogOut className="h-5 w-5" />
-//                 יציאה
-//               </button>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-
-//       {/* סגירת תפריט משתמש בלחיצה מחוץ לתיבה */}
-//       {showUserMenu && (
-//         <div
-//           className="fixed inset-0 z-40"
-//           onClick={() => setShowUserMenu(false)}
-//         />
-//       )}
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
-
-
-
 // src/components/Navbar.js
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { usersAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import {
   ShoppingCart,
@@ -303,11 +13,11 @@ import {
   LogOut,
   User,
   Store,
-  Bell,
-  Search,
-  Plus
+  Plus,
+  X
 } from 'lucide-react';
 import { cartAPI } from '../services/api';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const { user, isAdmin, logout } = useAuth();
@@ -316,6 +26,14 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // --- מודל שינוי סיסמה ---
+  const [modalOpen, setModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
   useEffect(() => {
     if (user && !isAdmin()) {
@@ -349,6 +67,34 @@ const Navbar = () => {
     }
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('הסיסמאות לא תואמות');
+      return;
+    }
+    try {
+      // כאן תשלח קריאה ל-API לשינוי סיסמה
+      console.log("gggggggggggggggggg", user.id, passwordForm.newPassword, passwordForm.confirmPassword);
+      console.log("newPassword type:", typeof passwordForm.newPassword);
+      console.log("confirmPassword type:", typeof passwordForm.confirmPassword);
+      console.log("user.id:", typeof user.id);
+
+      await usersAPI.changePassword(user.id,
+         { currentPassword: passwordForm.currentPassword,
+           newPassword: passwordForm.newPassword });
+           
+      toast.success('הסיסמה שונתה בהצלחה!');
+      setModalOpen(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      console.error(error);
+      toast.error('שגיאה בשינוי הסיסמה');
+    }
+  };
+
+  
+
   const adminMenuItems = [
     { path: '/dashboard', label: 'דאשבורד', icon: <Home className="h-4 w-4" /> },
     { path: '/products', label: 'מוצרים', icon: <Package className="h-4 w-4" /> },
@@ -366,131 +112,183 @@ const Navbar = () => {
   const menuItems = isAdmin() ? adminMenuItems : customerMenuItems;
 
   return (
-    <nav className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
-      <div className="navbar-content">
-        {/* לוגו */}
-        <Link to="/dashboard" className="navbar-logo">
-          <div className="navbar-logo-icon">
-            <ShoppingCart className="h-5 w-5 text-white" />
+    <>
+      <nav className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="navbar-content">
+          {/* לוגו */}
+          <Link to="/dashboard" className="navbar-logo">
+            <div className="navbar-logo-icon">
+              <ShoppingCart className="h-5 w-5 text-white" />
+            </div>
+            <span className="navbar-logo-text">מרקט פלוס<Plus className="h-4 w-4" /></span>
+          </Link>
+
+          {/* תפריט ראשי */}
+          <div className="navbar-menu">
+            {menuItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`navbar-menu-item ${location.pathname === item.path ? 'active' : ''}`}
+              >
+                {item.icon}
+                <span className="navbar-menu-text">{item.label}</span>
+              </Link>
+            ))}
+
+            {!isAdmin() && (
+              <Link
+                to="/my-cart"
+                className={`navbar-cart ${location.pathname === '/my-cart' ? 'active' : ''}`}
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="navbar-menu-text">עגלה</span>
+              </Link>
+            )}
           </div>
-          <span className="navbar-logo-text">מרקט פלוס<Plus className="h-4 w-4" /></span>
-        </Link>
 
-        {/* תפריט ראשי - תמיד נראה */}
-        <div className="navbar-menu">
-          {menuItems.map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`navbar-menu-item ${
-                location.pathname === item.path ? 'active' : ''
-              }`}
-            >
-              {item.icon}
-              <span className="navbar-menu-text">{item.label}</span>
-            </Link>
-          ))}
-
-          {/* עגלת קניות לקונים */}
-          {!isAdmin() && (
-            <Link
-              to="/my-cart"
-              className={`navbar-cart ${
-                location.pathname === '/my-cart' ? 'active' : ''
-              }`}
-            >
-              <ShoppingCart className="h-4 w-4" />
-              <span className="navbar-menu-text">עגלה</span>
-              {cartCount > 0 && (
-                <span className="navbar-cart-badge">
-                  {cartCount > 99 ? '99+' : cartCount}
-                </span>
-              )}
-            </Link>
-          )}
-        </div>
-
-        {/* אזור משתמש */}
-        <div className="navbar-user-area">
-
-
-          {/* תפריט משתמש */}
-          <div className="navbar-user-menu">
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="navbar-user-button"
-            >
-              <div className="navbar-user-avatar">
-                <User className="h-4 w-4 text-white" />
-              </div>
-              <div className="navbar-user-info">
-                <span className="navbar-user-name">{user?.full_name}</span>
-                <span className="navbar-user-role">
-                  {isAdmin() ? 'מנהל' : 'לקוח'}
-                </span>
-              </div>
-            </button>
-
-            {/* תפריט נפתח */}
-            {showUserMenu && (
-              <div className="navbar-user-dropdown">
-                <div className="navbar-user-details">
-                  <p className="navbar-user-details-name">{user?.full_name}</p>
-                  <p className="navbar-user-details-email">{user?.email}</p>
-                  <span className={`navbar-role-badge ${isAdmin() ? 'admin' : 'customer'}`}>
-                    {isAdmin() ? 'מנהל מערכת' : 'לקוח'}
-                  </span>
+          {/* אזור משתמש */}
+          <div className="navbar-user-area">
+            <div className="navbar-user-menu">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="navbar-user-button"
+              >
+                <div className="navbar-user-avatar">
+                  <User className="h-4 w-4 text-white" />
                 </div>
+                <div className="navbar-user-info">
+                  <span className="navbar-user-name">{user?.full_name}</span>
+                  <span className="navbar-user-role">{isAdmin() ? 'מנהל' : 'לקוח'}</span>
+                </div>
+              </button>
 
-                <div className="navbar-dropdown-divider"></div>
+              {showUserMenu && (
+                <div className="navbar-user-dropdown">
+                  <div className="navbar-user-details">
+                    <p className="navbar-user-details-name">{user?.full_name}</p>
+                    <p className="navbar-user-details-email">{user?.email}</p>
+                    <span className={`navbar-role-badge ${isAdmin() ? 'admin' : 'customer'}`}>
+                      {isAdmin() ? 'מנהל מערכת' : 'לקוח'}
+                    </span>
+                  </div>
 
-                <Link
-                  to="/profile"
-                  className="navbar-dropdown-item"
-                  onClick={() => setShowUserMenu(false)}
-                >
-                  <User className="h-4 w-4" />
-                  הפרופיל שלי
-                </Link>
+                  <div className="navbar-dropdown-divider"></div>
 
-                {isAdmin() && (
                   <Link
-                    to="/settings"
+                    to="/profile"
                     className="navbar-dropdown-item"
                     onClick={() => setShowUserMenu(false)}
                   >
-                    <Settings className="h-4 w-4" />
-                    הגדרות מערכת
+                    <User className="h-4 w-4" />
+                    הפרופיל שלי
                   </Link>
-                )}
 
-                <div className="navbar-dropdown-divider"></div>
+                  {isAdmin() && (
+                    <Link
+                      to="/settings"
+                      className="navbar-dropdown-item"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <Settings className="h-4 w-4" />
+                      הגדרות מערכת
+                    </Link>
+                  )}
 
-                <button
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    handleLogout();
-                  }}
-                  className="navbar-dropdown-item danger"
-                >
-                  <LogOut className="h-4 w-4" />
-                  יציאה מהמערכת
-                </button>
-              </div>
-            )}
+                  {/* כפתור שינוי סיסמה */}
+                  <button
+                    onClick={() => {
+                      setModalOpen(true);
+                      setShowUserMenu(false);
+                    }}
+                    className="navbar-dropdown-item"
+                  >
+                    <User className="h-4 w-4" />
+                    שינוי סיסמה
+                  </button>
+
+                  <div className="navbar-dropdown-divider"></div>
+
+                  <button
+                    onClick={handleLogout}
+                    className="navbar-dropdown-item danger"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    יציאה מהמערכת
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* סגירת תפריט משתמש בלחיצה מחוץ לתיבה */}
-      {showUserMenu && (
-        <div
-          className="navbar-overlay"
-          onClick={() => setShowUserMenu(false)}
-        />
+        {showUserMenu && (
+          <div className="navbar-overlay" onClick={() => setShowUserMenu(false)} />
+        )}
+      </nav>
+
+      {/* מודל שינוי סיסמה */}
+      {modalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
+            <button
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+              onClick={() => setModalOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            <h2 className="text-xl font-semibold mb-4 text-center">שינוי סיסמה</h2>
+
+            <form className="space-y-4" onSubmit={handlePasswordChange}>
+              <input
+                type="password"
+                placeholder="סיסמה נוכחית"
+                className="w-full px-3 py-2 border rounded-lg"
+                value={passwordForm.currentPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                required
+              />
+              <input
+                type="password"
+                placeholder="סיסמה חדשה"
+                className="w-full px-3 py-2 border rounded-lg"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                required
+              />
+              <input
+                type="password"
+                placeholder="אישור סיסמה חדשה"
+                className="w-full px-3 py-2 border rounded-lg"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                required
+              />
+
+              <div className="flex justify-between mt-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                  onClick={() => setModalOpen(false)}
+                >
+                  ביטול
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  שמור
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
-    </nav>
+    </>
   );
 };
 
 export default Navbar;
+
+

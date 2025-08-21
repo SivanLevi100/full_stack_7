@@ -55,7 +55,22 @@ class User {
         return result.affectedRows > 0;
     }
 
+ 
     static async verifyPassword(id, password) {
+        const [rows] = await pool.execute('SELECT password FROM users WHERE id = ?', [id]);
+        if (rows.length === 0) return false;
+
+        const user = rows[0];
+        return await bcrypt.compare(password, user.password);
+    }
+
+        
+
+
+
+//work
+
+    /*static async verifyPassword(id, password) {
         const [rows] = await pool.execute('SELECT password, role FROM users WHERE id = ?', [id]);
         if (rows.length === 0) return false;
 
@@ -68,7 +83,10 @@ class User {
 
         // אחרת - השוואה עם bcrypt
         return await bcrypt.compare(password, user.password);
-    }
+    }*/
+
+    
+
 
     static async delete(id) {
         const [result] = await pool.execute(
