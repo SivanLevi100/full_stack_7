@@ -231,7 +231,7 @@ const MyOrders = () => {
                 <option value="pending">ממתינות</option>
                 <option value="confirmed">מאושרות</option>
                 <option value="delivered">נמסרו</option>
-                <option value="cancelled">בוטלו</option>
+                
               </select>
             </div>
             

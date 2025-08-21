@@ -175,25 +175,7 @@ const Navbar = () => {
 
                   <div className="navbar-dropdown-divider"></div>
 
-                  <Link
-                    to="/profile"
-                    className="navbar-dropdown-item"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <User className="h-4 w-4" />
-                    הפרופיל שלי
-                  </Link>
-
-                  {isAdmin() && (
-                    <Link
-                      to="/settings"
-                      className="navbar-dropdown-item"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <Settings className="h-4 w-4" />
-                      הגדרות מערכת
-                    </Link>
-                  )}
+                  
 
                   {/* כפתור שינוי סיסמה */}
                   <button
