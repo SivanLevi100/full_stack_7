@@ -44,7 +44,7 @@
 //   const loadCustomerData = async () => {
 //     try {
 //       setLoading(true);
-      
+
 //       const [orders, products, cartData] = await Promise.all([
 //         ordersAPI.getMyOrders(),
 //         productsAPI.getAll(),
@@ -118,7 +118,7 @@
 //               <p className="text-green-100 text-lg mb-4">
 //                 ברוך הבא לחנות שלנו! מה נרכוש היום?
 //               </p>
-              
+
 //             </div>
 //             <div className="hidden md:block">
 //               <div className="text-6xl opacity-20">🛍️</div>
@@ -161,7 +161,7 @@
 //         />
 //       </div>
 
-    
+
 
 //       {/* תוכן ראשי */}
 //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -230,7 +230,7 @@
 //         </div>
 //       </div>
 
-     
+
 //       {/* פעולות מהירות */}
 //       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 //         <CustomerQuickAction
@@ -448,10 +448,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { 
-  ShoppingCart, 
-  Package, 
-  Clock, 
+import {
+  ShoppingCart,
+  Package,
+  Clock,
   Star,
   ArrowUpRight,
   CreditCard,
@@ -484,7 +484,7 @@ const CustomerDashboard = () => {
   const loadCustomerData = async () => {
     try {
       setLoading(true);
-      
+
       const [orders, products, cartData] = await Promise.all([
         ordersAPI.getMyOrders(),
         productsAPI.getAll(),
@@ -496,7 +496,7 @@ const CustomerDashboard = () => {
         .filter(order => order.status === 'delivered')
         .reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
 
-      const pendingOrders = orders.filter(order => 
+      const pendingOrders = orders.filter(order =>
         order.status === 'pending' || order.status === 'confirmed'
       ).length;
 
@@ -533,167 +533,168 @@ const CustomerDashboard = () => {
   }
 
   return (
-   <div className="customer-dashboard-container" >
-    <div className="customer-dashboard">
-      {/* Hero Header */}
-      <div className="customer-dashboard-hero">
-        <div className="customer-dashboard-hero-bg-element customer-dashboard-hero-bg-element--top"></div>
-        <div className="customer-dashboard-hero-bg-element customer-dashboard-hero-bg-element--bottom"></div>
-        
-        <div className="customer-dashboard-hero-content">
-          <div className="customer-dashboard-hero-main">
-            <div className="customer-dashboard-hero-text">
-              <div className="customer-dashboard-hero-user-info">
-                <div>
-                  <h1 className="customer-dashboard-hero-title">
-                    שלום {user?.full_name}! 
-                  </h1>
-                  <p className="customer-dashboard-hero-subtitle">
-                    ברוכים הבאים לחנות שלנו - מה נרכוש היום?
-                  </p>
+    <div className="customer-dashboard-container" >
+      <div className="customer-dashboard">
+        {/* Hero Header */}
+        <div className="customer-dashboard-hero">
+          <div className="customer-dashboard-hero-bg-element customer-dashboard-hero-bg-element--top"></div>
+          <div className="customer-dashboard-hero-bg-element customer-dashboard-hero-bg-element--bottom"></div>
+
+          <div className="customer-dashboard-hero-content">
+            <div className="customer-dashboard-hero-main">
+              <div className="customer-dashboard-hero-text">
+                <div className="customer-dashboard-hero-user-info">
+                  <div>
+                    <h1 className="customer-dashboard-hero-title">
+                      שלום {user?.full_name}!
+                    </h1>
+                    <p className="customer-dashboard-hero-subtitle">
+                      ברוכים הבאים לחנות שלנו - מה נרכוש היום?
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="customer-dashboard-stats">
-        <div className="customer-dashboard-stats-grid">
-          <CustomerStatCard
-            title="ההזמנות שלי"
-            value={customerStats.totalOrders}
-            icon={<ShoppingCart className="h-7 w-7" />}
-            iconColor="blue"
-            link="/my-orders"
-            trend="+3 השבוע"
-          />
-          <CustomerStatCard
-            title="הזמנות פעילות"
-            value={customerStats.pendingOrders}
-            icon={<Clock className="h-7 w-7" />}
-            iconColor="orange"
-            urgent={customerStats.pendingOrders > 0}
-            pulse={customerStats.pendingOrders > 0}
-          />
-          <CustomerStatCard
-            title="סך כל הקניות עם סטטוס delivered"
-            value={`₪${customerStats.totalSpent.toLocaleString()}`}
-            icon={<CreditCard className="h-7 w-7" />}
-            iconColor="green"
-            trend="+12% מהחודש הקודם"
-          />
-          <CustomerStatCard
-            title="מוצרים בעגלה"
-            value={customerStats.cartItems}
-            icon={<Package className="h-7 w-7" />}
-            iconColor="purple"
-            link="/my-cart"
-            urgent={customerStats.cartItems > 0}
-            badge={customerStats.cartItems > 0 ? customerStats.cartItems : null}
-          />
+        {/* Stats Cards */}
+        <div className="customer-dashboard-stats">
+          <div className="customer-dashboard-stats-grid">
+            <CustomerStatCard
+              title="ההזמנות שלי"
+              value={customerStats.totalOrders}
+              icon={<ShoppingCart className="h-7 w-7" />}
+              iconColor="blue"
+              link="/my-orders"
+              trend="+3 השבוע"
+            />
+            <CustomerStatCard
+              title="הזמנות פעילות"
+              value={customerStats.pendingOrders}
+              icon={<Clock className="h-7 w-7" />}
+              iconColor="orange"
+              urgent={customerStats.pendingOrders > 0}
+              pulse={customerStats.pendingOrders > 0}
+            />
+            <CustomerStatCard
+              title="סך כל הקניות עם סטטוס delivered"
+              value={`₪${customerStats.totalSpent.toLocaleString()}`}
+              icon={<CreditCard className="h-7 w-7" />}
+              iconColor="green"
+              trend="+12% מהחודש הקודם"
+            />
+            <CustomerStatCard
+              title="מוצרים בעגלה"
+              value={customerStats.cartItems}
+              icon={<Package className="h-7 w-7" />}
+              iconColor="purple"
+              link="/my-cart"
+              urgent={customerStats.cartItems > 0}
+              badge={null}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="customer-dashboard-content">
-        <div className="customer-dashboard-main-grid">
-          {/* Recent Orders */}
-          <div className="customer-dashboard-orders">
-            <div className="customer-dashboard-orders-header">
-              <div className="customer-dashboard-orders-header-content">
-                <div className="customer-dashboard-orders-header-info">
-                  <div className="customer-dashboard-orders-icon">
-                    <Clock className="h-5 w-5" />
+        {/* Main Content */}
+        <div className="customer-dashboard-content">
+          <div className="customer-dashboard-main-grid">
+            {/* Recent Orders */}
+            <div className="customer-dashboard-orders">
+              <div className="customer-dashboard-orders-header">
+                <div className="customer-dashboard-orders-header-content">
+                  <div className="customer-dashboard-orders-header-info">
+                    <div className="customer-dashboard-orders-icon">
+                      <Clock className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="customer-dashboard-orders-title">ההזמנות האחרונות שלי</h3>
+                      <p className="customer-dashboard-orders-subtitle">עקוב אחר הסטטוס והתקדמות</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="customer-dashboard-orders-title">ההזמנות האחרונות שלי</h3>
-                    <p className="customer-dashboard-orders-subtitle">עקוב אחר הסטטוס והתקדמות</p>
-                  </div>
-                </div>
-                <Link to="/my-orders" className="customer-dashboard-orders-link">
-                  צפה בהכל
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="customer-dashboard-orders-body">
-              {recentOrders.length > 0 ? (
-                <div className="customer-dashboard-orders-list">
-                  {recentOrders.map(order => (
-                    <CustomerOrderItem key={order.id} order={order} />
-                  ))}
-                </div>
-              ) : (
-                <div className="customer-dashboard-empty">
-                  <ShoppingCart className="customer-dashboard-empty-icon" />
-                  <h4 className="customer-dashboard-empty-title">עוד לא ביצעת הזמנות</h4>
-                  <p className="customer-dashboard-empty-description">
-                    התחל לקנות ותוכל לעקוב אחר ההזמנות שלך כאן
-                  </p>
-                  <Link to="/shop" className="customer-dashboard-empty-button">
-                    התחל לקנות
+                  <Link to="/my-orders" className="customer-dashboard-orders-link">
+                    צפה בהכל
                     <ArrowUpRight className="h-4 w-4" />
                   </Link>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="customer-dashboard-quick-actions">
-          
-          <div className="customer-dashboard-quick-actions-grid">
-            <CustomerQuickAction
-              title="התחל לקנות"
-              description="עיין במגוון המוצרים"
-              icon={<ShoppingCart className="h-6 w-6" />}
-              link="/shop"
-              iconColor="blue"
-            />
-            <CustomerQuickAction
-              title="עגלת הקניות"
-              description={`${customerStats.cartItems} מוצרים בעגלה`}
-              icon={<Package className="h-6 w-6" />}
-              link="/my-cart"
-              iconColor="green"
-              badge={customerStats.cartItems > 0 ? customerStats.cartItems : null}
-            />
-            <CustomerQuickAction
-              title="הפרופיל שלי"
-              description="עדכן פרטים אישיים"
-              icon={<User className="h-6 w-6" />}
-              link="/profile"
-              iconColor="purple"
-            />
-          </div>
-        </div>
-
-        {/* Tips Section */}
-        <div className="customer-dashboard-tips">
-          <div className="customer-dashboard-tips-content">
-            <div className="customer-dashboard-tips-icon">
-              <Star className="h-6 w-6" />
-            </div>
-            <div className="customer-dashboard-tips-text">
-              <div className="customer-dashboard-tips-header">
-                <h3 className="customer-dashboard-tips-title">טיפ היום</h3>
-                <span className="customer-dashboard-tips-badge">חדש</span>
               </div>
-              <p className="customer-dashboard-tips-description">
-                ידעת שחיסכון בנרגיה במקרר יכול להתחיל מסידור נכון של המוצרים? שמור את הירקות בתנאי טריות ואת המוצרים הקפואים יחד.
-              </p>
-              <div className="customer-dashboard-tips-footer">
-                <div className="customer-dashboard-tips-footer-item">
-                  <Calendar className="h-4 w-4" />
-                  עדכון יומי
+
+              <div className="customer-dashboard-orders-body">
+                {recentOrders.length > 0 ? (
+                  <div className="customer-dashboard-orders-list">
+                    {recentOrders.map(order => (
+                      <CustomerOrderItem key={order.id} order={order} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="customer-dashboard-empty">
+                    <ShoppingCart className="customer-dashboard-empty-icon" />
+                    <h4 className="customer-dashboard-empty-title">עוד לא ביצעת הזמנות</h4>
+                    <p className="customer-dashboard-empty-description">
+                      התחל לקנות ותוכל לעקוב אחר ההזמנות שלך כאן
+                    </p>
+                    <Link to="/shop" className="customer-dashboard-empty-button">
+                      התחל לקנות
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="customer-dashboard-quick-actions">
+
+            <div className="customer-dashboard-quick-actions-grid">
+              <CustomerQuickAction
+                title="התחל לקנות"
+                description="עיין במגוון המוצרים"
+                icon={<ShoppingCart className="h-6 w-6" />}
+                link="/shop"
+                iconColor="blue"
+              />
+              <CustomerQuickAction
+                title="עגלת הקניות"
+                description={`${customerStats.cartItems} מוצרים בעגלה`}
+                icon={<Package className="h-6 w-6" />}
+                link="/my-cart"
+                iconColor="green"
+                badge={null}
+              />
+              <CustomerQuickAction
+                title="הפרופיל שלי"
+                description="עדכן פרטים אישיים"
+                icon={<User className="h-6 w-6" />}
+                link="/profile"
+                iconColor="purple"
+              />
+            </div>
+          </div>
+
+          {/* Tips Section */}
+          <div className="customer-dashboard-tips">
+            <div className="customer-dashboard-tips-content">
+              <div className="customer-dashboard-tips-icon">
+                <Star className="h-6 w-6" />
+              </div>
+              <div className="customer-dashboard-tips-text">
+                <div className="customer-dashboard-tips-header">
+                  <h3 className="customer-dashboard-tips-title">טיפ היום</h3>
+                  <span className="customer-dashboard-tips-badge">חדש</span>
                 </div>
-                <div className="customer-dashboard-tips-footer-item">
-                  <CheckCircle className="h-4 w-4" />
-                  טיפים מועילים
+                <p className="customer-dashboard-tips-description">
+                  ידעת שחיסכון בנרגיה במקרר יכול להתחיל מסידור נכון של המוצרים? שמור את הירקות בתנאי טריות ואת המוצרים הקפואים יחד.
+                </p>
+                <div className="customer-dashboard-tips-footer">
+                  <div className="customer-dashboard-tips-footer-item">
+                    <Calendar className="h-4 w-4" />
+                    עדכון יומי
+                  </div>
+                  <div className="customer-dashboard-tips-footer-item">
+                    <CheckCircle className="h-4 w-4" />
+                    טיפים מועילים
+                  </div>
                 </div>
               </div>
             </div>
@@ -701,7 +702,6 @@ const CustomerDashboard = () => {
         </div>
       </div>
     </div>
-  </div>
   );
 };
 
@@ -709,11 +709,11 @@ const CustomerDashboard = () => {
 const CustomerStatCard = ({ title, value, icon, iconColor, link, trend, urgent, pulse, badge }) => (
   <div className={`customer-stat-card ${urgent ? 'customer-stat-card--urgent' : ''} ${pulse ? 'customer-stat-card--pulse' : ''}`}>
     <div className={`customer-stat-card-bg bg-gradient-to-br from-${iconColor}-500 to-${iconColor}-600`}></div>
-    
+
     {badge && (
       <span className="customer-stat-card-badge">{badge}</span>
     )}
-    
+
     <div className="customer-stat-card-content">
       <div className="customer-stat-card-header">
         <div className={`customer-stat-card-icon customer-stat-card-icon--${iconColor}`}>
@@ -723,15 +723,15 @@ const CustomerStatCard = ({ title, value, icon, iconColor, link, trend, urgent, 
           <AlertCircle className="customer-stat-card-alert h-5 w-5" />
         )}
       </div>
-      
+
       <div className="customer-stat-card-body">
         <p className="customer-stat-card-title">{title}</p>
         <p className="customer-stat-card-value">{value}</p>
-        
+
         {trend && (
           <p className="customer-stat-card-trend">{trend}</p>
         )}
-        
+
         {link && (
           <Link to={link} className="customer-stat-card-link">
             צפה בפירוט
@@ -755,7 +755,7 @@ const CustomerOrderItem = ({ order }) => (
         <p>{new Date(order.order_date).toLocaleDateString('he-IL')}</p>
       </div>
     </div>
-    
+
     <div className="customer-order-item-right">
       <div className="customer-order-item-details">
         <p className="customer-order-item-amount">₪{parseFloat(order.total_amount).toLocaleString()}</p>
@@ -774,7 +774,7 @@ const CustomerQuickAction = ({ title, description, icon, link, iconColor, badge 
     {badge && (
       <span className="customer-quick-action-badge">{badge}</span>
     )}
-    
+
     <div className="customer-quick-action-content">
       <div className={`customer-quick-action-icon customer-quick-action-icon--${iconColor}`}>
         {icon}

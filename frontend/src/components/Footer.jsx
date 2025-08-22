@@ -1,68 +1,141 @@
-// src/components/Footer.jsx
+// src/components/Footer.jsx - Footer מקצועי ומעוצב
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
+import {
+    ShoppingCart,
+    Facebook,
+    Instagram,
+    Twitter,
+    Linkedin,
+    Phone,
+    Mail,
+    MapPin,
+    Clock,
+    CreditCard,
+    Truck,
+    Shield,
+    Users
+} from 'lucide-react';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-100 text-gray-800 mt-12 border-t border-gray-300">
-            <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row md:justify-between gap-8">
-                {/* לוגו ותיאור */}
-                <div className="flex-1 flex flex-col items-center md:items-start gap-3 text-center md:text-left">
-                    <div className="flex items-center gap-2 text-gray-900 text-2xl font-bold justify-center md:justify-start">
-                        <ShoppingCart className="h-6 w-6" />
+        <footer className="footer-container">
+            <div className="footer-content">
+                {/* עמודה ראשונה - לוגו ותיאור (הכי מימין) */}
+                <div className="footer-section footer-logo-section">
+                    <Link to="/dashboard" className="footer-logo">
                         מרקט פלוס
-                    </div>
-                    <p className="text-gray-600 text-sm md:text-base">
-                        הפלטפורמה המקצועית שלך לקניות אונליין. מוצרים איכותיים, שירות אמין ותמיכה אישית.
+                        <ShoppingCart className="footer-logo-icon h-6 w-6" />
+                    </Link>
+                    <p className="footer-description">
+                        הפלטפורמה המובילה לקניות אונליין בישראל.
+                        מוצרים איכותיים, משלוח מהיר ושירות מעולה.
                     </p>
-                    <div className="flex gap-4 mt-2 justify-center md:justify-start">
-                        <a href="#" className="text-red-600 hover:text-red-800 transition-colors">
-                            <Facebook className="h-5 w-5" />
-                        </a>
-                        <a href="#" className="text-red-600 hover:text-red-800 transition-colors">
-                            <Instagram className="h-5 w-5" />
-                        </a>
-                        <a href="#" className="text-red-600 hover:text-red-800 transition-colors">
-                            <Twitter className="h-5 w-5" />
-                        </a>
-                        <a href="#" className="text-red-600 hover:text-red-800 transition-colors">
-                            <Linkedin className="h-5 w-5" />
-                        </a>
+
+                    {/* סטטיסטיקות קצרות */}
+                    <div className="footer-stats">
+                        <div className="footer-stat">
+                            <span>10,000+ לקוחות</span>
+                            <Users className="h-4 w-4" />
+                        </div>
+                        <div className="footer-stat">
+                            <span>100% מאובטח</span>
+                            <Shield className="h-4 w-4" />
+                        </div>
                     </div>
                 </div>
 
-                {/* קישורים מהירים */}
-                <div className="flex-1 flex flex-col items-center md:items-start gap-2 text-center md:text-left">
-                    <h3 className="text-gray-900 font-semibold mb-3">קישורים מהירים</h3>
-                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">דף הבית</Link>
-                    <Link to="/products" className="hover:text-red-600 transition-colors">מוצרים</Link>
-                    <Link to="/categories" className="hover:text-red-600 transition-colors">קטגוריות</Link>
-                    <Link to="/orders" className="hover:text-red-600 transition-colors">הזמנות</Link>
-                    <Link to="/users" className="hover:text-red-600 transition-colors">משתמשים</Link>
+                {/* עמודה שנייה - קישורים מהירים */}
+                <div className="footer-section">
+                    <h3 className="footer-section-title">קישורים מהירים</h3>
+                    <div className="footer-links">
+
+                        <Link to="/about" className="footer-link">אודותינו</Link>
+                        <Link to="/support" className="footer-link">תמיכה</Link>
+                        <Link to="/faq" className="footer-link">שאלות נפוצות</Link>
+                    </div>
                 </div>
 
-                {/* מידע ליצירת קשר */}
-                <div className="flex-1 flex flex-col items-center md:items-start gap-2 text-center md:text-left">
-                    <h3 className="text-gray-900 font-semibold mb-3">צור קשר</h3>
-                    <p className="text-gray-600 text-sm">טלפון: 03-1234567</p>
-                    <p className="text-gray-600 text-sm">מייל: info@marketplus.co.il</p>
-                    <p className="text-gray-600 text-sm">כתובת: רחוב הדגל 10, תל אביב</p>
+                {/* עמודה שלישית - שירותים */}
+                <div className="footer-section">
+                    <h3 className="footer-section-title">השירותים שלנו</h3>
+                    <div className="footer-services">
+                        <div className="footer-service">
+                            <span>משלוח חינם מעל ₪200</span>
+                            <Truck className="h-4 w-4" />
+                        </div>
+                        <div className="footer-service">
+                            <span>תשלום מאובטח</span>
+                            <CreditCard className="h-4 w-4" />
+                        </div>
+                        <div className="footer-service">
+                            <span>תמיכה 24/7</span>
+                            <Clock className="h-4 w-4" />
+                        </div>
+                        <div className="footer-service">
+                            <span>החזרה תוך 30 יום</span>
+                            <Shield className="h-4 w-4" />
+                        </div>
+                    </div>
                 </div>
 
-                {/* מידע נוסף */}
-                <div className="flex-1 flex flex-col items-center md:items-start gap-2 text-center md:text-left">
-                    <h3 className="text-gray-900 font-semibold mb-3">מידע נוסף</h3>
-                    <Link to="/privacy" className="hover:text-red-600 transition-colors">מדיניות פרטיות</Link>
-                    <Link to="/terms" className="hover:text-red-600 transition-colors">תנאי שימוש</Link>
-                    <Link to="/support" className="hover:text-red-600 transition-colors">תמיכה</Link>
+                {/* עמודה רביעית - צור קשר (הכי משמאל) */}
+                <div className="footer-section">
+                    <h3 className="footer-section-title">צור קשר</h3>
+                    <div className="footer-contact">
+                        <div className="footer-contact-item">
+                            <span>03-1234567</span>
+                            <Phone className="h-4 w-4" />
+                        </div>
+                        <div className="footer-contact-item">
+                            <span>info@marketplus.co.il</span>
+                            <Mail className="h-4 w-4" />
+                        </div>
+                        <div className="footer-contact-item">
+                            <span>רחוב דיזנגוף 50, תל אביב</span>
+                            <MapPin className="h-4 w-4" />
+                        </div>
+                        <div className="footer-contact-item">
+                            <span>א׳-ה׳: 9:00-18:00</span>
+                            <Clock className="h-4 w-4" />
+                        </div>
+                    </div>
+
+                    {/* רשתות חברתיות */}
+                    <div className="footer-social-section">
+                        <h4 className="footer-social-title">עקבו אחרינו</h4>
+                        <div className="footer-social">
+                            <a href="#" className="footer-social-link" aria-label="LinkedIn">
+                                <Linkedin className="h-4 w-4" />
+                            </a>
+                            <a href="#" className="footer-social-link" aria-label="Twitter">
+                                <Twitter className="h-4 w-4" />
+                            </a>
+                            <a href="#" className="footer-social-link" aria-label="Instagram">
+                                <Instagram className="h-4 w-4" />
+                            </a>
+                            <a href="#" className="footer-social-link" aria-label="Facebook">
+                                <Facebook className="h-4 w-4" />
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* קו תחתון וזכויות יוצרים */}
-            <div className="border-t border-gray-300 mt-8 py-6 text-gray-500 text-sm flex flex-col md:flex-row justify-center md:justify-between items-center gap-2">
-                <span>&copy; {new Date().getFullYear()} מרקט פלוס. כל הזכויות שמורות.</span>
-                <span>Designed with ❤️ by MarketPlus Team</span>
+            {/* חלק תחתון - זכויות יוצרים ומידע משפטי */}
+            <div className="footer-bottom">
+                <div className="footer-bottom-content">
+                    <div className="footer-copyright">
+                        <span>&copy; 2025 מרקט פלוס. כל הזכויות שמורות.</span>
+                    </div>
+
+                    <div className="footer-legal">
+                        <Link to="/privacy" className="footer-legal-link">מדיניות פרטיות</Link>
+                        <Link to="/terms" className="footer-legal-link">תנאי שימוש</Link>
+                    </div>
+
+
+                </div>
             </div>
         </footer>
     );
