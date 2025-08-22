@@ -253,6 +253,19 @@ class Order {
         );
     }
 
+    static async updateTotal(id, totalAmount) {
+    try {
+        const [result] = await pool.execute(
+            'UPDATE orders SET total_amount = ? WHERE id = ?',
+            [totalAmount, id]
+        );
+        return result.affectedRows > 0;
+    } catch (error) {
+        console.error('Error updating order total:', error);
+        throw error;
+    }
+}
+
 }
 
 module.exports = Order;

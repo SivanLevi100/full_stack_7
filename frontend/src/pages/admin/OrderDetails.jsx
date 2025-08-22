@@ -1,6 +1,442 @@
+// // src/pages/OrderDetails.jsx - עמוד פרטי הזמנה עם עיצוב מותאם
+// import React, { useEffect, useState } from 'react';
+// import { useParams, Link } from 'react-router-dom';
+// import { orderItemsAPI, productsAPI } from '../../services/api';
+// import { ArrowRight, AlertTriangle } from 'lucide-react';
+// import toast from 'react-hot-toast';
+
+// const OrderDetails = () => {
+//     const { orderId } = useParams();
+//     const [items, setItems] = useState([]);
+//     const [products, setProducts] = useState([]);
+//     const [loading, setLoading] = useState(true);
+
+//     // ניהול עריכה/הוספה
+//     const [editingItem, setEditingItem] = useState(null);
+//     const [newItem, setNewItem] = useState({ product_id: '', name: '', quantity: 1, unit_price: 0 });
+
+//     // טעינת פרטי הזמנה
+//     const loadItems = async () => {
+//         try {
+//             setLoading(true);
+//             const data = await orderItemsAPI.getByOrder(orderId);
+//             setItems(data);
+//         } catch (error) {
+//             console.error('Error loading order items:', error);
+//             toast.error('שגיאה בטעינת פרטי ההזמנה', {
+//                 dismissible: false
+//             });
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     // טעינת רשימת מוצרים מהחנות
+//     const loadProducts = async () => {
+//         try {
+//             const data = await productsAPI.getAll();
+//             setProducts(data);
+//         } catch (err) {
+//             console.error('Error loading products:', err);
+//             toast.error('שגיאה בטעינת רשימת המוצרים', {
+//                 dismissible: false
+//             });
+//         }
+//     };
+
+//     useEffect(() => {
+//         loadItems();
+//         loadProducts();
+//     }, [orderId]);
+
+//     // מחיקה עם Toast מותאם
+//     const handleDelete = async (item) => {
+//         const deleteItem = async () => {
+//             try {
+//                 await orderItemsAPI.delete(item.id);
+//                 toast.success(`פריט "${item.name}" נמחק בהצלחה`, {
+//                     duration: 3000,
+//                     icon: '✅',
+//                     dismissible: false
+//                 });
+//                 loadItems();
+//             } catch (err) {
+//                 console.error(err);
+//                 toast.error('שגיאה במחיקת פריט', {
+//                     dismissible: false
+//                 });
+//             }
+//         };
+
+//         // יצירת Toast מותאם עם כפתורי אישור/ביטול
+//         toast((t) => (
+//             <div className="categories-toast-delete-overlay">
+//                 <div className="categories-toast-delete-header">
+//                     <AlertTriangle size={24} />
+//                     מחיקת פריט
+//                 </div>
+                
+//                 <div className="categories-toast-delete-content">
+//                     האם אתה בטוח שברצונך למחוק את הפריט<br />
+//                     <strong>"{item.name}"</strong> מההזמנה?<br />
+//                     <span className="categories-toast-delete-warning">
+//                         פעולה זו בלתי הפיכה!
+//                     </span>
+//                 </div>
+                
+//                 <div className="categories-toast-delete-buttons">
+//                     <button
+//                         onClick={() => {
+//                             deleteItem();
+//                             toast.dismiss(t.id);
+//                         }}
+//                         className="categories-toast-delete-confirm"
+//                     >
+//                         כן, מחק
+//                     </button>
+                    
+//                     <button
+//                         onClick={() => toast.dismiss(t.id)}
+//                         className="categories-toast-delete-cancel"
+//                     >
+//                         ביטול
+//                     </button>
+//                 </div>
+//             </div>
+//         ), {
+//             duration: Infinity,
+//             className: 'categories-toast-delete-custom',
+//             position: 'top-center',
+//             dismissible: false
+//         });
+//     };
+
+//     // עריכה
+//     const handleEdit = (item) => setEditingItem({ ...item });
+
+//     const handleSaveEdit = async () => {
+//         try {
+//             // בדיקת מלאי לפני עדכון
+//             const product = products.find(p => p.name === editingItem.name);
+//             if (product && editingItem.quantity > product.stock_quantity) {
+//                 toast.error((t) => (
+//                     <div className="categories-toast-error-overlay">
+//                         <div className="categories-toast-error-header">
+//                             <AlertTriangle size={24} />
+//                             כמות חורגת מהמלאי
+//                         </div>
+                        
+//                         <div className="categories-toast-error-content">
+//                             הכמות המבוקשת (<strong>{editingItem.quantity}</strong>) של המוצר<br />
+//                             <strong>"{editingItem.name}"</strong><br />
+//                             חורגת מהמלאי הזמין במערכת.
+//                             <br /><br />
+//                             <strong>מלאי זמין:</strong> {product.stock_quantity} יחידות
+//                             <div className="categories-toast-error-tip">
+//                                 💡 עדכן את הכמות למלאי הזמין או פחות
+//                             </div>
+//                         </div>
+                        
+//                         <button
+//                             onClick={() => toast.dismiss(t.id)}
+//                             className="categories-toast-error-button"
+//                         >
+//                             הבנתי
+//                         </button>
+//                     </div>
+//                 ), {
+//                     duration: Infinity,
+//                     className: 'categories-toast-error-custom',
+//                     position: 'top-center',
+//                     dismissible: false
+//                 });
+//                 return;
+//             }
+
+//             await orderItemsAPI.update(editingItem.id, editingItem);
+//             toast.success('פריט עודכן בהצלחה', {
+//                 dismissible: false
+//             });
+//             setEditingItem(null);
+//             loadItems();
+//         } catch (err) {
+//             console.error(err);
+//             toast.error('שגיאה בעדכון פריט', {
+//                 dismissible: false
+//             });
+//         }
+//     };
+
+//     // הוספה
+//     const handleAddNew = async () => {
+//         if (!newItem.product_id) {
+//             toast.error('בחר מוצר לפני ההוספה', {
+//                 dismissible: false
+//             });
+//             return;
+//         }
+
+//         // בדיקת מלאי לפני הוספה
+//         const product = products.find(p => p.id === newItem.product_id);
+//         if (product && newItem.quantity > product.stock_quantity) {
+//             toast.error((t) => (
+//                 <div className="categories-toast-error-overlay">
+//                     <div className="categories-toast-error-header">
+//                         <AlertTriangle size={24} />
+//                         כמות חורגת מהמלאי
+//                     </div>
+                    
+//                     <div className="categories-toast-error-content">
+//                         הכמות המבוקשת (<strong>{newItem.quantity}</strong>) של המוצר<br />
+//                         <strong>"{newItem.name}"</strong><br />
+//                         חורגת מהמלאי הזמין במערכת.
+//                         <br /><br />
+//                         <strong>מלאי זמין:</strong> {product.stock_quantity} יחידות
+//                         <div className="categories-toast-error-tip">
+//                             💡 עדכן את הכמות למלאי הזמין או פחות
+//                         </div>
+//                     </div>
+                    
+//                     <button
+//                         onClick={() => toast.dismiss(t.id)}
+//                         className="categories-toast-error-button"
+//                     >
+//                         הבנתי
+//                     </button>
+//                 </div>
+//             ), {
+//                 duration: Infinity,
+//                 className: 'categories-toast-error-custom',
+//                 position: 'top-center',
+//                 dismissible: false
+//             });
+//             return;
+//         }
+
+//         try {
+//             await orderItemsAPI.create({ ...newItem, order_id: orderId });
+//             toast.success('פריט נוסף בהצלחה', {
+//                 dismissible: false
+//             });
+//             setNewItem({ product_id: '', name: '', quantity: 1, unit_price: 0 });
+//             loadItems();
+//         } catch (err) {
+//             console.error(err);
+//             toast.error('שגיאה בהוספת פריט', {
+//                 dismissible: false
+//             });
+//         }
+//     };
+
+//     if (loading) {
+//         return (
+//             <div className="order-details-container">
+//                 <div className="order-details-page">
+//                     <div className="order-details-loading">טוען פרטי הזמנה...</div>
+//                 </div>
+//             </div>
+//         );
+//     }
+
+//     return (
+//         <div className="order-details-container">
+//             <div className="order-details-page">
+//                 <div className="order-details-card">
+//                     {/* כפתור חזרה */}
+//                     <Link to="/orders" className="order-details-back">
+//                         <ArrowRight className="h-4 w-4" />
+//                         חזרה להזמנות
+//                     </Link>
+
+//                     <h1 className="order-details-title">פרטי הזמנה #{orderId}</h1>
+
+//                     {/* טבלת פריטים */}
+//                     <div className="order-details-table-container">
+//                         <table className="order-details-table">
+//                             <thead className="order-details-table-header">
+//                                 <tr>
+//                                     <th>מוצר</th>
+//                                     <th>כמות</th>
+//                                     <th>מחיר ליחידה</th>
+//                                     <th>סה"כ</th>
+//                                     <th>פעולות</th>
+//                                 </tr>
+//                             </thead>
+//                             <tbody>
+//                                 {items.map(item => (
+//                                     <tr key={item.id} className="order-details-table-row">
+//                                         <td className="order-details-table-cell" data-label="מוצר">
+//                                             <span className="order-details-product-name">{item.name}</span>
+//                                         </td>
+//                                         <td className="order-details-table-cell" data-label="כמות">
+//                                             {editingItem?.id === item.id ? (
+//                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+//                                                     <input
+//                                                         type="number"
+//                                                         value={editingItem.quantity}
+//                                                         onChange={(e) => setEditingItem({ ...editingItem, quantity: Number(e.target.value) })}
+//                                                         className="order-details-quantity-input"
+//                                                         min="1"
+//                                                         max={products.find(p => p.name === editingItem.name)?.stock_quantity}
+//                                                     />
+//                                                     {(() => {
+//                                                         const product = products.find(p => p.name === editingItem.name);
+//                                                         return product && (
+//                                                             <span style={{ 
+//                                                                 fontSize: '0.75rem', 
+//                                                                 color: editingItem.quantity > product.stock_quantity ? 'var(--red-600)' : 'var(--gray-600)',
+//                                                                 fontWeight: '600'
+//                                                             }}>
+//                                                                 זמין: {product.stock_quantity}
+//                                                             </span>
+//                                                         );
+//                                                     })()}
+//                                                 </div>
+//                                             ) : (
+//                                                 item.quantity
+//                                             )}
+//                                         </td>
+//                                         <td className="order-details-table-cell" data-label="מחיר ליחידה">
+//                                             <span className="order-details-price">₪{Number(item.unit_price)}</span>
+//                                         </td>
+//                                         <td className="order-details-table-cell" data-label="סה״כ">
+//                                             <span className="order-details-total-price">
+//                                                 ₪{(Number(item.unit_price) * item.quantity).toFixed(2)}
+//                                             </span>
+//                                         </td>
+//                                         <td className="order-details-table-cell" data-label="פעולות">
+//                                             <div className="order-details-actions">
+//                                                 {editingItem?.id === item.id ? (
+//                                                     <>
+//                                                         <button 
+//                                                             onClick={handleSaveEdit} 
+//                                                             className="order-details-action-button order-details-action-button--save"
+//                                                         >
+//                                                             שמור
+//                                                         </button>
+//                                                         <button 
+//                                                             onClick={() => setEditingItem(null)} 
+//                                                             className="order-details-action-button order-details-action-button--cancel"
+//                                                         >
+//                                                             ביטול
+//                                                         </button>
+//                                                     </>
+//                                                 ) : (
+//                                                     <>
+//                                                         <button 
+//                                                             onClick={() => handleEdit(item)} 
+//                                                             className="order-details-action-button order-details-action-button--edit"
+//                                                         >
+//                                                             ערוך
+//                                                         </button>
+//                                                         <button 
+//                                                             onClick={() => handleDelete(item)} 
+//                                                             className="order-details-action-button order-details-action-button--delete"
+//                                                         >
+//                                                             מחק
+//                                                         </button>
+//                                                     </>
+//                                                 )}
+//                                             </div>
+//                                         </td>
+//                                     </tr>
+//                                 ))}
+//                             </tbody>
+//                         </table>
+//                     </div>
+
+//                     {/* טופס הוספת פריט חדש */}
+//                     <div className="order-details-add-section">
+//                         <h3 className="order-details-add-title">הוסף פריט חדש</h3>
+
+//                         <div className="order-details-add-form">
+//                             <div className="order-details-form-group">
+//                                 <label className="order-details-form-label">מוצר:</label>
+//                                 <select
+//                                     value={newItem.product_id}
+//                                     onChange={(e) => {
+//                                         const selectedProduct = products.find(p => p.id === Number(e.target.value));
+//                                         if (selectedProduct) {
+//                                             setNewItem({
+//                                                 ...newItem,
+//                                                 product_id: selectedProduct.id,
+//                                                 name: selectedProduct.name,
+//                                                 unit_price: selectedProduct.price,
+//                                             });
+//                                         } else {
+//                                             setNewItem({
+//                                                 ...newItem,
+//                                                 product_id: '',
+//                                                 name: '',
+//                                                 unit_price: 0,
+//                                             });
+//                                         }
+//                                     }}
+//                                     className="order-details-form-select"
+//                                 >
+//                                     <option value="">בחר מוצר</option>
+//                                     {products.map(p => (
+//                                         <option key={p.id} value={p.id}>{p.name}</option>
+//                                     ))}
+//                                 </select>
+//                             </div>
+
+//                             <div className="order-details-form-group">
+//                                 <label className="order-details-form-label">כמות:</label>
+//                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//                                     <input
+//                                         type="number"
+//                                         placeholder="לדוגמא: 3"
+//                                         value={newItem.quantity}
+//                                         onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
+//                                         className="order-details-form-input order-details-form-input--small"
+//                                         min="1"
+//                                         max={newItem.product_id ? products.find(p => p.id === newItem.product_id)?.stock_quantity : undefined}
+//                                     />
+//                                     {newItem.product_id && (
+//                                         <span style={{ 
+//                                             fontSize: '0.875rem', 
+//                                             color: 'var(--gray-600)',
+//                                             fontWeight: '600'
+//                                         }}>
+//                                             (זמין: {products.find(p => p.id === newItem.product_id)?.stock_quantity || 0})
+//                                         </span>
+//                                     )}
+//                                 </div>
+//                             </div>
+
+//                             <div className="order-details-form-group">
+//                                 <label className="order-details-form-label">מחיר ליחידה:</label>
+//                                 <input
+//                                     type="number"
+//                                     value={newItem.unit_price}
+//                                     readOnly
+//                                     className="order-details-form-input order-details-form-input--small"
+//                                 />
+//                             </div>
+
+//                             <button
+//                                 onClick={handleAddNew}
+//                                 className="order-details-add-button"
+//                             >
+//                                 הוסף פריט
+//                             </button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default OrderDetails;
+
+
+// src/pages/OrderDetails.jsx - לוגיקת חישוב פשוטה בקומפוננטה
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { orderItemsAPI, productsAPI } from '../../services/api'; // נניח שיש שירות productsAPI
+import { orderItemsAPI, productsAPI, ordersAPI } from '../../services/api';
+import { ArrowRight, AlertTriangle, Package, Truck, Calculator } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const OrderDetails = () => {
@@ -8,12 +444,48 @@ const OrderDetails = () => {
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // ניהול עריכה/הוספה
     const [editingItem, setEditingItem] = useState(null);
     const [newItem, setNewItem] = useState({ product_id: '', name: '', quantity: 1, unit_price: 0 });
 
-    // טעינת פרטי הזמנה
+    useEffect(() => {
+        loadItems();
+        loadProducts();
+    }, [orderId]);
+
+    // חישוב סכומים - לוגיקה פשוטה בקומפוננטה
+    const calculateOrderSummary = () => {
+        // סכום כל הפריטים
+        const itemsTotal = items.reduce((sum, item) => {
+            return sum + (Number(item.unit_price) * Number(item.quantity));
+        }, 0);
+        
+        // חישוב משלוח - חינם מעל 50 ש"ח
+        const shippingCost = itemsTotal >= 50 ? 0 : 20;
+        
+        // סכום כולל
+        const totalAmount = itemsTotal + shippingCost;
+        
+        return {
+            itemsTotal,
+            shippingCost,
+            totalAmount,
+            isFreeShipping: itemsTotal >= 50
+        };
+    };
+
+    // עדכון סכום ההזמנה בשרת (פונקציה פשוטה)
+    const updateOrderTotal = async () => {
+        try {
+            const { totalAmount } = calculateOrderSummary();
+            // עדכון פשוט של הסכום בשרת
+            await ordersAPI.updateTotal(orderId, totalAmount);
+            return totalAmount;
+        } catch (error) {
+            console.error('Error updating order total:', error);
+            // לא זורק שגיאה - רק לוג
+        }
+    };
+
     const loadItems = async () => {
         try {
             setLoading(true);
@@ -27,187 +499,398 @@ const OrderDetails = () => {
         }
     };
 
-    // טעינת רשימת מוצרים מהחנות
     const loadProducts = async () => {
         try {
-            const data = await productsAPI.getAll(); // מחזיר array של מוצרים עם id, name, price
+            const data = await productsAPI.getAll();
             setProducts(data);
         } catch (err) {
             console.error('Error loading products:', err);
+            toast.error('שגיאה בטעינת רשימת המוצרים');
         }
     };
 
-    useEffect(() => {
-        loadItems();
-        loadProducts();
-    }, [orderId]);
+    // מחיקת פריט
+    const handleDelete = async (item) => {
+        const deleteItem = async () => {
+            try {
+                // מחיקה רגילה
+                await orderItemsAPI.delete(item.id);
+                
+                // עדכון הרשימה
+                const updatedItems = items.filter(i => i.id !== item.id);
+                setItems(updatedItems);
+                
+                // עדכון הסכום בשרת לאחר עדכון הרשימה
+                setTimeout(updateOrderTotal, 100);
+                
+                toast.success(`פריט "${item.name}" נמחק בהצלחה!`);
+            } catch (err) {
+                console.error(err);
+                toast.error('שגיאה במחיקת פריט');
+            }
+        };
 
-    // מחיקה
-    const handleDelete = async (id) => {
-        if (!window.confirm('למחוק פריט זה?')) return;
-        try {
-            await orderItemsAPI.delete(id);
-            toast.success('פריט נמחק בהצלחה');
-            loadItems();
-        } catch (err) {
-            console.error(err);
-            toast.error('שגיאה במחיקת פריט');
-        }
+        toast((t) => (
+            <div className="categories-toast-delete-overlay">
+                <div className="categories-toast-delete-header">
+                    <AlertTriangle size={24} />
+                    מחיקת פריט
+                </div>
+                
+                <div className="categories-toast-delete-content">
+                    האם אתה בטוח שברצונך למחוק את הפריט<br />
+                    <strong>"{item.name}"</strong> מההזמנה?<br />
+                    <span className="categories-toast-delete-warning">
+                        פעולה זו בלתי הפיכה!
+                    </span>
+                </div>
+                
+                <div className="categories-toast-delete-buttons">
+                    <button
+                        onClick={() => {
+                            deleteItem();
+                            toast.dismiss(t.id);
+                        }}
+                        className="categories-toast-delete-confirm"
+                    >
+                        כן, מחק
+                    </button>
+                    
+                    <button
+                        onClick={() => toast.dismiss(t.id)}
+                        className="categories-toast-delete-cancel"
+                    >
+                        ביטול
+                    </button>
+                </div>
+            </div>
+        ), {
+            duration: Infinity,
+            className: 'categories-toast-delete-custom',
+            position: 'top-center',
+            dismissible: false
+        });
     };
 
-    // עריכה
     const handleEdit = (item) => setEditingItem({ ...item });
 
     const handleSaveEdit = async () => {
         try {
+            // בדיקת מלאי
+            const product = products.find(p => p.name === editingItem.name);
+            if (product && editingItem.quantity > product.stock_quantity) {
+                toast.error(`כמות חורגת מהמלאי! זמין: ${product.stock_quantity} יחידות`);
+                return;
+            }
+
+            // עדכון רגיל
             await orderItemsAPI.update(editingItem.id, editingItem);
-            toast.success('פריט עודכן בהצלחה');
+            
+            // עדכון הרשימה מקומית
+            const updatedItems = items.map(item => 
+                item.id === editingItem.id ? editingItem : item
+            );
+            setItems(updatedItems);
+            
+            // עדכון הסכום בשרת
+            setTimeout(updateOrderTotal, 100);
+            
+            toast.success('פריט עודכן בהצלחה!');
             setEditingItem(null);
-            loadItems();
         } catch (err) {
             console.error(err);
             toast.error('שגיאה בעדכון פריט');
         }
     };
 
-    // הוספה
     const handleAddNew = async () => {
         if (!newItem.product_id) {
             toast.error('בחר מוצר לפני ההוספה');
             return;
         }
+
+        // בדיקת מלאי
+        const product = products.find(p => p.id === newItem.product_id);
+        if (product && newItem.quantity > product.stock_quantity) {
+            toast.error(`כמות חורגת מהמלאי! זמין: ${product.stock_quantity} יחידות`);
+            return;
+        }
+
         try {
-            await orderItemsAPI.create({ ...newItem, order_id: orderId });
-            toast.success('פריט נוסף בהצלחה');
+            // הוספה רגילה
+            const createdItem = await orderItemsAPI.create({ ...newItem, order_id: orderId });
+            
+            // עדכון הרשימה מקומית
+            setItems([...items, createdItem]);
+            
+            // עדכון הסכום בשרת
+            setTimeout(updateOrderTotal, 100);
+            
+            toast.success('פריט נוסף בהצלחה!');
             setNewItem({ product_id: '', name: '', quantity: 1, unit_price: 0 });
-            loadItems();
         } catch (err) {
             console.error(err);
             toast.error('שגיאה בהוספת פריט');
         }
     };
 
-    if (loading) return <p>טוען...</p>;
+    // רכיב סיכום הזמנה
+    const OrderSummary = () => {
+        const summary = calculateOrderSummary();
+
+        return (
+            <div className="order-summary-container">
+                <div className="order-summary-header">
+                    <Calculator className="h-5 w-5 text-primary-green" />
+                    <h3 className="order-summary-title">סיכום הזמנה</h3>
+                </div>
+
+                <div className="order-summary-content">
+                    {/* סכום פריטים */}
+                    <div className="order-summary-row">
+                        <div className="order-summary-label">
+                            <Package className="h-4 w-4" />
+                            <span>סה"כ פריטים</span>
+                            <span className="order-summary-items-count">({items.length} פריטים)</span>
+                        </div>
+                        <div className="order-summary-value">
+                            ₪{summary.itemsTotal.toLocaleString()}
+                        </div>
+                    </div>
+
+                    {/* משלוח */}
+                    <div className="order-summary-row">
+                        <div className="order-summary-label">
+                            <Truck className="h-4 w-4" />
+                            <span>משלוח</span>
+                            {summary.isFreeShipping && (
+                                <span className="order-summary-free-badge">משלוח חינם!</span>
+                            )}
+                        </div>
+                        <div className={`order-summary-value ${summary.isFreeShipping ? 'order-summary-value--free' : ''}`}>
+                            {summary.isFreeShipping ? 'חינם' : `₪${summary.shippingCost}`}
+                        </div>
+                    </div>
+
+                    {/* הודעת משלוח חינם */}
+                    {!summary.isFreeShipping && (
+                        <div className="order-summary-shipping-note">
+                            💡 הוסף עוד ₪{(50 - summary.itemsTotal).toFixed(2)} לקבלת משלוח חינם!
+                        </div>
+                    )}
+
+                    {/* קו מפריד */}
+                    <div className="order-summary-divider"></div>
+
+                    {/* סכום כולל */}
+                    <div className="order-summary-total">
+                        <div className="order-summary-total-label">סה"כ לתשלום</div>
+                        <div className="order-summary-total-value">₪{summary.totalAmount.toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    if (loading) {
+        return (
+            <div className="order-details-container">
+                <div className="order-details-page">
+                    <div className="order-details-loading">טוען פרטי הזמנה...</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="p-6 bg-white rounded-xl shadow space-y-6">
-            {/* כפתור חזרה עם Link */}
-            <Link
-                to="/orders"
-                className="inline-block bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-            >
-                ← חזרה להזמנות
-            </Link>
+        <div className="order-details-container">
+            <div className="order-details-page">
+                <div className="order-details-card">
+                    {/* כפתור חזרה */}
+                    <Link to="/orders" className="order-details-back">
+                        <ArrowRight className="h-4 w-4" />
+                        חזרה להזמנות
+                    </Link>
 
+                    <h1 className="order-details-title">פרטי הזמנה #{orderId}</h1>
 
-            <h1 className="text-2xl font-bold mb-4">פרטי הזמנה #{orderId}</h1>
+                    {/* טבלת פריטים */}
+                    <div className="order-details-table-container">
+                        <table className="order-details-table">
+                            <thead className="order-details-table-header">
+                                <tr>
+                                    <th>מוצר</th>
+                                    <th>כמות</th>
+                                    <th>מחיר ליחידה</th>
+                                    <th>סה"כ</th>
+                                    <th>פעולות</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {items.map(item => (
+                                    <tr key={item.id} className="order-details-table-row">
+                                        <td className="order-details-table-cell" data-label="מוצר">
+                                            <span className="order-details-product-name">{item.name}</span>
+                                        </td>
+                                        <td className="order-details-table-cell" data-label="כמות">
+                                            {editingItem?.id === item.id ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                                                    <input
+                                                        type="number"
+                                                        value={editingItem.quantity}
+                                                        onChange={(e) => setEditingItem({ ...editingItem, quantity: Number(e.target.value) })}
+                                                        className="order-details-quantity-input"
+                                                        min="1"
+                                                        max={products.find(p => p.name === editingItem.name)?.stock_quantity}
+                                                    />
+                                                    {(() => {
+                                                        const product = products.find(p => p.name === editingItem.name);
+                                                        return product && (
+                                                            <span style={{ 
+                                                                fontSize: '0.75rem', 
+                                                                color: editingItem.quantity > product.stock_quantity ? 'var(--red-600)' : 'var(--gray-600)',
+                                                                fontWeight: '600'
+                                                            }}>
+                                                                זמין: {product.stock_quantity}
+                                                            </span>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            ) : (
+                                                item.quantity
+                                            )}
+                                        </td>
+                                        <td className="order-details-table-cell" data-label="מחיר ליחידה">
+                                            <span className="order-details-price">₪{Number(item.unit_price)}</span>
+                                        </td>
+                                        <td className="order-details-table-cell" data-label="סה״כ">
+                                            <span className="order-details-total-price">
+                                                ₪{(Number(item.unit_price) * item.quantity).toFixed(2)}
+                                            </span>
+                                        </td>
+                                        <td className="order-details-table-cell" data-label="פעולות">
+                                            <div className="order-details-actions">
+                                                {editingItem?.id === item.id ? (
+                                                    <>
+                                                        <button 
+                                                            onClick={handleSaveEdit} 
+                                                            className="order-details-action-button order-details-action-button--save"
+                                                        >
+                                                            שמור
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setEditingItem(null)} 
+                                                            className="order-details-action-button order-details-action-button--cancel"
+                                                        >
+                                                            ביטול
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => handleEdit(item)} 
+                                                            className="order-details-action-button order-details-action-button--edit"
+                                                        >
+                                                            ערוך
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleDelete(item)} 
+                                                            className="order-details-action-button order-details-action-button--delete"
+                                                        >
+                                                            מחק
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
-            <table className="min-w-full border-collapse">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th className="border p-2">מוצר</th>
-                        <th className="border p-2">כמות</th>
-                        <th className="border p-2">מחיר ליחידה</th>
-                        <th className="border p-2">סה"כ</th>
-                        <th className="border p-2">פעולות</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items.map(item => (
-                        <tr key={item.id} className="text-center hover:bg-gray-50">
-                            <td className="border p-2">
-                                {item.name} {/* שם המוצר לא ניתן לעריכה */}
-                            </td>
-                            <td className="border p-2">
-                                {editingItem?.id === item.id ? (
+                    {/* טופס הוספת פריט חדש */}
+                    <div className="order-details-add-section">
+                        <h3 className="order-details-add-title">הוסף פריט חדש</h3>
+
+                        <div className="order-details-add-form">
+                            <div className="order-details-form-group">
+                                <label className="order-details-form-label">מוצר:</label>
+                                <select
+                                    value={newItem.product_id}
+                                    onChange={(e) => {
+                                        const selectedProduct = products.find(p => p.id === Number(e.target.value));
+                                        if (selectedProduct) {
+                                            setNewItem({
+                                                ...newItem,
+                                                product_id: selectedProduct.id,
+                                                name: selectedProduct.name,
+                                                unit_price: selectedProduct.price,
+                                            });
+                                        } else {
+                                            setNewItem({
+                                                ...newItem,
+                                                product_id: '',
+                                                name: '',
+                                                unit_price: 0,
+                                            });
+                                        }
+                                    }}
+                                    className="order-details-form-select"
+                                >
+                                    <option value="">בחר מוצר</option>
+                                    {products.map(p => (
+                                        <option key={p.id} value={p.id}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="order-details-form-group">
+                                <label className="order-details-form-label">כמות:</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <input
                                         type="number"
-                                        value={editingItem.quantity}
-                                        onChange={(e) => setEditingItem({ ...editingItem, quantity: Number(e.target.value) })}
-                                        className="border p-1 rounded w-24"
+                                        placeholder="לדוגמא: 3"
+                                        value={newItem.quantity}
+                                        onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
+                                        className="order-details-form-input order-details-form-input--small"
+                                        min="1"
+                                        max={newItem.product_id ? products.find(p => p.id === newItem.product_id)?.stock_quantity : undefined}
                                     />
-                                ) : (
-                                    item.quantity
-                                )}
-                            </td>
-                            <td className="border p-2">
-                                ₪{Number(item.unit_price)} {/* מחיר ליחידה קריא בלבד */}
-                            </td>
-                            <td className="border p-2">
-                                ₪{(Number(item.unit_price) * item.quantity).toFixed(2)}
-                            </td>
-                            <td className="border p-2 space-x-2">
-                                {editingItem?.id === item.id ? (
-                                    <>
-                                        <button onClick={handleSaveEdit} className="bg-green-500 text-black px-2 py-1 rounded">שמור</button>
-                                        <button onClick={() => setEditingItem(null)} className="bg-gray-300 text-black px-2 py-1 rounded">ביטול</button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button onClick={() => handleEdit(item)} className="bg-yellow-400 px-2 py-1 rounded">ערוך</button>
-                                        <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-black px-2 py-1 rounded">מחק</button>
-                                    </>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
+                                    {newItem.product_id && (
+                                        <span style={{ 
+                                            fontSize: '0.875rem', 
+                                            color: 'var(--gray-600)',
+                                            fontWeight: '600'
+                                        }}>
+                                            (זמין: {products.find(p => p.id === newItem.product_id)?.stock_quantity || 0})
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
 
-            </table>
+                            <div className="order-details-form-group">
+                                <label className="order-details-form-label">מחיר ליחידה:</label>
+                                <input
+                                    type="number"
+                                    value={newItem.unit_price}
+                                    readOnly
+                                    className="order-details-form-input order-details-form-input--small"
+                                />
+                            </div>
 
-            {/* טופס הוספת פריט חדש */}
-            <div className="mt-6 p-4 border rounded-lg space-y-4">
-                <h3 className="font-semibold">הוסף פריט חדש</h3>
+                            <button
+                                onClick={handleAddNew}
+                                className="order-details-add-button"
+                            >
+                                הוסף פריט
+                            </button>
+                        </div>
+                    </div>
 
-                <div className="flex flex-col md:flex-row md:items-center gap-2">
-                    <label className="w-32 font-medium">מוצר:</label>
-                    <select
-                        value={newItem.product_id}
-                        onChange={(e) => {
-                            const selectedProduct = products.find(p => p.id === Number(e.target.value));
-                            setNewItem({
-                                ...newItem,
-                                product_id: selectedProduct.id,
-                                name: selectedProduct.name,
-                                unit_price: selectedProduct.price,
-                            });
-                        }}
-                        className="border p-1 rounded flex-1"
-                    >
-                        <option value="">בחר מוצר</option>
-                        {products.map(p => (
-                            <option key={p.id} value={p.id}>{p.name}</option>
-                        ))}
-                    </select>
+                    {/* סיכום הזמנה */}
+                    <OrderSummary />
                 </div>
-
-                <div className="flex flex-col md:flex-row md:items-center gap-2">
-                    <label className="w-32 font-medium">כמות:</label>
-                    <input
-                        type="number"
-                        placeholder="לדוגמה: 3"
-                        value={newItem.quantity}
-                        onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
-                        className="border p-1 rounded w-24"
-                    />
-                </div>
-
-                <div className="flex flex-col md:flex-row md:items-center gap-2">
-                    <label className="w-32 font-medium">מחיר ליחידה:</label>
-                    <input
-                        type="number"
-                        value={newItem.unit_price}
-                        readOnly
-                        className="border p-1 rounded w-24 bg-gray-100"
-                    />
-                </div>
-
-                <button
-                    onClick={handleAddNew}
-                    className="bg-blue-600 text-white px-4 py-1 rounded mt-2"
-                >
-                    הוסף
-                </button>
             </div>
         </div>
     );

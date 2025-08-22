@@ -237,6 +237,18 @@ export const ordersAPI = {
     return response.data;
   },
 
+  updateTotal: async (id, totalAmount) => {
+    try {
+      const response = await api.put(`/orders/${id}/total`, { 
+        total_amount: totalAmount 
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating order total:', error);
+      throw error;
+    }
+  }
+
 };
 
 

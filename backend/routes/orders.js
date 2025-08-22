@@ -121,6 +121,32 @@ router.put('/:id/payment-status', authenticateToken, authorizeRole(['admin']), a
     }
 });
 
+
+router.put('/:id/total', authenticateToken, authorizeRole(['admin']), async (req, res) => {
+    try {
+        const { total_amount } = req.body;
+        
+        if (!total_amount && total_amount !== 0) {
+            return res.status(400).json({ error: 'Total amount is required' });
+        }
+
+        const success = await Order.updateTotal(req.params.id, total_amount);
+        
+        if (!success) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.json({ 
+            message: 'Order total updated successfully',
+            total_amount 
+        });
+        
+    } catch (err) {
+        console.error('Update order total error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // מחיקת הזמנה (מנהלים בלבד)
 router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {

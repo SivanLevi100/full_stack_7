@@ -15,24 +15,20 @@
             rgba(118, 129, 136, 0.8) 0%,
             rgba(118, 129, 136, 0.8) 50%,
             rgba(118, 129, 136, 0.8) 80%),
-        url('../assets/images/12.png');
+        url('../assets/images/8.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: scroll;
+    background-attachment: fixed;
     overflow: hidden;
-    /* או overflow-x:hidden אם יש רק גלילה אנכית */
 }
 
 .customer-dashboard {
     min-height: 100vh;
     width: 100%;
     padding: 0;
-    /* הסרת padding */
     margin: 0;
-    /* הסרת margin */
     background: transparent;
-    /* רקע שקוף כדי לראות את הרקע של הcontainer */
     padding-top: 6rem;
 }
 
@@ -45,35 +41,27 @@
             var(--primary-green-light) 50%,
             var(--secondary-blue) 100%);
     color: var(--white);
-    /* overflow: hidden; */
-    width: 80%;
-    /* הגדלתי קצת את הרוחב */
+    width: 90%;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 7rem;
-    /* הקטנתי את המרווח התחתון */
     margin-top: 0rem;
     padding-top: 1rem;
-    /* יותר מאוזן */
     padding-bottom: 2rem;
     border-radius: 2rem;
-    /* פינות מעוגלות יותר */
 
 }
 
 
 
-/* עיצוב התוכן */
 .customer-dashboard-hero-content {
     position: relative;
     z-index: 10;
     text-align: center;
-    /* מרכז את הטקסט */
 }
 
 .customer-dashboard-hero-title {
     font-size: 3.5rem;
-    /* הגדלתי את הגופן */
     font-weight: 900;
     margin-bottom: 1rem;
     line-height: 1.1;
@@ -81,7 +69,7 @@
 }
 
 .customer-dashboard-hero-subtitle {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgb(255, 255, 255);
     font-size: 1.25rem;
     font-weight:700;
     margin-bottom: 0;
@@ -89,7 +77,6 @@
     line-height: 1.6;
 }
 
-/* אלמנטים דקורטיביים */
 .customer-dashboard-hero-bg-element {
     position: absolute;
     background: rgba(255, 255, 255, 0.08);
@@ -115,7 +102,6 @@
     animation-delay: 3s;
 }
 
-/* אלמנט דקורטיבי נוסף */
 .customer-dashboard-hero-bg-element--center {
     top: 50%;
     left: 20%;
@@ -231,7 +217,6 @@
 .customer-dashboard-stats {
     max-width: 1280px;
     margin: -3rem auto 2rem;
-    /* שינוי ב-margin top */
     padding: 0 1.5rem;
     position: relative;
     z-index: 20;
@@ -746,6 +731,7 @@
     cursor: pointer;
     overflow: hidden;
     padding-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .customer-dashboard-tips-content {

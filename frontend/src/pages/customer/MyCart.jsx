@@ -303,7 +303,7 @@ const MyCart = () => {
             <ShoppingCart className="cart-empty-icon" />
             <h2 className="cart-empty-title">העגלה ריקה</h2>
             <p className="cart-empty-description">
-              נראה שעדיין לא הוספת מוצרים לעגלה שלך. בוא נמצא משהו מעניב עבורך!
+              נראה שעדיין לא הוספת מוצרים לעגלה שלך. בוא נמצא משהו  עבורך!
             </p>
             <Link to="/shop" className="cart-empty-action">
               <ShoppingCart className="h-5 w-5" />

@@ -500,8 +500,8 @@ const CustomerDashboard = () => {
         order.status === 'pending' || order.status === 'confirmed'
       ).length;
 
-      // נקודות נאמנות (1 נקודה לכל 10 שקלים)
-      const loyaltyPoints = Math.floor(totalSpent / 10);
+      // // נקודות נאמנות (1 נקודה לכל 10 שקלים)
+      // const loyaltyPoints = Math.floor(totalSpent / 10);
 
       setCustomerStats({
         totalOrders: orders.length,
@@ -549,7 +549,7 @@ const CustomerDashboard = () => {
                       שלום {user?.full_name}!
                     </h1>
                     <p className="customer-dashboard-hero-subtitle">
-                      ברוכים הבאים לחנות שלנו - מה נרכוש היום?
+                      ברוכים הבאים למרקט פלוס - מה תרכשו היום?
                     </p>
                   </div>
                 </div>
@@ -578,11 +578,10 @@ const CustomerDashboard = () => {
               pulse={customerStats.pendingOrders > 0}
             />
             <CustomerStatCard
-              title="סך כל הקניות עם סטטוס delivered"
+              title="סך כל הקניות עם סטטוס 'נשלח'"
               value={`₪${customerStats.totalSpent.toLocaleString()}`}
               icon={<CreditCard className="h-7 w-7" />}
               iconColor="green"
-              trend="+12% מהחודש הקודם"
             />
             <CustomerStatCard
               title="מוצרים בעגלה"
@@ -662,13 +661,13 @@ const CustomerDashboard = () => {
                 iconColor="green"
                 badge={null}
               />
-              <CustomerQuickAction
+              {/* <CustomerQuickAction
                 title="הפרופיל שלי"
                 description="עדכן פרטים אישיים"
                 icon={<User className="h-6 w-6" />}
                 link="/profile"
                 iconColor="purple"
-              />
+              /> */}
             </div>
           </div>
 
@@ -684,7 +683,7 @@ const CustomerDashboard = () => {
                   <span className="customer-dashboard-tips-badge">חדש</span>
                 </div>
                 <p className="customer-dashboard-tips-description">
-                  ידעת שחיסכון בנרגיה במקרר יכול להתחיל מסידור נכון של המוצרים? שמור את הירקות בתנאי טריות ואת המוצרים הקפואים יחד.
+                  ידעת שחיסכון באנרגיה במקרר יכול להתחיל מסידור נכון של המוצרים? שמור את הירקות בתנאי טריות ואת המוצרים הקפואים יחד.
                 </p>
                 <div className="customer-dashboard-tips-footer">
                   <div className="customer-dashboard-tips-footer-item">

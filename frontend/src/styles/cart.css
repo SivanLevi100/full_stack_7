@@ -2,13 +2,23 @@
 
 /* ===== CART MAIN CONTAINER ===== */
 .cart-page {
-  min-height: 100vh;
-  background: 
-    linear-gradient(135deg, 
-      rgba(5, 150, 105, 0.02) 0%, 
-      rgba(14, 165, 233, 0.02) 50%,
-      rgba(139, 92, 246, 0.02) 100%);
-  padding: 2rem 0;
+     position: relative;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background:
+        linear-gradient(135deg,
+            rgba(118, 129, 136, 0.8) 0%,
+            rgba(118, 129, 136, 0.8) 50%,
+            rgba(118, 129, 136, 0.8) 80%),
+        url('../assets/images/8.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    overflow-x: hidden;
+    padding-top: 2rem;
 }
 
 .cart-container {
@@ -22,21 +32,23 @@
 
 /* ===== CART HEADER ===== */
 .cart-header {
-  background: linear-gradient(135deg, 
-    var(--primary-green) 0%, 
-    var(--secondary-blue) 50%, 
-    var(--accent-purple) 100%);
-  color: var(--white);
-  border-radius: 2rem;
-  padding: 3rem 2.5rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 
-    0 25px 50px rgba(5, 150, 105, 0.15),
-    0 8px 25px rgba(14, 165, 233, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg,
+            var(--primary-green) 0%,
+            var(--primary-green-light) 50%,
+            var(--secondary-blue) 100%);
+    color: var(--white);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    overflow: hidden;
+      display: flex;
+  flex-direction: column;
+  align-items: center;   /* מרכז אופקי */
+  justify-content: center; /* מרכז אנכי */
+  text-align: center; /* שיהיה מיושר במרכז */
+    
 }
 
 .cart-header::before {
@@ -56,21 +68,15 @@
 }
 
 .cart-title {
-  font-size: 3rem;
+ font-size: 3rem;
   font-weight: 900;
   margin-bottom: 1rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 1) 0%, 
-    rgba(255, 255, 255, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: rgba(255, 255, 255);
 }
 
 .cart-subtitle {
   font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255);
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -383,6 +389,7 @@
 .cart-summary {
   position: sticky;
   top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .cart-summary-card {

@@ -176,35 +176,56 @@ const MyOrders = () => {
 
         {/* מודל פרטי ההזמנה */}
         {showModal && selectedOrder && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-xl w-full max-w-md relative">
-              <h2 className="text-xl font-bold mb-4">פרטי הזמנה #{selectedOrder.id}</h2>
-              <button
-                onClick={closeModal}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-bold"
-              >
-                X
-              </button>
-              <table className="w-full border-collapse">
+          <div className="order-modal-overlay" onClick={closeModal}>
+            <div
+              className="order-modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="order-modal-header">
+                <h2 className="order-modal-title">
+                  פרטי הזמנה #{selectedOrder.id}
+                </h2>
+                <button
+                  onClick={closeModal}
+                  className="order-modal-close"
+                  aria-label="סגור"
+                >
+                  ×
+                </button>
+              </div>
+
+              <table className="order-items-table">
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border p-2 text-right">פריט</th>
-                    <th className="border p-2 text-right">כמות</th>
-                    <th className="border p-2 text-right">מחיר</th>
+                  <tr>
+                    <th>פריט</th>
+                    <th>כמות</th>
+                    <th>מחיר ליחידה</th>
+                    <th>סה"כ</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
-                      <td className="border p-2">{item.name}</td>
-                      <td className="border p-2">{item.quantity}</td>
-                      <td className="border p-2">₪{Number(item.unit_price).toLocaleString()}</td>
+                      <td>{item.name}</td>
+                      <td>{item.quantity}</td>
+                      <td>₪{Number(item.unit_price).toLocaleString()}</td>
+                      <td>₪{(Number(item.unit_price) * item.quantity).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
+              <div className="order-modal-summary">
+                <div className="order-modal-total">
+                  <span>סה"כ להזמנה:</span>
+                  <span className="order-modal-total-amount">
+                    ₪{Number(selectedOrder.total_amount).toLocaleString()}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
+
         )}
 
 
