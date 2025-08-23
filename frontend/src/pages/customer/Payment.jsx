@@ -16,11 +16,11 @@ import React, { useState, useEffect } from 'react';
 import { cartAPI, ordersAPI, orderItemsAPI, authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  CreditCard, 
-  ArrowLeft, 
-  ShoppingCart, 
-  Lock, 
+import {
+  CreditCard,
+  ArrowLeft,
+  ShoppingCart,
+  Lock,
   Package,
   CheckCircle,
   AlertTriangle,
@@ -33,14 +33,14 @@ const Payment = () => {
   const [cart, setCart] = useState({ items: [], total: '0.00' });
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  
+
   // Credit card form fields
   const [cardName, setCardName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
   const [showCvv, setShowCvv] = useState(false);
-  
+
   const navigate = useNavigate();
 
   /**
@@ -131,17 +131,17 @@ const Payment = () => {
       toast.error('נא למלא את כל שדות הכרטיס');
       return false;
     }
-    
+
     if (cardNumber.replace(/\s/g, '').length < 16) {
       toast.error('מספר כרטיס לא תקין');
       return false;
     }
-    
+
     if (cvv.length < 3) {
       toast.error('קוד CVV לא תקין');
       return false;
     }
-    
+
     return true;
   };
 
@@ -167,7 +167,7 @@ const Payment = () => {
 
       console.log("from payment comp");
       console.log(orderData);
-      
+
       // Create order via API
       await ordersAPI.create(orderData);
 
@@ -223,7 +223,7 @@ const Payment = () => {
           <div className="cart-header-content">
             <h1 className="cart-title">תשלום מאובטח</h1>
             <p className="cart-subtitle">
-              בצע את התשלום בצורה מאובטחת ובמור את ההזמנה
+              בצע את התשלום בצורה מאובטחת וגמור את ההזמנה
             </p>
           </div>
         </div>
@@ -264,7 +264,7 @@ const Payment = () => {
                     {shippingCost === 0 ? 'חינם' : `₪${shippingCost.toFixed(2)}`}
                   </span>
                 </div>
-                
+
                 {/* Shipping notification */}
                 {isEligibleForFreeShipping ? (
                   <div className="cart-delivery-info cart-delivery-success">
@@ -374,7 +374,7 @@ const Payment = () => {
                 >
                   {processing ? (
                     <>
-                      <div className="cart-loading-spinner" style={{width: '1.25rem', height: '1.25rem'}}></div>
+                      <div className="cart-loading-spinner" style={{ width: '1.25rem', height: '1.25rem' }}></div>
                       מעבד תשלום...
                     </>
                   ) : (
