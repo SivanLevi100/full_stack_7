@@ -130,21 +130,38 @@ router.put('/:id', authenticateToken, authorizeRole(['admin']), async (req, res)
     }
 });
 
+
+
 /**
  * DELETE /:id
  * Delete an order item by ID.
+ * Updates product stock accordingly.
  * Admin only.
  */
 router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
-        const deleted = await OrderItem.delete(req.params.id);
-        if (!deleted) return res.status(404).json({ message: 'Order item not found' });
+        // שליפת פריט ההזמנה
+        const existingItem = await OrderItem.findById(req.params.id);
+        if (!existingItem) {
+            return res.status(404).json({ message: 'Order item not found' });
+        }
+
+        // החזרת מלאי למוצר
+        const product = await Product.findById(existingItem.product_id);
+        const newStock = product.stock_quantity + existingItem.quantity;
+        await Product.updateStock(existingItem.product_id, newStock);
+
+        // מחיקת הפריט מהטבלה
+        await OrderItem.delete(req.params.id);
+
         res.json({ message: 'Order item deleted successfully' });
     } catch (err) {
         console.error('Delete order item error:', err);
         res.status(500).json({ error: err.message });
     }
 });
+
+
 
 /**
  * GET /order/:orderId

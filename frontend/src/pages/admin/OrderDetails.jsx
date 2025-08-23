@@ -24,14 +24,14 @@ const OrderDetails = () => {
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     // Item editing state
     const [editingItem, setEditingItem] = useState(null);
-    const [newItem, setNewItem] = useState({ 
-        product_id: '', 
-        name: '', 
-        quantity: 1, 
-        unit_price: 0 
+    const [newItem, setNewItem] = useState({
+        product_id: '',
+        name: '',
+        quantity: 1,
+        unit_price: 0
     });
 
     useEffect(() => {
@@ -51,13 +51,13 @@ const OrderDetails = () => {
         const itemsTotal = itemsList.reduce((sum, item) => {
             return sum + (Number(item.unit_price) * Number(item.quantity));
         }, 0);
-        
+
         // Calculate shipping cost - free above ₪50
         const shippingCost = itemsTotal >= 50 ? 0 : 20;
-        
+
         // Calculate final total
         const totalAmount = itemsTotal + shippingCost;
-        
+
         return {
             itemsTotal,
             shippingCost,
@@ -79,10 +79,10 @@ const OrderDetails = () => {
             const itemsTotal = itemsList.reduce((sum, item) => {
                 return sum + (Number(item.unit_price) * Number(item.quantity));
             }, 0);
-            
+
             const shippingCost = itemsTotal >= 50 ? 0 : 20;
             const totalAmount = itemsTotal + shippingCost;
-            
+
             // Update on server
             await ordersAPI.updateTotal(orderId, totalAmount);
             return totalAmount;
@@ -133,20 +133,21 @@ const OrderDetails = () => {
             try {
                 // Regular deletion
                 await orderItemsAPI.delete(item.id);
-                
+
                 // Update items list
                 const updatedItems = items.filter(i => i.id !== item.id);
                 setItems(updatedItems);
-                
+
                 // Update order total with new items list
                 setTimeout(() => updateOrderTotalWithItems(updatedItems), 100);
-                
+
                 toast.success(`פריט "${item.name}" נמחק בהצלחה!`);
             } catch (err) {
                 console.error(err);
                 toast.error('שגיאה במחיקת פריט');
             }
         };
+
 
         // Custom confirmation dialog
         toast((t) => (
@@ -155,7 +156,7 @@ const OrderDetails = () => {
                     <AlertTriangle size={24} />
                     מחיקת פריט
                 </div>
-                
+
                 <div className="categories-toast-delete-content">
                     האם אתה בטוח שברצונך למחוק את הפריט<br />
                     <strong>"{item.name}"</strong> מההזמנה?<br />
@@ -163,7 +164,7 @@ const OrderDetails = () => {
                         פעולה זו בלתי הפיכה!
                     </span>
                 </div>
-                
+
                 <div className="categories-toast-delete-buttons">
                     <button
                         onClick={() => {
@@ -174,7 +175,7 @@ const OrderDetails = () => {
                     >
                         כן, מחק
                     </button>
-                    
+
                     <button
                         onClick={() => toast.dismiss(t.id)}
                         className="categories-toast-delete-cancel"
@@ -214,16 +215,16 @@ const OrderDetails = () => {
 
             // Regular update
             await orderItemsAPI.update(editingItem.id, editingItem);
-            
+
             // Update local items list
-            const updatedItems = items.map(item => 
+            const updatedItems = items.map(item =>
                 item.id === editingItem.id ? editingItem : item
             );
             setItems(updatedItems);
-            
+
             // Update order total with new items list
             setTimeout(() => updateOrderTotalWithItems(updatedItems), 100);
-            
+
             toast.success('פריט עודכן בהצלחה!');
             setEditingItem(null);
         } catch (err) {
@@ -242,7 +243,6 @@ const OrderDetails = () => {
             return;
         }
 
-        // Stock validation
         const product = products.find(p => p.id === newItem.product_id);
         if (product && newItem.quantity > product.stock_quantity) {
             toast.error(`כמות חורגת מהמלאי! זמין: ${product.stock_quantity} יחידות`);
@@ -250,16 +250,14 @@ const OrderDetails = () => {
         }
 
         try {
-            // Regular addition
-            const createdItem = await orderItemsAPI.create({ ...newItem, order_id: orderId });
-            
-            // Update local items list
-            const updatedItems = [...items, createdItem];
+            await orderItemsAPI.create({ ...newItem, order_id: orderId });
+
+            // ✅ במקום להוסיף ידנית, נטען מחדש מהשרת
+            const updatedItems = await orderItemsAPI.getByOrder(orderId);
             setItems(updatedItems);
-            
-            // Update order total with new items list
+
             setTimeout(() => updateOrderTotalWithItems(updatedItems), 100);
-            
+
             toast.success('פריט נוסף בהצלחה!');
             setNewItem({ product_id: '', name: '', quantity: 1, unit_price: 0 });
         } catch (err) {
@@ -267,6 +265,7 @@ const OrderDetails = () => {
             toast.error('שגיאה בהוספת פריט');
         }
     };
+
 
     /**
      * Order Summary Component
@@ -377,8 +376,8 @@ const OrderDetails = () => {
                                                     {(() => {
                                                         const product = products.find(p => p.name === editingItem.name);
                                                         return product && (
-                                                            <span style={{ 
-                                                                fontSize: '0.75rem', 
+                                                            <span style={{
+                                                                fontSize: '0.75rem',
                                                                 color: editingItem.quantity > product.stock_quantity ? 'var(--red-600)' : 'var(--gray-600)',
                                                                 fontWeight: '600'
                                                             }}>
@@ -403,14 +402,14 @@ const OrderDetails = () => {
                                             <div className="order-details-actions">
                                                 {editingItem?.id === item.id ? (
                                                     <>
-                                                        <button 
-                                                            onClick={handleSaveEdit} 
+                                                        <button
+                                                            onClick={handleSaveEdit}
                                                             className="order-details-action-button order-details-action-button--save"
                                                         >
                                                             שמור
                                                         </button>
-                                                        <button 
-                                                            onClick={() => setEditingItem(null)} 
+                                                        <button
+                                                            onClick={() => setEditingItem(null)}
                                                             className="order-details-action-button order-details-action-button--cancel"
                                                         >
                                                             ביטול
@@ -418,14 +417,14 @@ const OrderDetails = () => {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <button 
-                                                            onClick={() => handleEdit(item)} 
+                                                        <button
+                                                            onClick={() => handleEdit(item)}
                                                             className="order-details-action-button order-details-action-button--edit"
                                                         >
                                                             ערוך
                                                         </button>
-                                                        <button 
-                                                            onClick={() => handleDelete(item)} 
+                                                        <button
+                                                            onClick={() => handleDelete(item)}
                                                             className="order-details-action-button order-details-action-button--delete"
                                                         >
                                                             מחק
@@ -489,8 +488,8 @@ const OrderDetails = () => {
                                         max={newItem.product_id ? products.find(p => p.id === newItem.product_id)?.stock_quantity : undefined}
                                     />
                                     {newItem.product_id && (
-                                        <span style={{ 
-                                            fontSize: '0.875rem', 
+                                        <span style={{
+                                            fontSize: '0.875rem',
                                             color: 'var(--gray-600)',
                                             fontWeight: '600'
                                         }}>
