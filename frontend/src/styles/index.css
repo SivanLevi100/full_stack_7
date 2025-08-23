@@ -15,8 +15,8 @@
 @import url('./admin-categories.css');
 @import url('./admin-orders.css');
 @import url('./admin-users.css');
+@import url('./admin-reports.css');
 
-/* ===== משתני CSS גלובליים ===== */
 
 :root {
   /* 🎨 צבעים ראשיים */

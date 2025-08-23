@@ -182,10 +182,7 @@ const MyOrders = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="order-modal-header">
-                <h2 className="order-modal-title">
-                  פרטי הזמנה #{selectedOrder.id}
-                </h2>
-                <button
+              <button
                   onClick={closeModal}
                   className="order-modal-close"
                   aria-label="סגור"
@@ -227,8 +224,6 @@ const MyOrders = () => {
           </div>
 
         )}
-
-
 
       </div>
     </div>

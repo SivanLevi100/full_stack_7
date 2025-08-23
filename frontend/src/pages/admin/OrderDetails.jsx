@@ -431,8 +431,7 @@
 
 // export default OrderDetails;
 
-
-// src/pages/OrderDetails.jsx - לוגיקת חישוב פשוטה בקומפוננטה
+// src/pages/OrderDetails.jsx - קוד מלא מתוקן
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { orderItemsAPI, productsAPI, ordersAPI } from '../../services/api';
@@ -452,10 +451,10 @@ const OrderDetails = () => {
         loadProducts();
     }, [orderId]);
 
-    // חישוב סכומים - לוגיקה פשוטה בקומפוננטה
-    const calculateOrderSummary = () => {
+    // ✅ פונקציה מתוקנת לחישוב סכום (לתצוגה)
+    const calculateOrderSummary = (itemsList = items) => {
         // סכום כל הפריטים
-        const itemsTotal = items.reduce((sum, item) => {
+        const itemsTotal = itemsList.reduce((sum, item) => {
             return sum + (Number(item.unit_price) * Number(item.quantity));
         }, 0);
         
@@ -473,16 +472,22 @@ const OrderDetails = () => {
         };
     };
 
-    // עדכון סכום ההזמנה בשרת (פונקציה פשוטה)
-    const updateOrderTotal = async () => {
+    // ✅ פונקציה חדשה שמקבלת רשימת פריטים כפרמטר
+    const updateOrderTotalWithItems = async (itemsList) => {
         try {
-            const { totalAmount } = calculateOrderSummary();
-            // עדכון פשוט של הסכום בשרת
+            // חישוב עם הרשימה שהתקבלה
+            const itemsTotal = itemsList.reduce((sum, item) => {
+                return sum + (Number(item.unit_price) * Number(item.quantity));
+            }, 0);
+            
+            const shippingCost = itemsTotal >= 50 ? 0 : 20;
+            const totalAmount = itemsTotal + shippingCost;
+            
+            // עדכון בשרת
             await ordersAPI.updateTotal(orderId, totalAmount);
             return totalAmount;
         } catch (error) {
             console.error('Error updating order total:', error);
-            // לא זורק שגיאה - רק לוג
         }
     };
 
@@ -509,7 +514,7 @@ const OrderDetails = () => {
         }
     };
 
-    // מחיקת פריט
+    // ✅ מחיקת פריט - מתוקן
     const handleDelete = async (item) => {
         const deleteItem = async () => {
             try {
@@ -520,8 +525,8 @@ const OrderDetails = () => {
                 const updatedItems = items.filter(i => i.id !== item.id);
                 setItems(updatedItems);
                 
-                // עדכון הסכום בשרת לאחר עדכון הרשימה
-                setTimeout(updateOrderTotal, 100);
+                // עדכון הסכום עם הרשימה החדשה
+                setTimeout(() => updateOrderTotalWithItems(updatedItems), 100);
                 
                 toast.success(`פריט "${item.name}" נמחק בהצלחה!`);
             } catch (err) {
@@ -574,6 +579,7 @@ const OrderDetails = () => {
 
     const handleEdit = (item) => setEditingItem({ ...item });
 
+    // ✅ עריכת פריט - מתוקן
     const handleSaveEdit = async () => {
         try {
             // בדיקת מלאי
@@ -592,8 +598,8 @@ const OrderDetails = () => {
             );
             setItems(updatedItems);
             
-            // עדכון הסכום בשרת
-            setTimeout(updateOrderTotal, 100);
+            // עדכון הסכום עם הרשימה החדשה
+            setTimeout(() => updateOrderTotalWithItems(updatedItems), 100);
             
             toast.success('פריט עודכן בהצלחה!');
             setEditingItem(null);
@@ -603,6 +609,7 @@ const OrderDetails = () => {
         }
     };
 
+    // ✅ הוספת פריט - מתוקן
     const handleAddNew = async () => {
         if (!newItem.product_id) {
             toast.error('בחר מוצר לפני ההוספה');
@@ -621,10 +628,11 @@ const OrderDetails = () => {
             const createdItem = await orderItemsAPI.create({ ...newItem, order_id: orderId });
             
             // עדכון הרשימה מקומית
-            setItems([...items, createdItem]);
+            const updatedItems = [...items, createdItem];
+            setItems(updatedItems);
             
-            // עדכון הסכום בשרת
-            setTimeout(updateOrderTotal, 100);
+            // עדכון הסכום עם הרשימה החדשה
+            setTimeout(() => updateOrderTotalWithItems(updatedItems), 100);
             
             toast.success('פריט נוסף בהצלחה!');
             setNewItem({ product_id: '', name: '', quantity: 1, unit_price: 0 });
@@ -640,16 +648,12 @@ const OrderDetails = () => {
 
         return (
             <div className="order-summary-container">
-                <div className="order-summary-header">
-                    <Calculator className="h-5 w-5 text-primary-green" />
-                    <h3 className="order-summary-title">סיכום הזמנה</h3>
-                </div>
+            
 
                 <div className="order-summary-content">
                     {/* סכום פריטים */}
                     <div className="order-summary-row">
                         <div className="order-summary-label">
-                            <Package className="h-4 w-4" />
                             <span>סה"כ פריטים</span>
                             <span className="order-summary-items-count">({items.length} פריטים)</span>
                         </div>
@@ -661,7 +665,6 @@ const OrderDetails = () => {
                     {/* משלוח */}
                     <div className="order-summary-row">
                         <div className="order-summary-label">
-                            <Truck className="h-4 w-4" />
                             <span>משלוח</span>
                             {summary.isFreeShipping && (
                                 <span className="order-summary-free-badge">משלוח חינם!</span>
@@ -675,7 +678,7 @@ const OrderDetails = () => {
                     {/* הודעת משלוח חינם */}
                     {!summary.isFreeShipping && (
                         <div className="order-summary-shipping-note">
-                            💡 הוסף עוד ₪{(50 - summary.itemsTotal).toFixed(2)} לקבלת משלוח חינם!
+                             הוסף עוד ₪{(50 - summary.itemsTotal).toFixed(2)} לקבלת משלוח חינם!
                         </div>
                     )}
 
@@ -684,7 +687,7 @@ const OrderDetails = () => {
 
                     {/* סכום כולל */}
                     <div className="order-summary-total">
-                        <div className="order-summary-total-label">סה"כ לתשלום</div>
+                        <div className="order-summary-total-label">סה"כ לתשלום:</div>
                         <div className="order-summary-total-value">₪{summary.totalAmount.toLocaleString()}</div>
                     </div>
                 </div>

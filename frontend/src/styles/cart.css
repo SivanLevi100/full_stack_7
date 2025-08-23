@@ -91,6 +91,7 @@
   border: 1px solid var(--gray-100);
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.95);
+  margin-bottom: 1rem;
 }
 
 .cart-empty-icon {
@@ -801,5 +802,103 @@
   .cart-summary-card {
     box-shadow: none;
     border: 1px solid var(--gray-300);
+  }
+}
+
+
+/* ===== CART REMOVE ITEM TOAST STYLES ===== */
+
+/* Toast מותאם להסרת פריט מהעגלה */
+.cart-toast-delete-overlay {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  min-width: 320px;
+  max-width: 400px;
+}
+
+.cart-toast-delete-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.cart-toast-delete-content {
+  color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.cart-toast-delete-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.cart-toast-delete-confirm {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cart-toast-delete-confirm:hover {
+  background: #b91c1c;
+}
+
+.cart-toast-delete-cancel {
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cart-toast-delete-cancel:hover {
+  background: #d1d5db;
+}
+
+/* התאמת הצגת ה-Toast */
+.cart-toast-delete-custom {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* ריספונסיב למובייל */
+@media (max-width: 480px) {
+  .cart-toast-delete-overlay {
+    min-width: 280px;
+    max-width: 90vw;
+    padding: 1.25rem;
+  }
+  
+  .cart-toast-delete-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .cart-toast-delete-confirm,
+  .cart-toast-delete-cancel {
+    width: 100%;
+    padding: 0.75rem 1rem;
   }
 }
