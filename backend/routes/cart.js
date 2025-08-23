@@ -1,9 +1,25 @@
+/**
+ * Cart Routes
+ * 
+ * Handles operations on the user's shopping cart:
+ * - GET /         : Get all cart items for the current user
+ * - POST /add     : Add a new item to the cart (or increase quantity if already exists)
+ * - PUT /update   : Update the quantity of an existing cart item
+ * - DELETE /remove/:product_id : Remove a specific item from the cart
+ * - DELETE /clear : Clear all items from the cart
+ * - GET /count    : Get the total number of items in the cart
+ */
+
 const express = require('express');
 const router = express.Router();
 const Cart = require('../models/Cart');
 const { authenticateToken } = require('../middleware/auth');
 
-// קבלת כל הפריטים בעגלה של המשתמש הנוכחי
+/**
+ * GET /
+ * Fetch all cart items for the current authenticated user.
+ * Returns the items and the total price.
+ */
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const items = await Cart.getCartItems(req.user.id);
@@ -15,7 +31,11 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// הוספת פריט חדש לעגלה (או הגדלת הכמות אם קיים)
+/**
+ * POST /add
+ * Add an item to the cart, or increase quantity if it already exists.
+ * Expects: product_id and optional quantity (defaults to 1).
+ */
 router.post('/add', authenticateToken, async (req, res) => {
     try {
         const { product_id, quantity } = req.body;
@@ -24,9 +44,7 @@ router.post('/add', authenticateToken, async (req, res) => {
         const qty = quantity && quantity > 0 ? quantity : 1;
         const result = await Cart.addItem(req.user.id, product_id, qty);
 
-        if (!result) {
-            return res.status(500).json({ error: 'Failed to add item to cart' });
-        }
+        if (!result) return res.status(500).json({ error: 'Failed to add item to cart' });
 
         const items = await Cart.getCartItems(req.user.id);
         const total = await Cart.getCartTotal(req.user.id);
@@ -37,7 +55,11 @@ router.post('/add', authenticateToken, async (req, res) => {
     }
 });
 
-// עדכון כמות פריט בעגלה
+/**
+ * PUT /update
+ * Update the quantity of an item in the cart.
+ * Expects: product_id and quantity (must be >= 1)
+ */
 router.put('/update', authenticateToken, async (req, res) => {
     try {
         const { product_id, quantity } = req.body;
@@ -60,7 +82,10 @@ router.put('/update', authenticateToken, async (req, res) => {
     }
 });
 
-// הסרת פריט מהעגלה
+/**
+ * DELETE /remove/:product_id
+ * Remove a specific item from the cart by product ID.
+ */
 router.delete('/remove/:product_id', authenticateToken, async (req, res) => {
     try {
         const productId = req.params.product_id;
@@ -76,7 +101,10 @@ router.delete('/remove/:product_id', authenticateToken, async (req, res) => {
     }
 });
 
-// ניקוי כל העגלה
+/**
+ * DELETE /clear
+ * Clear all items from the current user's cart.
+ */
 router.delete('/clear', authenticateToken, async (req, res) => {
     try {
         const success = await Cart.clearCart(req.user.id);
@@ -88,7 +116,11 @@ router.delete('/clear', authenticateToken, async (req, res) => {
     }
 });
 
-// קבלת מספר הפריטים בעגלה (למשל עבור תצוגה בסרגל ניווט)
+/**
+ * GET /count
+ * Get the total number of items in the current user's cart.
+ * Useful for displaying in the navbar or cart icon.
+ */
 router.get('/count', authenticateToken, async (req, res) => {
     try {
         const count = await Cart.getCartItemsCount(req.user.id);

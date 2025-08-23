@@ -1,10 +1,29 @@
+/**
+ * Orders Routes
+ * 
+ * Handles CRUD operations for orders.
+ * Routes:
+ * - GET /                   : Get all orders (admin only, with optional filters)
+ * - GET /:id                 : Get a single order by ID (admin or owner)
+ * - POST /                   : Create a new order (authenticated user)
+ * - PUT /:id/status          : Update order status (admin only)
+ * - PUT /:id/payment-status  : Update payment status (admin only)
+ * - PUT /:id/total           : Update total amount (admin only)
+ * - DELETE /:id              : Delete an order (admin only)
+ * - GET /my/orders           : Get all orders of the current user
+ */
+
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
-// קבלת כל ההזמנות (מנהלים בלבד) עם פילטרים
+/**
+ * GET /
+ * Get all orders with optional filters: user_id, status, date_from, date_to.
+ * Admin only.
+ */
 router.get('/', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const filters = {
@@ -21,7 +40,11 @@ router.get('/', authenticateToken, authorizeRole(['admin']), async (req, res) =>
     }
 });
 
-// קבלת הזמנה לפי ID - מנהל או המשתמש שהזמין
+/**
+ * GET /:id
+ * Get a single order by ID.
+ * Admin can access all; users can access only their own orders.
+ */
 router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);
@@ -31,7 +54,6 @@ router.get('/:id', authenticateToken, async (req, res) => {
             return res.status(403).json({ error: 'Access denied' });
         }
 
-        // ניתן להוסיף גם פריטי הזמנה
         const items = await Order.getOrderItems(req.params.id);
         res.json({ ...order, items });
     } catch (err) {
@@ -40,28 +62,27 @@ router.get('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-
-
-
-
-// יצירת הזמנה חדשה (רק למשתמש עצמו)
+/**
+ * POST /
+ * Create a new order.
+ * Authenticated users only.
+ * Updates product stock for each item.
+ */
 router.post('/', authenticateToken, async (req, res) => {
-
     try {
         const orderData = {
             user_id: req.user.id,
-            order_number: `ORD-${Date.now()}`, // מספר הזמנה ייחודי
+            order_number: `ORD-${Date.now()}`,
             total_amount: req.body.total_amount,
-            status: 'pending', // סטטוס ראשוני
+            status: 'pending',
             order_date: new Date().toISOString()
         };
 
         const { orderId, orderNumber } = await Order.create(orderData);
 
-        // הוספת פריטי הזמנה אם יש
+        // Add order items and update product stock
         if (Array.isArray(req.body.items)) {
             for (const item of req.body.items) {
-                // הוספת פריט להזמנה
                 await Order.addOrderItem({
                     order_id: orderId,
                     product_id: item.product_id,
@@ -69,8 +90,7 @@ router.post('/', authenticateToken, async (req, res) => {
                     unit_price: item.unit_price
                 });
 
-                // עדכון מלאי המוצר
-                const product = await Product.findById(item.product_id); // נניח שיש פונקציה שמביאה את המוצר
+                const product = await Product.findById(item.product_id);
                 const newStock = product.stock_quantity - item.quantity;
                 await Product.updateStock(item.product_id, newStock);
             }
@@ -86,8 +106,11 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-
-// עדכון סטטוס הזמנה (מנהלים בלבד)
+/**
+ * PUT /:id/status
+ * Update the status of an order.
+ * Admin only.
+ */
 router.put('/:id/status', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { status } = req.body;
@@ -104,7 +127,11 @@ router.put('/:id/status', authenticateToken, authorizeRole(['admin']), async (re
     }
 });
 
-// עדכון סטטוס תשלום הזמנה (מנהלים בלבד)
+/**
+ * PUT /:id/payment-status
+ * Update payment status of an order.
+ * Admin only.
+ */
 router.put('/:id/payment-status', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { payment_status } = req.body;
@@ -121,37 +148,35 @@ router.put('/:id/payment-status', authenticateToken, authorizeRole(['admin']), a
     }
 });
 
-
+/**
+ * PUT /:id/total
+ * Update total amount of an order.
+ * Admin only.
+ */
 router.put('/:id/total', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
         const { total_amount } = req.body;
-        
         if (!total_amount && total_amount !== 0) {
             return res.status(400).json({ error: 'Total amount is required' });
         }
 
         const success = await Order.updateTotal(req.params.id, total_amount);
-        
-        if (!success) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
+        if (!success) return res.status(404).json({ message: 'Order not found' });
 
-        res.json({ 
-            message: 'Order total updated successfully',
-            total_amount 
-        });
-        
+        res.json({ message: 'Order total updated successfully', total_amount });
     } catch (err) {
         console.error('Update order total error:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// מחיקת הזמנה (מנהלים בלבד)
+/**
+ * DELETE /:id
+ * Delete an order.
+ * Admin only.
+ */
 router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, res) => {
     try {
-        // למודל שלך אין פונקציית מחיקה, אפשר להוסיף או לשנות סטטוס למחוק (soft delete)
-        // כאן נניח שתוסיף פונקציה delete או update סטטוס ל"deleted"
         const success = await Order.delete(req.params.id);
         if (!success) return res.status(404).json({ message: 'Order not found' });
 
@@ -162,7 +187,10 @@ router.delete('/:id', authenticateToken, authorizeRole(['admin']), async (req, r
     }
 });
 
-// קבלת ההזמנות של המשתמש הנוכחי
+/**
+ * GET /my/orders
+ * Get all orders for the authenticated user.
+ */
 router.get('/my/orders', authenticateToken, async (req, res) => {
     try {
         const orders = await Order.findAll({ user_id: req.user.id });

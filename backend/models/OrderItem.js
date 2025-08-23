@@ -1,8 +1,20 @@
-// models/OrderItem.js
+/**
+ * OrderItem Model
+ * 
+ * Provides functions to manage order items:
+ * - Retrieve all order items or specific items
+ * - Create, update, and delete order items
+ * - Retrieve items by order ID for reports or detailed views
+ */
+
 const { pool } = require('../config/database');
 
 class OrderItem {
-    // שליפת כל פריטי ההזמנה
+    /**
+     * Get all order items with optional filters.
+     * @param {Object} filters - Optional filters: order_id, product_id
+     * @returns {Promise<Array>} - List of order items with product info
+     */
     static async findAll(filters = {}) {
         let query = `
             SELECT oi.*, p.name, p.image_url
@@ -32,7 +44,11 @@ class OrderItem {
         return rows;
     }
 
-    // שליפת פריט הזמנה לפי ID
+    /**
+     * Get a single order item by its ID.
+     * @param {number} id - Order item ID
+     * @returns {Promise<Object|null>} - Order item object or null if not found
+     */
     static async findById(id) {
         const [rows] = await pool.execute(`
             SELECT oi.*, p.name, p.image_url
@@ -43,7 +59,11 @@ class OrderItem {
         return rows[0];
     }
 
-    // הוספת פריט להזמנה
+    /**
+     * Create a new order item.
+     * @param {Object} orderItemData - { order_id, product_id, quantity, unit_price }
+     * @returns {Promise<number>} - Inserted order item ID
+     */
     static async create(orderItemData) {
         const { order_id, product_id, quantity, unit_price } = orderItemData;
         const [result] = await pool.execute(
@@ -53,7 +73,12 @@ class OrderItem {
         return result.insertId;
     }
 
-    // עדכון פריט הזמנה
+    /**
+     * Update an existing order item.
+     * @param {number} id - Order item ID
+     * @param {Object} updateData - Fields to update: quantity, unit_price
+     * @returns {Promise<boolean>} - True if updated successfully
+     */
     static async update(id, updateData) {
         const fields = [];
         const params = [];
@@ -80,7 +105,11 @@ class OrderItem {
         return result.affectedRows > 0;
     }
 
-    // מחיקת פריט הזמנה
+    /**
+     * Delete an order item.
+     * @param {number} id - Order item ID
+     * @returns {Promise<boolean>} - True if deleted successfully
+     */
     static async delete(id) {
         const [result] = await pool.execute(
             'DELETE FROM order_items WHERE id = ?',
@@ -89,7 +118,12 @@ class OrderItem {
         return result.affectedRows > 0;
     }
 
-    // שליפת פריטים לפי מספר ההזמנה (שימושי לדוחות)
+    /**
+     * Get all order items for a specific order.
+     * Useful for generating reports or detailed order views.
+     * @param {number} orderId - Order ID
+     * @returns {Promise<Array>} - List of order items with product info
+     */
     static async findByOrderId(orderId) {
         const [rows] = await pool.execute(`
             SELECT oi.*, p.name, p.image_url

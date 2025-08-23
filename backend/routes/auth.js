@@ -1,19 +1,28 @@
-// routes/auth.js
+/**
+ * Auth Routes
+ * 
+ * Handles user authentication:
+ * - POST /login : User login
+ * - POST /register : User registration
+ * 
+ * Note: GET routes are defined only to prevent accidental access.
+ */
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Login
+/**
+ * POST /login
+ * Authenticate a user with email and password.
+ * Returns a JWT token on success.
+ */
 router.post('/login', async (req, res) => {
     try {
         console.log('🔑 Login request body:', req.body);
         
         const { email, password } = req.body;
-        
-        console.log('🔍 Login fields:');
-        console.log('email:', email);
-        console.log('password:', password);
         
         if (!email || !password) {
             console.log('❌ Missing login fields');
@@ -32,10 +41,11 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // הימנע מהגדרה כפולה של email
+        // Extract relevant user info for response
         const { id, full_name, phone, role } = user;
         const userInfo = { id, full_name, email: user.email, phone, role };
 
+        // Sign JWT token
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET || 'your_jwt_secret_key',
@@ -53,68 +63,37 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Register
-/*router.post('/register', async (req, res) => {
-    try {
-        const { email, password,full_name, phone} = req.body;
-        
-        if (!password || !email) {
-            return res.status(400).json({ error: 'Password and email are required' });
-        }
-
-        // Check if user already exists
-        const existingUser = await User.findByEmail(email);
-        if (existingUser) {
-            return res.status(409).json({ error: 'Email already exists' });
-        }
-
-        // Create user
-        const userId = await User.create({
-            email: email,
-            password: password,
-            full_name: full_name,
-            phone: phone 
-        });
-
-      
-        res.status(201).json({ 
-            message: 'User registered successfully',
-            userId: userId
-        });
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});*/
-
-
+/**
+ * POST /register
+ * Register a new user.
+ * Accepts: email, password, full_name, phone, role
+ */
 router.post('/register', async (req, res) => {
     try {
-        const { email, password,full_name, phone,role} = req.body;
+        const { email, password, full_name, phone, role } = req.body;
         
-        if (!password || !email) {
-            return res.status(400).json({ error: 'Password and email are required' });
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
         }
 
-        // Check if user already exists
+        // Check if the user already exists
         const existingUser = await User.findByEmail(email);
         if (existingUser) {
             return res.status(409).json({ error: 'Email already exists' });
         }
 
-        // Create user
+        // Create new user
         const userId = await User.create({
-            email: email,
-            password: password,
-            full_name: full_name,
-            phone: phone,
-            role: role
+            email,
+            password,
+            full_name,
+            phone,
+            role
         });
 
-      
         res.status(201).json({ 
             message: 'User registered successfully',
-            userId: userId
+            userId
         });
     } catch (error) {
         console.error('Registration error:', error);
@@ -122,17 +101,20 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// להסיר – מיועד למנוע גישה ב־GET
+/**
+ * GET /login
+ * Prevent GET access. Only POST is allowed.
+ */
 router.get('/login', (req, res) => {
     res.send('Login route is POST only. Use POST with JSON body.');
 });
 
+/**
+ * GET /register
+ * Prevent GET access. Only POST is allowed.
+ */
 router.get('/register', (req, res) => {
     res.send('Register route is POST only. Use POST with JSON body.');
 });
-
-
-
-
 
 module.exports = router;

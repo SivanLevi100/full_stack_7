@@ -1,53 +1,73 @@
-// middleware/upload.js
+/**
+ * File Upload Middleware using Multer
+ *
+ * This module provides utilities for handling image uploads in an Express app,
+ * including storage configuration, file validation, error handling, and deletion.
+ */
+
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// יצירת תיקיית uploads אם לא קיימת
 const uploadsDir = 'uploads';
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// הגדרת אחסון קבצים
+/**
+ * Multer storage configuration
+ * - Destination: 'uploads/' folder
+ * - Filename: fieldname + unique timestamp + random number + original extension
+ */
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // תיקיית היעד לשמירת קבצים
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        // יצירת שם קובץ ייחודי
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const fileExtension = path.extname(file.originalname);
         const fileName = file.fieldname + '-' + uniqueSuffix + fileExtension;
         cb(null, fileName);
     }
 });
 
-// פילטר לסוגי קבצים מותרים
+/**
+ * File filter to allow only specific image types
+ * Allowed types: jpeg, jpg, png, gif, webp
+ */
 const fileFilter = (req, file, cb) => {
-    // סוגי קבצים מותרים
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
-        return cb(null, true);
+        cb(null, true);
     } else {
         cb(new Error('Only image files (JPEG, JPG, PNG, GIF, WebP) are allowed!'));
     }
 };
 
-// הגדרת multer
+/**
+ * Multer upload instance
+ * - Max file size: 5MB
+ * - Max files per request: 1
+ */
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB מקסימום
-        files: 1 // קובץ אחד בכל פעם
+        fileSize: 5 * 1024 * 1024, // 5MB
+        files: 1
     },
     fileFilter: fileFilter
 });
 
-// Middleware לטיפול בשגיאות העלאה
+/**
+ * Middleware for handling Multer errors
+ * Responds with appropriate error messages for:
+ * - File size limit
+ * - File count limit
+ * - Unexpected field name
+ */
 const handleUploadError = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
@@ -60,15 +80,18 @@ const handleUploadError = (err, req, res, next) => {
             return res.status(400).json({ error: 'Unexpected field name' });
         }
     }
-    
+
     if (err) {
         return res.status(400).json({ error: err.message });
     }
-    
+
     next();
 };
 
-// פונקציה למחיקת קובץ ישן
+/**
+ * Utility function to delete a file
+ * @param {string} filePath - path to the file to delete
+ */
 const deleteFile = (filePath) => {
     try {
         if (fs.existsSync(filePath)) {
