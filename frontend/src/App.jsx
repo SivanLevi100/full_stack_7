@@ -1,7 +1,8 @@
+/**
+ * Main App component for supermarket management system
+ * - Handles routing, authentication, and layout
+ */
 
-//import './App.css'
-
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -12,14 +13,12 @@ import Footer from './components/Footer';
 
 import './styles/index.css';
 
-
-
 // Import pages
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+
 import Shop from './pages/customer/Shop';
-import Cart from './pages/customer/Cart';
 import MyOrders from './pages/customer/MyOrders';
 import MyCart from './pages/customer/MyCart';
 import Payment from './pages/customer/Payment';
@@ -29,32 +28,33 @@ import Categories from './pages/admin/Categories';
 import Orders from './pages/admin/Orders';
 import Users from './pages/admin/Users';
 import OrderDetails from './pages/admin/OrderDetails';
-
 import Reports from './pages/admin/Reports';
 
-
-
-
-
-// Layout component
+/**
+ * Layout wrapper with navbar and footer
+ */
 const Layout = ({ children }) => (
-  <div >
-    <Navbar/>
+  <div>
+    <Navbar />
     <main>
       {children}
     </main>
-     <Footer />
-    
+    <Footer />
   </div>
 );
 
+/**
+ * App Component
+ * - Defines routes for public, protected, and admin areas
+ * - Provides global auth context
+ */
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="App">
           <Routes>
-            {/* Public routes - redirect if logged in */}
+            {/* Public routes (redirect if logged in) */}
             <Route path="/login" element={
               <AuthRedirect>
                 <Login />
@@ -66,7 +66,7 @@ function App() {
               </AuthRedirect>
             } />
 
-            {/* Protected routes */}
+            {/* Customer protected routes */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Layout>
@@ -83,7 +83,6 @@ function App() {
               </ProtectedRoute>
             } />
 
-
             <Route path="/my-cart" element={
               <ProtectedRoute>
                 <Layout>
@@ -91,7 +90,6 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
-
 
             <Route path="/my-orders" element={
               <ProtectedRoute>
@@ -109,6 +107,7 @@ function App() {
               </ProtectedRoute>
             } />
 
+            {/* Admin protected routes */}
             <Route path="/products" element={
               <ProtectedRoute>
                 <Layout>
@@ -133,7 +132,6 @@ function App() {
               </ProtectedRoute>
             } />
 
-
             <Route path="/users" element={
               <ProtectedRoute>
                 <Layout>
@@ -153,27 +151,18 @@ function App() {
               }
             />
 
-             <Route path="/reports" element={
+            <Route path="/reports" element={
               <ProtectedRoute>
                 <Layout>
-                  <Reports  />
+                  <Reports />
                 </Layout>
               </ProtectedRoute>
             } />
 
-
-            
-
-             
-
-
-
-
-
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* 404 */}
+            {/* 404 Not Found */}
             <Route path="*" element={
               <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -197,14 +186,10 @@ function App() {
                 textAlign: 'right'
               },
               success: {
-                style: {
-                  background: '#059669',
-                },
+                style: { background: '#059669' },
               },
               error: {
-                style: {
-                  background: '#dc2626',
-                },
+                style: { background: '#dc2626' },
               },
             }}
           />

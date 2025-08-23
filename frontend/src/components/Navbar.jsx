@@ -1,7 +1,17 @@
-// src/components/Navbar.js
+/**
+ * Navbar.jsx - Application Navigation Bar
+ *
+ * This component manages the main navigation and user interactions:
+ * - Displays logo, navigation menu, and role-based menu items
+ * - Shows cart link and count for customers
+ * - Provides user dropdown with profile, password change, and logout
+ * - Responsive design with scroll detection
+ * - Password change modal integrated with API
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { usersAPI } from '../services/api';
+import { usersAPI, cartAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import {
   ShoppingCart,
@@ -9,14 +19,12 @@ import {
   Package,
   Users,
   FileText,
-  Settings,
   LogOut,
   User,
   Store,
   Plus,
   X
 } from 'lucide-react';
-import { cartAPI } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Navbar = () => {
@@ -27,7 +35,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // --- מודל שינוי סיסמה ---
+  // State for password change modal
   const [modalOpen, setModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -35,12 +43,14 @@ const Navbar = () => {
     confirmPassword: ''
   });
 
+  // Load cart count for customer users
   useEffect(() => {
     if (user && !isAdmin()) {
       loadCartCount();
     }
   }, [user, isAdmin]);
 
+  // Handle navbar scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -49,6 +59,9 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  /**
+   * Load cart item count from API
+   */
   const loadCartCount = async () => {
     try {
       const response = await cartAPI.getCount();
@@ -58,6 +71,9 @@ const Navbar = () => {
     }
   };
 
+  /**
+   * Logout user and redirect to login page
+   */
   const handleLogout = async () => {
     try {
       await logout();
@@ -67,6 +83,10 @@ const Navbar = () => {
     }
   };
 
+  /**
+   * Handle password change request
+   * Validates form and sends update to API
+   */
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
@@ -74,16 +94,10 @@ const Navbar = () => {
       return;
     }
     try {
-      // כאן תשלח קריאה ל-API לשינוי סיסמה
-      console.log("gggggggggggggggggg", user.id, passwordForm.newPassword, passwordForm.confirmPassword);
-      console.log("newPassword type:", typeof passwordForm.newPassword);
-      console.log("confirmPassword type:", typeof passwordForm.confirmPassword);
-      console.log("user.id:", typeof user.id);
-
-      await usersAPI.changePassword(user.id,
-         { currentPassword: passwordForm.currentPassword,
-           newPassword: passwordForm.newPassword });
-           
+      await usersAPI.changePassword(user.id, {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
       toast.success('הסיסמה שונתה בהצלחה!');
       setModalOpen(false);
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -93,8 +107,7 @@ const Navbar = () => {
     }
   };
 
-  
-
+  // Menu items for admin
   const adminMenuItems = [
     { path: '/dashboard', label: 'דאשבורד', icon: <Home className="h-4 w-4" /> },
     { path: '/products', label: 'מוצרים', icon: <Package className="h-4 w-4" /> },
@@ -103,6 +116,7 @@ const Navbar = () => {
     { path: '/users', label: 'משתמשים', icon: <Users className="h-4 w-4" /> },
   ];
 
+  // Menu items for customer
   const customerMenuItems = [
     { path: '/dashboard', label: 'דאשבורד', icon: <Home className="h-4 w-4" /> },
     { path: '/shop', label: 'חנות', icon: <Store className="h-4 w-4" /> },
@@ -115,7 +129,7 @@ const Navbar = () => {
     <>
       <nav className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
         <div className="navbar-content">
-          {/* לוגו */}
+          {/* Logo */}
           <Link to="/dashboard" className="navbar-logo">
             <div className="navbar-logo-icon">
               <ShoppingCart className="h-5 w-5 text-white" />
@@ -123,7 +137,7 @@ const Navbar = () => {
             <span className="navbar-logo-text">מרקט פלוס<Plus className="h-4 w-4" /></span>
           </Link>
 
-          {/* תפריט ראשי */}
+          {/* Main menu */}
           <div className="navbar-menu">
             {menuItems.map(item => (
               <Link
@@ -136,6 +150,7 @@ const Navbar = () => {
               </Link>
             ))}
 
+            {/* Cart link for customers only */}
             {!isAdmin() && (
               <Link
                 to="/my-cart"
@@ -147,7 +162,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* אזור משתמש */}
+          {/* User area with dropdown */}
           <div className="navbar-user-area">
             <div className="navbar-user-menu">
               <button
@@ -175,9 +190,7 @@ const Navbar = () => {
 
                   <div className="navbar-dropdown-divider"></div>
 
-                  
-
-                  {/* כפתור שינוי סיסמה */}
+                  {/* Password change button */}
                   <button
                     onClick={() => {
                       setModalOpen(true);
@@ -191,6 +204,7 @@ const Navbar = () => {
 
                   <div className="navbar-dropdown-divider"></div>
 
+                  {/* Logout button */}
                   <button
                     onClick={handleLogout}
                     className="navbar-dropdown-item danger"
@@ -209,7 +223,7 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* מודל שינוי סיסמה */}
+      {/* Password change modal */}
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
@@ -272,5 +286,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-

@@ -1,4 +1,17 @@
-// src/pages/Orders.jsx - עמוד הזמנות עם עיצוב מותאם
+/**
+ * Orders.jsx - Enhanced Orders Management Page
+ * 
+ * This component provides comprehensive order management functionality:
+ * - Orders listing grouped by customer
+ * - Advanced filtering by status, date range, and price
+ * - Order deletion with confirmation dialogs
+ * - Status change with confirmation workflow
+ * - Responsive table design for mobile and desktop
+ * - Real-time order statistics and filtering
+ * - Integration with order details navigation
+ * - Custom Toast notifications for user feedback
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ordersAPI } from '../../services/api';
@@ -10,7 +23,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // state לסינון
+  // Filter state for advanced order filtering
   const [filters, setFilters] = useState({
     status: '',
     fromDate: '',
@@ -23,6 +36,10 @@ const Orders = () => {
     loadOrders();
   }, []);
 
+  /**
+   * Load all orders from API
+   * Fetches complete order list with error handling
+   */
   const loadOrders = async () => {
     try {
       setLoading(true);
@@ -38,7 +55,12 @@ const Orders = () => {
     }
   };
 
-  // --- מחיקה עם Toast מותאם ---
+  /**
+   * Handle order deletion with confirmation dialog
+   * Provides user feedback and updates state after deletion
+   * 
+   * @param {Object} order - Order object to delete
+   */
   const handleDelete = async (order) => {
     const deleteOrder = async () => {
       try {
@@ -53,13 +75,13 @@ const Orders = () => {
         console.error('Error deleting order:', error);
         toast.error('שגיאה במחיקת ההזמנה', {
           duration: 4000,
-          icon: '❌',
+          icon: '⌫',
           dismissible: false
         });
       }
     };
 
-    // יצירת Toast מותאם עם כפתורי אישור/ביטול
+    // Custom confirmation dialog using Toast
     toast((t) => (
       <div className="categories-toast-delete-overlay">
         <div className="categories-toast-delete-header">
@@ -102,7 +124,13 @@ const Orders = () => {
     });
   };
 
-  // --- שינוי סטטוס עם אישור ---
+  /**
+   * Handle order status change with confirmation
+   * Updates order status after user confirmation
+   * 
+   * @param {Object} order - Order object to update
+   * @param {string} newStatus - New status to set
+   */
   const handleStatusChange = async (order, newStatus) => {
     const updateStatus = async () => {
       try {
@@ -121,13 +149,13 @@ const Orders = () => {
         console.error('Error updating order status:', error);
         toast.error('שגיאה בעדכון סטטוס ההזמנה', {
           duration: 4000,
-          icon: '❌',
+          icon: '⌫',
           dismissible: false
         });
       }
     };
 
-    // הודעת אישור לשינוי סטטוס
+    // Status change confirmation dialog
     toast((t) => (
       <div className="categories-toast-delete-overlay">
         <div className="categories-toast-delete-header">
@@ -171,7 +199,12 @@ const Orders = () => {
     });
   };
 
-  // פונקציה להמרת סטטוס לטקסט בעברית
+  /**
+   * Convert status codes to Hebrew display text
+   * 
+   * @param {string} status - Order status code
+   * @returns {string} Localized status text
+   */
   const getStatusText = (status) => {
     const statusMap = {
       pending: 'ממתין',
@@ -181,6 +214,12 @@ const Orders = () => {
     return statusMap[status] || status;
   };
 
+  /**
+   * Group orders by user for better organization
+   * Creates nested structure with user as key and their orders as values
+   * 
+   * @returns {Object} Orders grouped by user identifier
+   */
   const ordersByUser = () => {
     const grouped = {};
     filteredOrders().forEach((order) => {
@@ -191,6 +230,12 @@ const Orders = () => {
     return grouped;
   };
 
+  /**
+   * Apply all active filters to orders list
+   * Filters by status, date range, and price range
+   * 
+   * @returns {Array} Filtered orders array
+   */
   const filteredOrders = () => {
     return orders.filter((o) => {
       const orderDate = new Date(o.order_date);
@@ -207,6 +252,7 @@ const Orders = () => {
     });
   };
 
+  // Loading state component
   if (loading) {
     return (
       <div className="orders-loading">
@@ -220,7 +266,7 @@ const Orders = () => {
   return (
     <div className="orders-container">
       <div className="orders-page">
-        {/* כותרת עמוד */}
+        {/* Page Header */}
         <div className="orders-header">
           <div className="orders-header-content">
             <h1 className="orders-header-title">
@@ -233,7 +279,7 @@ const Orders = () => {
           </div>
         </div>
 
-        {/* סינונים */}
+        {/* Advanced Filters */}
         <div className="orders-filters">
           <div className="orders-filters-content">
             <Filter className="orders-filters-icon" />
@@ -290,6 +336,7 @@ const Orders = () => {
           </div>
         </div>
 
+        {/* Orders Display */}
         {filteredOrders().length === 0 ? (
           <div className="orders-empty">
             <FileText className="orders-empty-icon" />
@@ -342,7 +389,7 @@ const Orders = () => {
                                 const newStatus = e.target.value;
                                 if (newStatus !== order.status) {
                                   handleStatusChange(order, newStatus);
-                                  // מחזיר את הסלקט לערך הקודם עד לאישור
+                                  // Reset select to current value until confirmation
                                   e.target.value = order.status;
                                 }
                               }}

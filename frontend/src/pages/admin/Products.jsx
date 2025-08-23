@@ -1,4 +1,18 @@
-// src/pages/Products.jsx - עמוד ניהול מוצרים עם toast למחיקה
+/**
+ * Products.jsx - Enhanced Products Management Page
+ * 
+ * This component provides comprehensive product management functionality:
+ * - Products listing with advanced filtering and sorting
+ * - Add/Edit products with image upload support
+ * - Advanced delete confirmation with constraint handling
+ * - Stock level filtering with visual indicators
+ * - Category-based filtering and price range filtering
+ * - Responsive table design for mobile and desktop
+ * - Image preview and placeholder handling
+ * - Real-time stock status indicators
+ * - Error handling for foreign key constraints (orders using products)
+ */
+
 import React, { useState, useEffect } from 'react';
 import { productsAPI, categoriesAPI } from '../../services/api';
 import { Plus, Trash2, Edit, AlertCircle, X, Package, AlertTriangle } from 'lucide-react';
@@ -9,6 +23,7 @@ const Products = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Modal state for add/edit operations
     const [modalOpen, setModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [formData, setFormData] = useState({
@@ -19,7 +34,7 @@ const Products = () => {
         image: null,
     });
 
-    // --- סינון ---
+    // Advanced filtering state
     const [filters, setFilters] = useState({
         category_id: '',
         minPrice: '',
@@ -36,6 +51,10 @@ const Products = () => {
         loadData();
     }, []);
 
+    /**
+     * Load products and categories data from APIs
+     * Handles loading states and error feedback
+     */
     const loadData = async () => {
         try {
             setLoading(true);
@@ -53,44 +72,68 @@ const Products = () => {
         }
     };
 
-    // --- סינון לפי שדות ---
-    let filteredProducts = products.filter(p => {
-        const matchCategory = filters.category_id ? p.category_id === parseInt(filters.category_id) : true;
+    /**
+     * Apply all active filters to products list
+     * Filters by category, price range, and stock levels
+     * 
+     * @returns {Array} Filtered and sorted products array
+     */
+    const getFilteredProducts = () => {
+        let filtered = products.filter(p => {
+            const matchCategory = filters.category_id ? p.category_id === parseInt(filters.category_id) : true;
 
-        // המרת מחירים למספרים
-        const productPrice = parseFloat(p.price);
-        const minPrice = filters.minPrice ? parseFloat(filters.minPrice) : null;
-        const maxPrice = filters.maxPrice ? parseFloat(filters.maxPrice) : null;
+            // Convert prices to numbers for comparison
+            const productPrice = parseFloat(p.price);
+            const minPrice = filters.minPrice ? parseFloat(filters.minPrice) : null;
+            const maxPrice = filters.maxPrice ? parseFloat(filters.maxPrice) : null;
 
-        const matchPriceMin = minPrice != null ? productPrice >= minPrice : true;
-        const matchPriceMax = maxPrice != null ? productPrice <= maxPrice : true;
+            const matchPriceMin = minPrice != null ? productPrice >= minPrice : true;
+            const matchPriceMax = maxPrice != null ? productPrice <= maxPrice : true;
 
-        // סינון מלאי
-        const matchStockMin = filters.stockMin != null ? p.stock_quantity >= filters.stockMin : true;
-        const matchStockMax = filters.stockMax != null ? p.stock_quantity <= filters.stockMax : true;
+            // Stock filtering
+            const matchStockMin = filters.stockMin != null ? p.stock_quantity >= filters.stockMin : true;
+            const matchStockMax = filters.stockMax != null ? p.stock_quantity <= filters.stockMax : true;
 
-        return matchCategory && matchPriceMin && matchPriceMax && matchStockMin && matchStockMax;
-    });
+            return matchCategory && matchPriceMin && matchPriceMax && matchStockMin && matchStockMax;
+        });
 
-    // --- מיון לפי מחיר ---
-    if (filters.priceSort === 'asc') {
-        filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-    } else if (filters.priceSort === 'desc') {
-        filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-    }
+        // Apply price sorting
+        if (filters.priceSort === 'asc') {
+            filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        } else if (filters.priceSort === 'desc') {
+            filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        }
 
+        return filtered;
+    };
+
+    /**
+     * Handle filter input changes
+     * Updates filter state as user modifies filter options
+     * 
+     * @param {Event} e - Input change event
+     */
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
     };
 
-    // --- פתיחת מודל ---
+    /**
+     * Open modal for adding new product
+     * Resets form data and editing state
+     */
     const openAddModal = () => {
         setEditingProduct(null);
         setFormData({ name: '', category_id: '', price: '', stock_quantity: '', image: null });
         setModalOpen(true);
     };
 
+    /**
+     * Open modal for editing existing product
+     * Populates form with current product data
+     * 
+     * @param {Object} product - Product object to edit
+     */
     const openEditModal = (product) => {
         setEditingProduct(product);
         setFormData({
@@ -103,7 +146,12 @@ const Products = () => {
         setModalOpen(true);
     };
 
-    // --- שינוי שדות ---
+    /**
+     * Handle form input changes including file uploads
+     * Updates form state as user types or selects files
+     * 
+     * @param {Event} e - Input change event
+     */
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
@@ -113,7 +161,11 @@ const Products = () => {
         }
     };
 
-    // --- שמירה ---
+    /**
+     * Save product (create or update)
+     * Handles both new product creation and existing product updates
+     * Uses FormData for file upload support
+     */
     const handleSave = async () => {
         try {
             const data = new FormData();
@@ -140,7 +192,12 @@ const Products = () => {
         }
     };
 
-    // --- מחיקה עם Toast מותאם ---
+    /**
+     * Handle product deletion with advanced error handling
+     * Provides detailed feedback for constraint violations
+     * 
+     * @param {Object} product - Product object to delete
+     */
     const handleDelete = async (product) => {
         const deleteProduct = async () => {
             try {
@@ -154,25 +211,25 @@ const Products = () => {
             } catch (error) {
                 console.error('Error deleting product:', error);
                 
-                // בדיקה מפורטת יותר של השגיאה
+                // Advanced error analysis for better user experience
                 let showProductInOrdersError = false;
                 let errorMessage = '';
 
                 if (error.response) {
-                    // יש תגובה מהשרת
+                    // Server response available
                     const status = error.response.status;
                     const responseData = error.response.data;
                     
                     console.log('Server response:', { status, data: responseData });
                     
-                    // בדיקת סטטוס קוד ותוכן התגובה
+                    // Check status codes and response content
                     if (status === 400 || status === 409 || status === 422) {
-                        // שגיאות הקשורות לאילוצי מסד נתונים
+                        // Constraint violation related errors
                         if (responseData) {
                             const message = responseData.message || responseData.error || '';
                             const details = responseData.details || '';
                             
-                            // בדיקת מילות מפתח בהודעת השגיאה
+                            // Check for order-related keywords in error message
                             const orderRelatedKeywords = [
                                 'הזמנות', 'הזמנה', 'orders', 'order',
                                 'רכישה', 'רכש', 'purchased', 'purchase',
@@ -192,19 +249,19 @@ const Products = () => {
                             errorMessage = message || details || 'שגיאה לא ידועה';
                         }
                     } else if (status === 500) {
-                        // שגיאת שרת פנימית - לרוב אילוץ מסד נתונים
+                        // Internal server error - usually constraint violation
                         showProductInOrdersError = true;
                         errorMessage = 'המוצר קשור להזמנות פעילות';
                     }
                 } else if (error.request) {
-                    // בעיית רשת
+                    // Network error
                     errorMessage = 'בעיית תקשורת עם השרת';
                 } else {
-                    // שגיאה כללית
+                    // General error
                     errorMessage = error.message || 'שגיאה לא ידועה';
                 }
 
-                // הצגת ההודעה המתאימה
+                // Display appropriate error message
                 if (showProductInOrdersError) {
                     toast.error((t) => (
                         <div className="toast-error-overlay">
@@ -216,8 +273,6 @@ const Products = () => {
                             <div className="toast-error-content">
                                 המוצר <strong>"{product.name}"</strong> לא יכול להימחק<br />
                                 כיוון שהוא קשור להזמנות פעילות במערכת.
-                            
-                               
                                 <div className="toast-error-tip">
                                     💡 המתן עד שכל ההזמנות הקשורות יושלמו, או פנה למנהל המערכת
                                 </div>
@@ -237,7 +292,7 @@ const Products = () => {
                         dismissible: false
                     });
                 } else {
-                    // שגיאה כללית אחרת
+                    // Other general errors
                     toast.error(`שגיאה במחיקת המוצר: ${errorMessage}`, {
                         duration: 5000,
                         className: 'toast-error-general'
@@ -246,7 +301,7 @@ const Products = () => {
             }
         };
 
-        // יצירת Toast מותאם עם כפתורי אישור/ביטול
+        // Custom confirmation dialog using Toast
         toast((t) => (
             <div className="toast-delete-overlay">
                 <div className="toast-delete-header">
@@ -282,20 +337,26 @@ const Products = () => {
                 </div>
             </div>
         ), {
-            duration: Infinity, // לא ייעלם אוטומטית
+            duration: Infinity,
             className: 'toast-delete-custom',
             position: 'top-center',
             dismissible: false 
         });
     };
 
-    // Get stock status class
+    /**
+     * Get CSS class for stock status visual indicator
+     * 
+     * @param {number} quantity - Stock quantity
+     * @returns {string} CSS class name for stock status
+     */
     const getStockStatusClass = (quantity) => {
         if (quantity <= 10) return 'products-stock--low';
         if (quantity <= 50) return 'products-stock--medium';
         return 'products-stock--high';
     };
 
+    // Loading state component
     if (loading) {
         return (
             <div className="products-loading">
@@ -304,10 +365,12 @@ const Products = () => {
         );
     }
 
+    const filteredProducts = getFilteredProducts();
+
     return (
         <div className="products-container">
             <div className="products-page">
-                {/* כותרת עמוד */}
+                {/* Page Header */}
                 <div className="products-header">
                     <div className="products-header-content">
                         <h1 className="products-header-title">ניהול מוצרים</h1>
@@ -321,7 +384,7 @@ const Products = () => {
                     </div>
                 </div>
 
-                {/* --- סינון --- */}
+                {/* Advanced Filters */}
                 <div className="products-filters">
                     <div className="products-filters-content">
                         <select
@@ -354,7 +417,7 @@ const Products = () => {
                             className="products-filter-input"
                         />
                         
-                        {/* --- סינון מלאי עם כפתורים בצד --- */}
+                        {/* Advanced stock filtering with direction buttons */}
                         <div className="products-stock-filter">
                             <input
                                 type="number"
@@ -369,14 +432,14 @@ const Products = () => {
                                 className="products-stock-button"
                                 title="מכאן ומעלה"
                             >
-                                →
+                                ↗
                             </button>
                             <button
                                 onClick={() => setFilters(prev => ({ ...prev, stockMax: parseInt(filters.stock) || 0, stockMin: null }))}
                                 className="products-stock-button"
                                 title="מכאן ומטה"
                             >
-                                ↓
+                                ↙
                             </button>
                         </div>
 
@@ -399,6 +462,7 @@ const Products = () => {
                     </div>
                 </div>
 
+                {/* Products Table or Empty State */}
                 {filteredProducts.length === 0 ? (
                     <div className="products-empty">
                         <AlertCircle className="products-empty-icon" />
@@ -479,7 +543,7 @@ const Products = () => {
                     </div>
                 )}
 
-                {/* מודל */}
+                {/* Add/Edit Product Modal */}
                 {modalOpen && (
                     <div className="products-modal-overlay">
                         <div className="products-modal">

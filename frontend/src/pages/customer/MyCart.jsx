@@ -1,4 +1,15 @@
-// src/pages/MyCart.jsx - עמוד עגלה משופר
+/**
+ * MyCart.jsx - Enhanced Shopping Cart Page
+ * 
+ * This component provides a comprehensive shopping cart experience featuring:
+ * - Cart items display with quantity controls
+ * - Price breakdown with shipping calculations
+ * - Free shipping promotions and notifications
+ * - Item removal with confirmation dialog
+ * - Responsive design with loading states
+ * - Integration with payment flow
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   ShoppingCart,
@@ -20,13 +31,20 @@ const MyCart = () => {
   const [loading, setLoading] = useState(true);
   const [updatingItems, setUpdatingItems] = useState({});
 
-  // חישוב עלויות משלוח
+  /**
+   * Calculate shipping cost based on order subtotal
+   * Free shipping for orders over ₪50, otherwise ₪20 shipping fee
+   * 
+   * @param {number} subtotal - Order subtotal amount
+   * @returns {number} Shipping cost
+   */
   const calculateShipping = (subtotal) => {
     const SHIPPING_THRESHOLD = 50;
     const SHIPPING_COST = 20;
     return subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   };
 
+  // Calculate cart totals and shipping eligibility
   const subtotal = parseFloat(cart.total);
   const shippingCost = calculateShipping(subtotal);
   const finalTotal = subtotal + shippingCost;
@@ -37,6 +55,10 @@ const MyCart = () => {
     loadCart();
   }, []);
 
+  /**
+   * Load cart data from API
+   * Handles errors gracefully and shows user feedback
+   */
   const loadCart = async () => {
     try {
       setLoading(true);
@@ -50,6 +72,13 @@ const MyCart = () => {
     }
   };
 
+  /**
+   * Update item quantity in cart
+   * Provides visual feedback during update process
+   * 
+   * @param {number} productId - Product ID to update
+   * @param {number} quantity - New quantity value
+   */
   const updateQuantity = async (productId, quantity) => {
     setUpdatingItems(prev => ({ ...prev, [productId]: true }));
     try {
@@ -64,77 +93,69 @@ const MyCart = () => {
     }
   };
 
-  /*const removeItem = async (productId) => {
-    setUpdatingItems(prev => ({ ...prev, [productId]: true }));
-    try {
-      await cartAPI.removeItem(productId);
-      await loadCart();
-      toast.success('הפריט הוסר מהעגלה');
-    } catch (error) {
-      console.error('Error removing item:', error);
-      toast.error('שגיאה בהסרת הפריט');
-    } finally {
-      setUpdatingItems(prev => ({ ...prev, [productId]: false }));
-    }
-  };*/
-// החלף את הפונקציה removeItem הקיימת בזה:
+  /**
+   * Remove item from cart with confirmation dialog
+   * Uses custom toast confirmation instead of window.confirm for better UX
+   * 
+   * @param {number} productId - Product ID to remove
+   * @param {string} productName - Product name for confirmation message
+   */
+  const removeItem = async (productId, productName) => {
+    const deleteItem = async () => {
+      setUpdatingItems(prev => ({ ...prev, [productId]: true }));
+      try {
+        await cartAPI.removeItem(productId);
+        await loadCart();
+        toast.success('הפריט הוסר מהעגלה');
+      } catch (error) {
+        console.error('Error removing item:', error);
+        toast.error('שגיאה בהסרת הפריט');
+      } finally {
+        setUpdatingItems(prev => ({ ...prev, [productId]: false }));
+      }
+    };
 
-const removeItem = async (productId, productName) => {
-  const deleteItem = async () => {
-    setUpdatingItems(prev => ({ ...prev, [productId]: true }));
-    try {
-      await cartAPI.removeItem(productId);
-      await loadCart();
-      toast.success('הפריט הוסר מהעגלה');
-    } catch (error) {
-      console.error('Error removing item:', error);
-      toast.error('שגיאה בהסרת הפריט');
-    } finally {
-      setUpdatingItems(prev => ({ ...prev, [productId]: false }));
-    }
+    // Custom toast confirmation dialog instead of window.confirm
+    toast((t) => (
+      <div className="cart-toast-delete-overlay">
+        <div className="cart-toast-delete-header">
+          <AlertTriangle size={24} />
+          הסרת פריט מהעגלה
+        </div>
+        
+        <div className="cart-toast-delete-content">
+          האם אתה בטוח שברצונך להסיר את הפריט<br />
+          <strong> </strong> מהעגלה?
+        </div>
+        
+        <div className="cart-toast-delete-buttons">
+          <button
+            onClick={() => {
+              deleteItem();
+              toast.dismiss(t.id);
+            }}
+            className="cart-toast-delete-confirm"
+          >
+            כן, הסר
+          </button>
+          
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="cart-toast-delete-cancel"
+          >
+            ביטול
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity,
+      className: 'cart-toast-delete-custom',
+      position: 'top-center',
+      dismissible: false
+    });
   };
 
-  // Toast מותאם במקום window.confirm
-  toast((t) => (
-    <div className="cart-toast-delete-overlay">
-      <div className="cart-toast-delete-header">
-        <AlertTriangle size={24} />
-        הסרת פריט מהעגלה
-      </div>
-      
-      <div className="cart-toast-delete-content">
-        האם אתה בטוח שברצונך להסיר את הפריט<br />
-        <strong> </strong> מהעגלה?
-      </div>
-      
-      <div className="cart-toast-delete-buttons">
-        <button
-          onClick={() => {
-            deleteItem();
-            toast.dismiss(t.id);
-          }}
-          className="cart-toast-delete-confirm"
-        >
-          כן, הסר
-        </button>
-        
-        <button
-          onClick={() => toast.dismiss(t.id)}
-          className="cart-toast-delete-cancel"
-        >
-          ביטול
-        </button>
-      </div>
-    </div>
-  ), {
-    duration: Infinity,
-    className: 'cart-toast-delete-custom',
-    position: 'top-center',
-    dismissible: false
-  });
-};
-
-
+  // Loading state component
   if (loading) {
     return (
       <div className="cart-loading">
@@ -147,7 +168,7 @@ const removeItem = async (productId, productName) => {
   return (
     <div className="cart-page">
       <div className="cart-container">
-        {/* כותרת העגלה */}
+        {/* Cart Header */}
         <div className="cart-header">
           <div className="cart-header-content">
             <h1 className="cart-title">העגלה שלי</h1>
@@ -161,11 +182,12 @@ const removeItem = async (productId, productName) => {
         </div>
 
         {cart.items.length === 0 ? (
+          // Empty cart state
           <div className="cart-empty">
             <ShoppingCart className="cart-empty-icon" />
             <h2 className="cart-empty-title">העגלה ריקה</h2>
             <p className="cart-empty-description">
-              נראה שעדיין לא הוספת מוצרים לעגלה שלך. בוא נמצא משהו  עבורך!
+              נראה שעדיין לא הוספת מוצרים לעגלה שלך. בואו נמצא משהו עבורך!
             </p>
             <Link to="/shop" className="cart-empty-action">
               <ShoppingCart className="h-5 w-5" />
@@ -174,7 +196,7 @@ const removeItem = async (productId, productName) => {
           </div>
         ) : (
           <div className="cart-layout">
-            {/* רשימת מוצרים בעגלה */}
+            {/* Cart Items List */}
             <div className="cart-items-container">
               <div className="cart-items-title">
                 <Package className="h-6 w-6 text-primary-green" />
@@ -195,7 +217,7 @@ const removeItem = async (productId, productName) => {
               </div>
             </div>
 
-            {/* סיכום העגלה */}
+            {/* Cart Summary */}
             <div className="cart-summary">
               <div className="cart-summary-card">
                 <h3 className="cart-summary-title">
@@ -203,7 +225,7 @@ const removeItem = async (productId, productName) => {
                   סיכום הזמנה
                 </h3>
 
-                {/* פירוט מחירים */}
+                {/* Price Breakdown */}
                 <div className="cart-pricing-breakdown">
                   <div className="cart-pricing-row">
                     <span className="cart-pricing-label">סך המוצרים</span>
@@ -218,7 +240,7 @@ const removeItem = async (productId, productName) => {
                     </span>
                   </div>
 
-                  {/* הודעת משלוח */}
+                  {/* Shipping notifications */}
                   {isEligibleForFreeShipping ? (
                     <div className="cart-delivery-info cart-delivery-success">
                       <Truck className="h-4 w-4" />
@@ -232,7 +254,7 @@ const removeItem = async (productId, productName) => {
                   )}
                 </div>
 
-                {/* סך הכל */}
+                {/* Total Amount */}
                 <div className="cart-total-row">
                   <span>סך הכל לתשלום</span>
                   <span className="cart-total-value">
@@ -240,7 +262,7 @@ const removeItem = async (productId, productName) => {
                   </span>
                 </div>
 
-                {/* כפתורי פעולה */}
+                {/* Action buttons */}
                 <div className="cart-actions">
                   <Link to="/payment" className="cart-checkout-btn">
                     <CreditCard className="h-5 w-5" />
@@ -262,16 +284,32 @@ const removeItem = async (productId, productName) => {
   );
 };
 
-// רכיב פריט בעגלה משופר
+/**
+ * Enhanced Cart Item Component
+ * Displays individual cart item with quantity controls and remove option
+ * 
+ * @param {Object} item - Cart item object
+ * @param {boolean} isUpdating - Whether the item is currently being updated
+ * @param {Function} onUpdateQuantity - Callback for quantity updates
+ * @param {Function} onRemove - Callback for item removal
+ */
 const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
   const [quantity, setQuantity] = useState(item.quantity);
 
+  /**
+   * Handle quantity increment
+   * Ensures quantity doesn't exceed stock
+   */
   const handleIncrement = () => {
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
     onUpdateQuantity(item.product_id, newQuantity);
   };
 
+  /**
+   * Handle quantity decrement
+   * Ensures minimum quantity of 1
+   */
   const handleDecrement = () => {
     if (quantity > 1) {
       const newQuantity = quantity - 1;
@@ -280,6 +318,10 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
     }
   };
 
+  /**
+   * Handle item removal
+   * Passes product ID to parent component
+   */
   const handleRemove = () => {
     onRemove(item.product_id);
   };
@@ -290,7 +332,7 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
 
   return (
     <div className={`cart-item ${isUpdating ? 'updating' : ''} cart-item-enter`}>
-      {/* תמונת מוצר */}
+      {/* Product Image */}
       <div className="cart-item-image">
         {item.image_url ? (
           <img
@@ -305,7 +347,7 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
         )}
       </div>
 
-      {/* פרטי המוצר */}
+      {/* Product Details */}
       <div className="cart-item-details">
         <h3 className="cart-item-name">{item.name}</h3>
 
@@ -318,7 +360,7 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
           </div>
         </div>
 
-        {/* אזהרת מלאי נמוך */}
+        {/* Low stock warning */}
         {isLowStock && (
           <div className="cart-item-stock-warning">
             <AlertTriangle className="h-3 w-3" />
@@ -327,9 +369,9 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
         )}
       </div>
 
-      {/* בקרות המוצר */}
+      {/* Product Controls */}
       <div className="cart-item-controls">
-        {/* בקרת כמות */}
+        {/* Quantity Control */}
         <div className="cart-quantity-control">
           <button
             onClick={handleDecrement}
@@ -354,7 +396,7 @@ const CartItem = ({ item, isUpdating, onUpdateQuantity, onRemove }) => {
           </button>
         </div>
 
-        {/* כפתור הסרה */}
+        {/* Remove Button */}
         <button
           onClick={handleRemove}
           disabled={isUpdating}

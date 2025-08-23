@@ -1,4 +1,15 @@
-// src/pages/MyOrders.jsx
+/**
+ * MyOrders.jsx - Customer Orders Management Page
+ * 
+ * This component provides comprehensive order management functionality:
+ * - Display all customer orders with status filtering
+ * - Order status tracking with visual indicators
+ * - Detailed order view modal with item breakdown
+ * - Order sorting by date (most recent first)
+ * - Responsive design with empty states
+ * - Integration with orders API for real-time data
+ */
+
 import React, { useState, useEffect } from 'react';
 import { ordersAPI } from '../../services/api';
 import {
@@ -22,7 +33,7 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // --- מצב למודל פרטי ההזמנה ---
+  // Order details modal state
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -34,6 +45,10 @@ const MyOrders = () => {
     applyFilters();
   }, [orders, statusFilter]);
 
+  /**
+   * Load customer orders from API
+   * Fetches all orders for the authenticated user
+   */
   const loadOrders = async () => {
     try {
       setLoading(true);
@@ -48,6 +63,10 @@ const MyOrders = () => {
     }
   };
 
+  /**
+   * Apply filters and sorting to orders list
+   * Filters by status and sorts by date (newest first)
+   */
   const applyFilters = () => {
     let filtered = [...orders];
     if (statusFilter !== 'all') {
@@ -57,17 +76,57 @@ const MyOrders = () => {
     setFilteredOrders(filtered);
   };
 
+  /**
+   * Get status information for display
+   * Returns localized text, icon, and styling classes for each status
+   * 
+   * @param {string} status - Order status code
+   * @returns {Object} Status display information
+   */
   const getStatusInfo = (status) => {
     const statusMap = {
-      pending: { text: 'ממתינה', icon: Clock, color: 'status-pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800', iconColor: 'text-yellow-600' },
-      confirmed: { text: 'אושרה', icon: CheckCircle, color: 'status-confirmed', bgColor: 'bg-blue-100', textColor: 'text-blue-800', iconColor: 'text-blue-600' },
-      delivered: { text: 'נמסרה', icon: CheckCircle, color: 'status-delivered', bgColor: 'bg-green-100', textColor: 'text-green-800', iconColor: 'text-green-600' },
-      cancelled: { text: 'בוטלה', icon: XCircle, color: 'status-cancelled', bgColor: 'bg-red-100', textColor: 'text-red-800', iconColor: 'text-red-600' },
+      pending: { 
+        text: 'ממתינה', 
+        icon: Clock, 
+        color: 'status-pending', 
+        bgColor: 'bg-yellow-100', 
+        textColor: 'text-yellow-800', 
+        iconColor: 'text-yellow-600' 
+      },
+      confirmed: { 
+        text: 'אושרה', 
+        icon: CheckCircle, 
+        color: 'status-confirmed', 
+        bgColor: 'bg-blue-100', 
+        textColor: 'text-blue-800', 
+        iconColor: 'text-blue-600' 
+      },
+      delivered: { 
+        text: 'נמסרה', 
+        icon: CheckCircle, 
+        color: 'status-delivered', 
+        bgColor: 'bg-green-100', 
+        textColor: 'text-green-800', 
+        iconColor: 'text-green-600' 
+      },
+      cancelled: { 
+        text: 'בוטלה', 
+        icon: XCircle, 
+        color: 'status-cancelled', 
+        bgColor: 'bg-red-100', 
+        textColor: 'text-red-800', 
+        iconColor: 'text-red-600' 
+      },
     };
     return statusMap[status] || statusMap.pending;
   };
 
-  // --- הפעלת מודל פרטי ההזמנה ---
+  /**
+   * Handle order details modal
+   * Fetches detailed order information and displays in modal
+   * 
+   * @param {number} orderId - Order ID to fetch details for
+   */
   const handleViewDetails = async (orderId) => {
     try {
       const orderDetails = await ordersAPI.getById(orderId);
@@ -79,11 +138,16 @@ const MyOrders = () => {
     }
   };
 
+  /**
+   * Close order details modal
+   * Resets modal state
+   */
   const closeModal = () => {
     setShowModal(false);
     setSelectedOrder(null);
   };
 
+  // Loading state component
   if (loading) {
     return (
       <div className="cart-loading">
@@ -96,7 +160,7 @@ const MyOrders = () => {
   return (
     <div className="shop-page">
       <div className="shop-container">
-        {/* כותרת העמוד */}
+        {/* Page Header */}
         <div className="shop-header">
           <div className="shop-header-content">
             <h1 className="shop-header-title">ההזמנות שלי</h1>
@@ -104,7 +168,7 @@ const MyOrders = () => {
           </div>
         </div>
 
-        {/* פילטרים */}
+        {/* Filters Section */}
         <div className="shop-filters">
           <div className="orders-filters-header">
             <div className="orders-filters-title">
@@ -135,16 +199,22 @@ const MyOrders = () => {
           </div>
         </div>
 
-        {/* תוצאות */}
+        {/* Results Section */}
         {filteredOrders.length > 0 ? (
           <div className="orders-grid">
             {filteredOrders.map((order) => (
-              <OrderCard key={order.id} order={order} getStatusInfo={getStatusInfo} onViewDetails={handleViewDetails} />
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                getStatusInfo={getStatusInfo} 
+                onViewDetails={handleViewDetails} 
+              />
             ))}
           </div>
         ) : (
           <div className="shop-empty-state">
             {orders.length === 0 ? (
+              // No orders at all
               <>
                 <Package className="shop-empty-icon" />
                 <h3 className="shop-empty-title">אין הזמנות להצגה</h3>
@@ -157,6 +227,7 @@ const MyOrders = () => {
                 </a>
               </>
             ) : (
+              // No orders matching current filter
               <>
                 <AlertCircle className="shop-empty-icon" />
                 <h3 className="shop-empty-title">אין הזמנות בסטטוס זה</h3>
@@ -174,7 +245,7 @@ const MyOrders = () => {
           </div>
         )}
 
-        {/* מודל פרטי ההזמנה */}
+        {/* Order Details Modal */}
         {showModal && selectedOrder && (
           <div className="order-modal-overlay" onClick={closeModal}>
             <div
@@ -182,7 +253,7 @@ const MyOrders = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="order-modal-header">
-              <button
+                <button
                   onClick={closeModal}
                   className="order-modal-close"
                   aria-label="סגור"
@@ -191,6 +262,7 @@ const MyOrders = () => {
                 </button>
               </div>
 
+              {/* Order Items Table */}
               <table className="order-items-table">
                 <thead>
                   <tr>
@@ -212,6 +284,7 @@ const MyOrders = () => {
                 </tbody>
               </table>
 
+              {/* Order Summary */}
               <div className="order-modal-summary">
                 <div className="order-modal-total">
                   <span>סה"כ להזמנה:</span>
@@ -222,15 +295,20 @@ const MyOrders = () => {
               </div>
             </div>
           </div>
-
         )}
-
       </div>
     </div>
   );
 };
 
-// רכיב כרטיס הזמנה
+/**
+ * Order Card Component
+ * Displays individual order information in a card format
+ * 
+ * @param {Object} order - Order object with details
+ * @param {Function} getStatusInfo - Function to get status display info
+ * @param {Function} onViewDetails - Callback for viewing order details
+ */
 const OrderCard = ({ order, getStatusInfo, onViewDetails }) => {
   const statusInfo = getStatusInfo(order.status);
   const StatusIcon = statusInfo.icon;

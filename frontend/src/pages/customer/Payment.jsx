@@ -1,181 +1,17 @@
-// // src/pages/Payment.jsx
-// import React, { useState, useEffect } from 'react';
-// import { cartAPI, ordersAPI, orderItemsAPI, authAPI } from '../../services/api';
-// import toast from 'react-hot-toast';
-// import { useNavigate, Link } from 'react-router-dom';
-// import { CreditCard, ArrowLeft } from 'lucide-react';
+/**
+ * Payment.jsx - Enhanced Secure Payment Page
+ * 
+ * This component provides a comprehensive and secure payment experience featuring:
+ * - Order summary with shipping calculations
+ * - Secure credit card form with input formatting
+ * - Form validation with user feedback
+ * - Free shipping promotions and notifications
+ * - SSL security indicators and user trust elements
+ * - Integration with cart and orders APIs
+ * - Responsive design with loading states
+ * - Proper accessibility and error handling
+ */
 
-// const Payment = () => {
-//     const [cart, setCart] = useState({ items: [], total: '0.00' });
-//     const [loading, setLoading] = useState(true);
-//     const [processing, setProcessing] = useState(false);
-//     const [cardName, setCardName] = useState('');
-//     const [cardNumber, setCardNumber] = useState('');
-//     const [expiry, setExpiry] = useState('');
-//     const [cvv, setCvv] = useState('');
-//     const navigate = useNavigate();
-
-//     useEffect(() => {
-//         loadCart();
-//     }, []);
-
-//     const loadCart = async () => {
-//         try {
-//             setLoading(true);
-//             const data = await cartAPI.getItems();
-//             setCart(data);
-//         } catch (error) {
-//             console.error('Error loading cart:', error);
-//             toast.error('שגיאה בטעינת העגלה');
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     const isFormValid = () => {
-//         if (!cardName || !cardNumber || !expiry || !cvv) {
-//             toast.error('נא למלא את כל שדות הכרטיס');
-//             return false;
-//         }
-//         // אפשר להוסיף כאן בדיקות נוספות כמו מספר כרטיס תקין, תוקף וכדומה
-//         return true;
-//     };
-
-//     const handlePayment = async () => {
-//         if (!isFormValid()) return;
-
-//         try {
-//             setProcessing(true);
-
-//             // יצירת הזמנה חדשה
-//             const orderData = {
-//                 total_amount: parseFloat(cart.total),
-//                 items: cart.items.map(item => ({
-//                     product_id: item.product_id,
-//                     quantity: item.quantity,
-//                     //unit_price: 5
-//                     unit_price: parseFloat(item.price)
-
-//                 }))
-//             };
-
-//             console.log("from payment comp");
-//             console.log(orderData);
-//             await ordersAPI.create(orderData);
-
-//             // ניקוי העגלה
-//             await cartAPI.clear();
-
-//             toast.success('התשלום בוצע וההזמנה נוצרה בהצלחה!');
-//             navigate('/'); // החזרה לדף הבית או לדף ההזמנות
-//         } catch (error) {
-//             console.error('Payment/order creation error:', error);
-//             toast.error('שגיאה בתשלום או ביצירת ההזמנה');
-//         } finally {
-//             setProcessing(false);
-//         }
-//     };
-
-//     if (loading) {
-//         return (
-//             <div className="flex items-center justify-center min-h-screen">
-//                 <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-//             </div>
-//         );
-//     }
-
-//     if (cart.items.length === 0) {
-//         return (
-//             <div className="text-center py-12">
-//                 <p className="text-gray-500 text-lg">העגלה ריקה</p>
-//                 <Link
-//                     to="/"
-//                     className="mt-4 inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-//                 >
-//                     חזור לחנות
-//                     <ArrowLeft className="h-4 w-4" />
-//                 </Link>
-//             </div>
-//         );
-//     }
-
-//     return (
-//         <div className="max-w-2xl mx-auto p-4 space-y-6">
-//             <h1 className="text-3xl font-bold mb-4">תשלום</h1>
-
-//             {/* סיכום הזמנה */}
-//             <div className="bg-white p-4 rounded-xl shadow-sm space-y-2">
-//                 <h2 className="font-semibold text-lg">סיכום הזמנה</h2>
-//                 {cart.items.map(item => (
-//                     <div key={item.product_id} className="flex justify-between">
-//                         <span>{item.name} x {item.quantity}</span>
-//                         <span>₪{(item.price * item.quantity).toFixed(2)}</span>
-//                     </div>
-//                 ))}
-//                 <div className="flex justify-between font-bold border-t mt-2 pt-2">
-//                     <span>סה״כ לתשלום:</span>
-//                     <span>₪{parseFloat(cart.total).toFixed(2)}</span>
-//                 </div>
-//             </div>
-
-//             {/* פרטי כרטיס */}
-//             <div className="bg-white p-4 rounded-xl shadow-sm space-y-4">
-//                 <h2 className="font-semibold text-lg">פרטי כרטיס</h2>
-//                 <input
-//                     type="text"
-//                     placeholder="שם בעל הכרטיס"
-//                     value={cardName}
-//                     onChange={e => setCardName(e.target.value)}
-//                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-//                 />
-//                 <input
-//                     type="text"
-//                     placeholder="מספר כרטיס"
-//                     value={cardNumber}
-//                     onChange={e => setCardNumber(e.target.value)}
-//                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-//                 />
-//                 <div className="flex gap-2">
-//                     <input
-//                         type="text"
-//                         placeholder="MM/YY"
-//                         value={expiry}
-//                         onChange={e => setExpiry(e.target.value)}
-//                         className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-//                     />
-//                     <input
-//                         type="text"
-//                         placeholder="CVV"
-//                         value={cvv}
-//                         onChange={e => setCvv(e.target.value)}
-//                         className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
-//                     />
-//                 </div>
-//             </div>
-
-//             {/* כפתור תשלום */}
-//             <button
-//                 onClick={handlePayment}
-//                 disabled={processing}
-//                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-//             >
-//                 {processing ? (
-//                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-//                 ) : (
-//                     <>
-//                         <CreditCard className="h-5 w-5" />
-//                         אשר תשלום
-//                     </>
-//                 )}
-//             </button>
-//         </div>
-//     );
-// };
-
-// export default Payment;
-
-
-// src/pages/Payment.jsx - עמוד תשלום משופר
 import React, { useState, useEffect } from 'react';
 import { cartAPI, ordersAPI, orderItemsAPI, authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -197,20 +33,30 @@ const Payment = () => {
   const [cart, setCart] = useState({ items: [], total: '0.00' });
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  
+  // Credit card form fields
   const [cardName, setCardName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
   const [showCvv, setShowCvv] = useState(false);
+  
   const navigate = useNavigate();
 
-  // חישוב עלויות משלוח
+  /**
+   * Calculate shipping cost based on order subtotal
+   * Free shipping for orders over ₪50, otherwise ₪20 shipping fee
+   * 
+   * @param {number} subtotal - Order subtotal amount
+   * @returns {number} Shipping cost
+   */
   const calculateShipping = (subtotal) => {
     const SHIPPING_THRESHOLD = 50;
     const SHIPPING_COST = 20;
     return subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   };
 
+  // Calculate order totals and shipping eligibility
   const subtotal = parseFloat(cart.total);
   const shippingCost = calculateShipping(subtotal);
   const finalTotal = subtotal + shippingCost;
@@ -220,6 +66,10 @@ const Payment = () => {
     loadCart();
   }, []);
 
+  /**
+   * Load cart data from API
+   * Redirects to shop if cart is empty
+   */
   const loadCart = async () => {
     try {
       setLoading(true);
@@ -233,6 +83,13 @@ const Payment = () => {
     }
   };
 
+  /**
+   * Format credit card number with spaces
+   * Adds spaces every 4 digits for better readability
+   * 
+   * @param {string} value - Raw card number input
+   * @returns {string} Formatted card number
+   */
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     const matches = v.match(/\d{4,16}/g);
@@ -248,6 +105,13 @@ const Payment = () => {
     }
   };
 
+  /**
+   * Format expiry date as MM/YY
+   * Automatically adds slash after 2 digits
+   * 
+   * @param {string} value - Raw expiry input
+   * @returns {string} Formatted expiry date
+   */
   const formatExpiry = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     if (v.length >= 2) {
@@ -256,6 +120,12 @@ const Payment = () => {
     return v;
   };
 
+  /**
+   * Validate payment form
+   * Checks all required fields and formats
+   * 
+   * @returns {boolean} Whether form is valid
+   */
   const isFormValid = () => {
     if (!cardName || !cardNumber || !expiry || !cvv) {
       toast.error('נא למלא את כל שדות הכרטיס');
@@ -275,12 +145,17 @@ const Payment = () => {
     return true;
   };
 
+  /**
+   * Process payment and create order
+   * Validates form, creates order, clears cart, and redirects
+   */
   const handlePayment = async () => {
     if (!isFormValid()) return;
 
     try {
       setProcessing(true);
 
+      // Create order data with final total including shipping
       const orderData = {
         total_amount: finalTotal,
         items: cart.items.map(item => ({
@@ -292,11 +167,14 @@ const Payment = () => {
 
       console.log("from payment comp");
       console.log(orderData);
+      
+      // Create order via API
       await ordersAPI.create(orderData);
 
+      // Clear cart after successful payment
       await cartAPI.clear();
 
-      toast.success('התשלום בוצע והההזמנה נוצרה בהצלחה!');
+      toast.success('התשלום בוצע וההזמנה נוצרה בהצלחה!');
       navigate('/my-orders');
     } catch (error) {
       console.error('Payment/order creation error:', error);
@@ -306,6 +184,7 @@ const Payment = () => {
     }
   };
 
+  // Loading state component
   if (loading) {
     return (
       <div className="cart-loading">
@@ -315,6 +194,7 @@ const Payment = () => {
     );
   }
 
+  // Empty cart state
   if (cart.items.length === 0) {
     return (
       <div className="shop-page">
@@ -338,18 +218,18 @@ const Payment = () => {
   return (
     <div className="cart-page">
       <div className="cart-container">
-        {/* כותרת התשלום */}
+        {/* Payment Header */}
         <div className="cart-header">
           <div className="cart-header-content">
             <h1 className="cart-title">תשלום מאובטח</h1>
             <p className="cart-subtitle">
-              בצע את התשלום בצורה מאובטחת וגמור את ההזמנה
+              בצע את התשלום בצורה מאובטחת ובמור את ההזמנה
             </p>
           </div>
         </div>
 
         <div className="payment-layout">
-          {/* סיכום הזמנה */}
+          {/* Order Summary */}
           <div className="payment-summary">
             <div className="cart-summary-card">
               <h3 className="cart-summary-title">
@@ -357,7 +237,7 @@ const Payment = () => {
                 סיכום הזמנה
               </h3>
 
-              {/* פריטים */}
+              {/* Order Items */}
               <div className="payment-items">
                 {cart.items.map(item => (
                   <div key={item.product_id} className="payment-item">
@@ -372,7 +252,7 @@ const Payment = () => {
                 ))}
               </div>
 
-              {/* פירוט מחירים */}
+              {/* Price Breakdown */}
               <div className="cart-pricing-breakdown">
                 <div className="cart-pricing-row">
                   <span className="cart-pricing-label">סך המוצרים</span>
@@ -385,6 +265,7 @@ const Payment = () => {
                   </span>
                 </div>
                 
+                {/* Shipping notification */}
                 {isEligibleForFreeShipping ? (
                   <div className="cart-delivery-info cart-delivery-success">
                     <Truck className="h-4 w-4" />
@@ -398,6 +279,7 @@ const Payment = () => {
                 )}
               </div>
 
+              {/* Final Total */}
               <div className="cart-total-row">
                 <span>סך הכל לתשלום</span>
                 <span className="cart-total-value">₪{finalTotal.toFixed(2)}</span>
@@ -405,7 +287,7 @@ const Payment = () => {
             </div>
           </div>
 
-          {/* טופס תשלום */}
+          {/* Payment Form */}
           <div className="payment-form-container">
             <div className="cart-summary-card">
               <h3 className="payment-form-title">
@@ -418,7 +300,7 @@ const Payment = () => {
               </h3>
 
               <div className="payment-form">
-                {/* שם בעל הכרטיס */}
+                {/* Cardholder Name */}
                 <div className="payment-form-group">
                   <label className="payment-form-label">שם בעל הכרטיס</label>
                   <input
@@ -430,7 +312,7 @@ const Payment = () => {
                   />
                 </div>
 
-                {/* מספר כרטיס */}
+                {/* Card Number */}
                 <div className="payment-form-group">
                   <label className="payment-form-label">מספר כרטיס</label>
                   <input
@@ -443,7 +325,7 @@ const Payment = () => {
                   />
                 </div>
 
-                {/* תוקף ו-CVV */}
+                {/* Expiry and CVV */}
                 <div className="payment-form-row">
                   <div className="payment-form-group">
                     <label className="payment-form-label">תוקף</label>
@@ -478,13 +360,13 @@ const Payment = () => {
                   </div>
                 </div>
 
-                {/* הודעת אבטחה */}
+                {/* Security Notice */}
                 <div className="payment-security-notice">
                   <Lock className="h-4 w-4 text-green-600" />
                   <span>כל המידע מוצפן ומאובטח בתקני SSL</span>
                 </div>
 
-                {/* כפתור תשלום */}
+                {/* Payment Button */}
                 <button
                   onClick={handlePayment}
                   disabled={processing}
@@ -504,7 +386,7 @@ const Payment = () => {
                   )}
                 </button>
 
-                {/* כפתור חזרה */}
+                {/* Back to Cart Button */}
                 <Link to="/my-cart" className="cart-continue-shopping">
                   <ArrowLeft className="h-4 w-4" />
                   חזור לעגלה

@@ -1,16 +1,30 @@
+/**
+ * Register Page Component
+ *
+ * Provides a registration form for new users to create an account.
+ * Includes validation for full name, email, phone, password, and role selection.
+ * Handles form state, errors, and redirects after successful registration.
+ */
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, ShoppingCart, Mail, Lock, User, Phone, Plus } from 'lucide-react';
 
+/**
+ * Register Component
+ *
+ * @returns {JSX.Element} Registration form for new users
+ */
 const Register = () => {
+  // Form state
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
     full_name: '',
     phone: '',
-    role: 'customer' // ברירת מחדל
+    role: 'customer' // Default role
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,6 +34,9 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  /**
+   * Handle input field changes
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -34,47 +51,55 @@ const Register = () => {
     }
   };
 
+  /**
+   * Validate form fields before submission
+   *
+   * @returns {boolean} true if valid, false otherwise
+   */
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.full_name) {
-      newErrors.full_name = 'שם מלא הוא שדה חובה';
+      newErrors.full_name = 'Full name is required';
     } else if (formData.full_name.length < 2) {
-      newErrors.full_name = 'שם מלא חייב להכיל לפחות 2 תווים';
+      newErrors.full_name = 'Full name must be at least 2 characters';
     }
 
     if (!formData.email) {
-      newErrors.email = 'אימייל הוא שדה חובה';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'אימייל לא תקין';
+      newErrors.email = 'Invalid email format';
     }
 
     if (!formData.phone) {
-      newErrors.phone = 'מספר טלפון הוא שדה חובה';
+      newErrors.phone = 'Phone number is required';
     } else if (!/^05\d{8}$/.test(formData.phone.replace(/[-\s]/g, ''))) {
-      newErrors.phone = 'מספר טלפון לא תקין (05xxxxxxxx)';
+      newErrors.phone = 'Invalid phone number (05xxxxxxxx)';
     }
 
     if (!formData.password) {
-      newErrors.password = 'סיסמה היא שדה חובה';
+      newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'סיסמה חייבת להכיל לפחות 6 תווים';
+      newErrors.password = 'Password must be at least 6 characters';
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'אישור סיסמה הוא שדה חובה';
+      newErrors.confirmPassword = 'Password confirmation is required';
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'הסיסמאות לא תואמות';
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.role) {
-      newErrors.role = 'יש לבחור תפקיד';
+      newErrors.role = 'Role selection is required';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Handle form submission
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -88,9 +113,7 @@ const Register = () => {
       role: formData.role
     };
 
-    console.log('formData.roleeeeeeeeeeeeeeeeeeeeeeeeee',formData.role);
-
-    console.log('🚀 Frontend sending:', userData);
+    console.log('🚀 Register form submission:', userData);
 
     setLoading(true);
     try {
@@ -98,7 +121,7 @@ const Register = () => {
       navigate('/login');
     } catch (error) {
       console.error('Register error:', error);
-      setErrors(prev => ({ ...prev, general: 'שגיאה בהרשמה. נסו שוב.' }));
+      setErrors(prev => ({ ...prev, general: 'Registration failed. Please try again.' }));
     } finally {
       setLoading(false);
     }
@@ -107,10 +130,12 @@ const Register = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        {/* Logo */}
         <div className="auth-logo">
           <ShoppingCart className="h-16 w-16 text-white" />
         </div>
 
+        {/* Titles */}
         <h1 className="auth-title">
           מרקט פלוס
           <Plus className="h-1 w-1 text-blue-600" />
@@ -118,15 +143,16 @@ const Register = () => {
         <h2 className="auth-welcome">הצטרפו אלינו</h2>
         <p className="auth-subtitle">צרו חשבון חדש במערכת ניהול הסופרמרקט המתקדמת</p>
 
+        {/* General error */}
         {errors.general && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-700 text-sm font-medium">{errors.general}</p>
           </div>
         )}
 
+        {/* Registration form */}
         <form onSubmit={handleSubmit} className="auth-form">
-
-          {/* שם מלא */}
+          {/* Full name */}
           <div className="auth-input-group">
             <label htmlFor="full_name" className="auth-label">
               <User className="h-4 w-4" />
@@ -149,7 +175,7 @@ const Register = () => {
             {errors.full_name && <div className="auth-error">{errors.full_name}</div>}
           </div>
 
-          {/* אימייל */}
+          {/* Email */}
           <div className="auth-input-group">
             <label htmlFor="email" className="auth-label">
               <Mail className="h-4 w-4" />
@@ -172,7 +198,7 @@ const Register = () => {
             {errors.email && <div className="auth-error">{errors.email}</div>}
           </div>
 
-          {/* טלפון */}
+          {/* Phone */}
           <div className="auth-input-group">
             <label htmlFor="phone" className="auth-label">
               <Phone className="h-4 w-4" />
@@ -195,7 +221,7 @@ const Register = () => {
             {errors.phone && <div className="auth-error">{errors.phone}</div>}
           </div>
 
-          {/* תפקיד */}
+          {/* Role */}
           <div className="auth-input-group">
             <label htmlFor="role" className="auth-label">
               תפקיד
@@ -214,7 +240,7 @@ const Register = () => {
             {errors.role && <div className="auth-error">{errors.role}</div>}
           </div>
 
-          {/* סיסמה */}
+          {/* Password */}
           <div className="auth-input-group">
             <label htmlFor="password" className="auth-label">
               <Lock className="h-4 w-4" />
@@ -239,7 +265,7 @@ const Register = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="auth-password-toggle"
                 disabled={loading}
-                aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -247,7 +273,7 @@ const Register = () => {
             {errors.password && <div className="auth-error">{errors.password}</div>}
           </div>
 
-          {/* אישור סיסמה */}
+          {/* Confirm password */}
           <div className="auth-input-group">
             <label htmlFor="confirmPassword" className="auth-label">
               <Lock className="h-4 w-4" />
@@ -272,7 +298,7 @@ const Register = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="auth-password-toggle"
                 disabled={loading}
-                aria-label={showConfirmPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                aria-label={showConfirmPassword ? 'Hide password confirmation' : 'Show password confirmation'}
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -280,11 +306,12 @@ const Register = () => {
             {errors.confirmPassword && <div className="auth-error">{errors.confirmPassword}</div>}
           </div>
 
+          {/* Submit button */}
           <button
             type="submit"
             disabled={loading}
             className="auth-button"
-            aria-label="הירשם למערכת"
+            aria-label="Register to the system"
           >
             {loading ? (
               <>
@@ -302,6 +329,7 @@ const Register = () => {
           </button>
         </form>
 
+        {/* Link to login */}
         <div className="auth-link">
           כבר יש לכם חשבון במרקט פלוס?{' '}
           <Link to="/login">התחברו כאן</Link>

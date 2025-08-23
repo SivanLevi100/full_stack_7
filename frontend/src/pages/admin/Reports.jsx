@@ -1,182 +1,24 @@
-// // src/pages/Reports.jsx
-// import React, { useEffect, useState } from 'react';
-// import { ordersAPI, productsAPI, usersAPI } from '../../services/api';
-// import { DollarSign, ShoppingCart, Users, AlertTriangle, BarChart3 } from 'lucide-react';
-// import { Line } from 'recharts';
-// import { LineChart, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+/**
+ * Reports.jsx - Enhanced Business Reports and Analytics Page
+ * 
+ * This component provides comprehensive business reporting functionality:
+ * - Real-time KPI dashboard with revenue, orders, users, and alerts
+ * - Interactive sales charts with monthly data visualization
+ * - Recent orders table with status tracking
+ * - Low stock products monitoring and alerts
+ * - Responsive chart components using Recharts library
+ * - Advanced data processing for real sales analytics
+ * - Mobile-responsive design with proper accessibility
+ * - Dynamic data calculation from actual order history
+ */
 
-// const Reports = () => {
-//   const [stats, setStats] = useState({
-//     totalRevenue: 0,
-//     totalOrders: 0,
-//     totalUsers: 0,
-//     lowStockProducts: 0,
-//     pendingOrders: 0,
-//     todayOrders: 0
-//   });
-//   const [recentOrders, setRecentOrders] = useState([]);
-//   const [lowStockProducts, setLowStockProducts] = useState([]);
-//   const [salesData, setSalesData] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     loadReportsData();
-//   }, []);
-
-//   const loadReportsData = async () => {
-//     try {
-//       setLoading(true);
-//       const [products, orders, users, lowStock] = await Promise.all([
-//         productsAPI.getAll(),
-//         ordersAPI.getAll(),
-//         usersAPI.getAll(),
-//         productsAPI.getLowStock()
-//       ]);
-
-//       const totalRevenue = orders
-//         .filter(o => o.status !== 'cancelled')
-//         .reduce((sum, o) => sum + parseFloat(o.total_amount), 0);
-
-//       const todayOrders = orders.filter(
-//         o => new Date(o.order_date).toDateString() === new Date().toDateString()
-//       ).length;
-
-//       const pendingOrders = orders.filter(o => o.status === 'pending').length;
-
-//       setStats({
-//         totalRevenue,
-//         totalOrders: orders.length,
-//         totalUsers: users.length,
-//         lowStockProducts: lowStock.length,
-//         pendingOrders,
-//         todayOrders
-//       });
-
-//       setRecentOrders(orders.slice(0, 8));
-//       setLowStockProducts(lowStock.slice(0, 6));
-
-//       // נתוני מכירות חודשי לדוגמה
-//       setSalesData([
-//         { month: 'ינואר', sales: 12000 },
-//         { month: 'פברואר', sales: 15000 },
-//         { month: 'מרץ', sales: 18000 },
-//         { month: 'אפריל', sales: 22000 },
-//         { month: 'מאי', sales: 25000 },
-//         { month: 'יוני', sales: 28000 }
-//       ]);
-//     } catch (error) {
-//       console.error('Error loading reports data:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="flex items-center justify-center min-h-screen">
-//         <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-blue-500"></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="space-y-6 p-6">
-//       {/* כותרת */}
-//       <h1 id="topReport" className="text-3xl font-bold mb-6">דוחות מערכת</h1>
-
-//       {/* כרטיסי KPI */}
-//       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-//         <ReportCard title="סך ההכנסות" value={`₪${stats.totalRevenue.toLocaleString()}`} icon={<DollarSign className="h-6 w-6" />} color="bg-green-500" />
-//         <ReportCard title="סך ההזמנות" value={stats.totalOrders} icon={<ShoppingCart className="h-6 w-6" />} color="bg-blue-500" />
-//         <ReportCard title="לקוחות פעילים" value={stats.totalUsers} icon={<Users className="h-6 w-6" />} color="bg-purple-500" />
-//         <ReportCard title="מוצרים במלאי נמוך" value={stats.lowStockProducts} icon={<AlertTriangle className="h-6 w-6" />} color="bg-red-500" />
-//       </div>
-
-//       {/* גרף מכירות */}
-//       <div className="bg-white rounded-xl p-6 shadow-sm border">
-//         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-//           <BarChart3 className="h-5 w-5 text-blue-500" />
-//           מכירות חודשיות
-//         </h2>
-//         <ResponsiveContainer width="100%" height={300}>
-//           <LineChart data={salesData}>
-//             <CartesianGrid strokeDasharray="3 3" />
-//             <XAxis dataKey="month" />
-//             <YAxis />
-//             <Tooltip />
-//             <Line type="monotone" dataKey="sales" stroke="#4f46e5" strokeWidth={3} />
-//           </LineChart>
-//         </ResponsiveContainer>
-//       </div>
-
-//       {/* הזמנות אחרונות */}
-//       <div className="bg-white rounded-xl p-6 shadow-sm border">
-//         <h2 className="text-xl font-semibold mb-4">הזמנות אחרונות</h2>
-//         {recentOrders.length === 0 ? (
-//           <p className="text-gray-500">אין הזמנות אחרונות</p>
-//         ) : (
-//           <table className="w-full table-auto border-collapse text-center">
-//             <thead>
-//               <tr className="bg-gray-100 text-gray-700">
-//                 <th className="p-2 border">#ID</th>
-//                 <th className="p-2 border">תאריך</th>
-//                 <th className="p-2 border">שם לקוח</th>
-//                 <th className="p-2 border">סה"כ</th>
-//                 <th className="p-2 border">סטטוס</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {recentOrders.map(order => (
-//                 <tr key={order.id} className="hover:bg-gray-50">
-//                   <td className="p-2 border">{order.id}</td>
-//                   <td className="p-2 border">{new Date(order.order_date).toLocaleDateString('he-IL')}</td>
-//                   <td className="p-2 border">{order.full_name}</td>
-//                   <td className="p-2 border">₪{parseFloat(order.total_amount).toLocaleString()}</td>
-//                   <td className="p-2 border">
-//                     <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusStyle(order.status)}`}>
-//                       {getStatusText(order.status)}
-//                     </span>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// // רכיב כרטיס KPI
-// const ReportCard = ({ title, value, icon, color }) => (
-//   <div className={`${color} text-white rounded-xl p-6 shadow-lg flex items-center justify-between`}>
-//     <div>
-//       <p className="text-sm font-medium">{title}</p>
-//       <p className="text-2xl font-bold">{value}</p>
-//     </div>
-//     <div className="p-3 bg-white bg-opacity-20 rounded-lg">{icon}</div>
-//   </div>
-// );
-
-// // פונקציות עזר לסטטוס הזמנה
-// const getStatusText = (status) => {
-//   const map = { pending: 'ממתינה', confirmed: 'אושרה', delivered: 'נמסרה', cancelled: 'בוטלה' };
-//   return map[status] || status;
-// };
-
-// const getStatusStyle = (status) => {
-//   const map = { pending: 'bg-yellow-100 text-yellow-800', confirmed: 'bg-blue-100 text-blue-800', delivered: 'bg-green-100 text-green-800', cancelled: 'bg-red-100 text-red-800' };
-//   return map[status] || 'bg-gray-100 text-gray-800';
-// };
-
-// export default Reports;
-// src/pages/Reports.jsx - מעודכן עם לוגיקה אמיתית וCSS חדש
 import React, { useEffect, useState } from 'react';
 import { ordersAPI, productsAPI, usersAPI } from '../../services/api';
 import { DollarSign, ShoppingCart, Users, AlertTriangle, BarChart3, Package } from 'lucide-react';
 import { LineChart, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Line } from 'recharts';
 
 const Reports = () => {
+  // Business statistics state
   const [stats, setStats] = useState({
     totalRevenue: 0,
     totalOrders: 0,
@@ -185,6 +27,7 @@ const Reports = () => {
     pendingOrders: 0,
     todayOrders: 0
   });
+  
   const [recentOrders, setRecentOrders] = useState([]);
   const [lowStockProducts, setLowStockProducts] = useState([]);
   const [salesData, setSalesData] = useState([]);
@@ -194,17 +37,23 @@ const Reports = () => {
     loadReportsData();
   }, []);
 
-  // פונקציה ליצירת נתוני מכירות אמיתיים לפי חודשים
+  /**
+   * Generate real sales data from actual orders
+   * Processes order history to create monthly sales analytics
+   * 
+   * @param {Array} orders - Array of order objects
+   * @returns {Array} Monthly sales data for charts
+   */
   const generateRealSalesData = (orders) => {
     const monthNames = [
       'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
       'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
     ];
 
-    // יצירת מפה של חודשים עם מכירות
+    // Create monthly data map
     const monthlyData = {};
     
-    // אתחול כל החודשים עם 0
+    // Initialize all months with zero values
     monthNames.forEach((month, index) => {
       monthlyData[index] = {
         month: month,
@@ -213,7 +62,7 @@ const Reports = () => {
       };
     });
 
-    // חישוב מכירות אמיתיות לפי חודש
+    // Calculate real monthly sales from orders
     orders.forEach(order => {
       if (order.status !== 'cancelled') {
         const orderDate = new Date(order.order_date);
@@ -221,7 +70,7 @@ const Reports = () => {
         const year = orderDate.getFullYear();
         const currentYear = new Date().getFullYear();
         
-        // רק הזמנות מהשנה הנוכחית
+        // Only include current year orders
         if (year === currentYear) {
           monthlyData[month].sales += parseFloat(order.total_amount || 0);
           monthlyData[month].orders += 1;
@@ -229,7 +78,7 @@ const Reports = () => {
       }
     });
 
-    // המרה למערך ולקיחת 6 החודשים האחרונים
+    // Convert to array and get last 6 months
     const currentMonth = new Date().getMonth();
     const last6Months = [];
     
@@ -245,6 +94,10 @@ const Reports = () => {
     return last6Months;
   };
 
+  /**
+   * Load comprehensive reports data
+   * Fetches and processes data from multiple APIs
+   */
   const loadReportsData = async () => {
     try {
       setLoading(true);
@@ -255,6 +108,7 @@ const Reports = () => {
         productsAPI.getLowStock()
       ]);
 
+      // Calculate business metrics
       const totalRevenue = orders
         .filter(o => o.status !== 'cancelled')
         .reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
@@ -275,12 +129,12 @@ const Reports = () => {
         todayOrders
       });
 
-      // מיון הזמנות לפי תאריך (החדשות ביותר קודם)
+      // Sort orders by date (newest first)
       const sortedOrders = orders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
       setRecentOrders(sortedOrders.slice(0, 8));
       setLowStockProducts(lowStock.slice(0, 6));
 
-      // יצירת נתוני מכירות אמיתיים
+      // Generate real sales data
       const realSalesData = generateRealSalesData(orders);
       setSalesData(realSalesData);
 
@@ -291,7 +145,12 @@ const Reports = () => {
     }
   };
 
-  // פונקציות עזר לסטטוס הזמנה
+  /**
+   * Convert status codes to Hebrew display text
+   * 
+   * @param {string} status - Order status code
+   * @returns {string} Localized status text
+   */
   const getStatusText = (status) => {
     const map = { 
       pending: 'ממתין', 
@@ -302,6 +161,12 @@ const Reports = () => {
     return map[status] || status;
   };
 
+  /**
+   * Get CSS class for status styling
+   * 
+   * @param {string} status - Order status code
+   * @returns {string} CSS class name
+   */
   const getStatusClass = (status) => {
     const map = { 
       pending: 'reports-status-pending', 
@@ -312,7 +177,15 @@ const Reports = () => {
     return map[status] || 'reports-status-pending';
   };
 
-  // רכיב כרטיס KPI
+  /**
+   * Report KPI Card Component
+   * Displays individual key performance indicators
+   * 
+   * @param {string} title - Card title
+   * @param {string|number} value - Main value to display
+   * @param {ReactNode} icon - Icon component
+   * @param {string} type - Card type for styling
+   */
   const ReportCard = ({ title, value, icon, type }) => (
     <div className={`reports-kpi-card reports-kpi-card-${type}`}>
       <div className="reports-kpi-content">
@@ -327,6 +200,7 @@ const Reports = () => {
     </div>
   );
 
+  // Loading state component
   if (loading) {
     return (
       <div className="reports-container">
@@ -343,12 +217,12 @@ const Reports = () => {
   return (
     <div className="reports-container">
       <div className="reports-page">
-        {/* כותרת עמוד */}
+        {/* Page Header */}
         <div className="reports-header">
           <h1 className="reports-title">דוחות מערכת</h1>
         </div>
 
-        {/* כרטיסי KPI */}
+        {/* KPI Cards Grid */}
         <div className="reports-kpi-grid">
           <ReportCard 
             title="סך הכנסות" 
@@ -376,7 +250,7 @@ const Reports = () => {
           />
         </div>
 
-        {/* גרף מכירות */}
+        {/* Sales Chart */}
         <div className="reports-chart-container">
           <div className="reports-chart-header">
             <BarChart3 className="reports-chart-icon h-6 w-6" />
@@ -422,7 +296,7 @@ const Reports = () => {
           </div>
         </div>
 
-        {/* הזמנות אחרונות */}
+        {/* Recent Orders Table */}
         <div className="reports-table-container">
           <div className="reports-table-header-section">
             <h2 className="reports-table-title">הזמנות אחרונות</h2>
@@ -477,7 +351,7 @@ const Reports = () => {
           )}
         </div>
 
-        {/* מוצרים במלאי נמוך */}
+        {/* Low Stock Products Section */}
         {lowStockProducts.length > 0 && (
           <div className="reports-low-stock-container">
             <div className="reports-low-stock-header">

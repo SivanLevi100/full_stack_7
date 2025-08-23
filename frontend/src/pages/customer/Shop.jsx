@@ -1,367 +1,17 @@
-// // src/pages/Shop.js
-// import React, { useState, useEffect } from 'react';
-// import { Search, Filter, ShoppingCart, Plus, Minus, Star, X } from 'lucide-react';
-// import { productsAPI, categoriesAPI, cartAPI } from '../../services/api';
-// import toast from 'react-hot-toast';
+/**
+ * Shop.jsx - Enhanced Shopping Page
+ * 
+ * This component provides a comprehensive shopping experience featuring:
+ * - Product browsing with search and filtering capabilities
+ * - Category-based filtering and sorting options
+ * - Price range filtering with min/max inputs
+ * - Real-time search with instant results
+ * - Product cards with quantity controls and cart integration
+ * - Stock management with low stock warnings
+ * - Responsive grid layout with empty states
+ * - Advanced filtering with collapsible interface
+ */
 
-// const Shop = () => {
-//   const [products, setProducts] = useState([]);
-//   const [categories, setCategories] = useState([]);
-//   const [filteredProducts, setFilteredProducts] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [cartUpdating, setCartUpdating] = useState({});
-//   const [filters, setFilters] = useState({
-//     category: '',
-//     search: '',
-//     minPrice: '',
-//     maxPrice: '',
-//     sortBy: 'name',
-//     sortOrder: 'ASC'
-//   });
-//   const [showFilters, setShowFilters] = useState(false);
-
-//   useEffect(() => {
-//     loadData();
-//   }, []);
-
-//   useEffect(() => {
-//     applyFilters();
-//   }, [products, filters]);
-
-//   const loadData = async () => {
-//     try {
-//       setLoading(true);
-//       const [productsData, categoriesData] = await Promise.all([
-//         productsAPI.getAll(),
-//         categoriesAPI.getAll()
-//       ]);
-
-//       setProducts(productsData);
-//       setCategories(categoriesData);
-//     } catch (error) {
-//       console.error('Error loading shop data:', error);
-//       toast.error('שגיאה בטעינת נתוני החנות');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const applyFilters = () => {
-//     let filtered = [...products];
-
-//     if (filters.category) {
-//       filtered = filtered.filter(product =>
-//         product.category_id === parseInt(filters.category)
-//       );
-//     }
-
-//     if (filters.search) {
-//       filtered = filtered.filter(product =>
-//         product.name.toLowerCase().includes(filters.search.toLowerCase())
-//       );
-//     }
-
-//     if (filters.minPrice) {
-//       filtered = filtered.filter(product =>
-//         parseFloat(product.price) >= parseFloat(filters.minPrice)
-//       );
-//     }
-
-//     if (filters.maxPrice) {
-//       filtered = filtered.filter(product =>
-//         parseFloat(product.price) <= parseFloat(filters.maxPrice)
-//       );
-//     }
-
-//     filtered.sort((a, b) => {
-//       let aValue = a[filters.sortBy];
-//       let bValue = b[filters.sortBy];
-
-//       if (filters.sortBy === 'price') {
-//         aValue = parseFloat(aValue);
-//         bValue = parseFloat(bValue);
-//       }
-
-//       if (filters.sortOrder === 'ASC') {
-//         return aValue > bValue ? 1 : -1;
-//       } else {
-//         return aValue < bValue ? 1 : -1;
-//       }
-//     });
-
-//     setFilteredProducts(filtered);
-//   };
-
-//   const handleFilterChange = (key, value) => {
-//     setFilters(prev => ({ ...prev, [key]: value }));
-//   };
-
-//   const addToCart = async (productId, quantity = 1) => {
-//     setCartUpdating(prev => ({ ...prev, [productId]: true }));
-//     try {
-//       await cartAPI.addItem(productId, quantity);
-//       toast.success('המוצר נוסף לעגלה!');
-//     } catch (error) {
-//       console.error('Error adding to cart:', error);
-//       toast.error('שגיאה בהוספה לעגלה');
-//     } finally {
-//       setCartUpdating(prev => ({ ...prev, [productId]: false }));
-//     }
-//   };
-
-//   const resetFilters = () => {
-//     setFilters({
-//       category: '',
-//       search: '',
-//       minPrice: '',
-//       maxPrice: '',
-//       sortBy: 'name',
-//       sortOrder: 'ASC'
-//     });
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="flex items-center justify-center min-h-screen">
-//         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="space-y-6">
-//       {/* כותרת */}
-//       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6">
-//         <h1 className="text-3xl font-bold mb-2">החנות שלנו</h1>
-//         <p className="text-blue-100">גלה את המוצרים הטובים ביותר במחירים הכי טובים</p>
-//       </div>
-
-//       {/* סרגל חיפוש ופילטרים */}
-//       <div className="bg-white rounded-xl p-4 shadow-sm">
-//         <div className="flex flex-col lg:flex-row gap-4 items-center">
-//           {/* חיפוש */}
-//           <div className="relative flex-1">
-//             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-//             <input
-//               type="text"
-//               placeholder="חפש מוצרים..."
-//               value={filters.search}
-//               onChange={(e) => handleFilterChange('search', e.target.value)}
-//               className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//             />
-//           </div>
-
-//           {/* קטגוריה */}
-//           <select
-//             value={filters.category}
-//             onChange={(e) => handleFilterChange('category', e.target.value)}
-//             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-//           >
-//             <option value="">כל הקטגוריות</option>
-//             {categories.map(category => (
-//               <option key={category.id} value={category.id}>
-//                 {category.name}
-//               </option>
-//             ))}
-//           </select>
-
-//           {/* מיון */}
-//           <select
-//             value={`${filters.sortBy}-${filters.sortOrder}`}
-//             onChange={(e) => {
-//               const [sortBy, sortOrder] = e.target.value.split('-');
-//               handleFilterChange('sortBy', sortBy);
-//               handleFilterChange('sortOrder', sortOrder);
-//             }}
-//             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-//           >
-//             <option value="name-ASC">שם (א-ת)</option>
-//             <option value="name-DESC">שם (ת-א)</option>
-//             <option value="price-ASC">מחיר (נמוך-גבוה)</option>
-//             <option value="price-DESC">מחיר (גבוה-נמוך)</option>
-//           </select>
-
-//           {/* כפתור פילטרים נוסף */}
-//           <button
-//             onClick={() => setShowFilters(!showFilters)}
-//             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
-//           >
-//             <Filter className="h-4 w-4" />
-//             פילטרים
-//           </button>
-//         </div>
-
-//         {/* פילטרים מתקדמים */}
-//         {showFilters && (
-//           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-//             <div className="flex flex-col md:flex-row gap-4">
-//               <div className="flex-1">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">מחיר מינימום</label>
-//                 <input
-//                   type="number"
-//                   placeholder="0"
-//                   value={filters.minPrice}
-//                   onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-//                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-//                 />
-//               </div>
-//               <div className="flex-1">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">מחיר מקסימום</label>
-//                 <input
-//                   type="number"
-//                   placeholder="999"
-//                   value={filters.maxPrice}
-//                   onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-//                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-//                 />
-//               </div>
-//               <div className="flex items-end">
-//                 <button
-//                   onClick={resetFilters}
-//                   className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-//                 >
-//                   איפוס
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-
-//       {/* תוצאות */}
-//       <div className="flex justify-between items-center">
-//         <p className="text-gray-600">
-//           נמצאו {filteredProducts.length} מוצרים
-//         </p>
-//       </div>
-
-//       {/* רשת מוצרים */}
-//       {filteredProducts.length > 0 ? (
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-//           {filteredProducts.map(product => (
-//             <ProductCard
-//               key={product.id}
-//               product={product}
-//               onAddToCart={addToCart}
-//               isUpdating={cartUpdating[product.id]}
-//             />
-//           ))}
-//         </div>
-//       ) : (
-//         <div className="text-center py-12 bg-white rounded-xl">
-//           <ShoppingCart className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-//           <p className="text-gray-500 text-lg mb-4">לא נמצאו מוצרים המתאימים לחיפוש</p>
-//           <button
-//             onClick={resetFilters}
-//             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-//           >
-//             נקה סינונים
-//           </button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// // רכיב כרטיס מוצר
-// const ProductCard = ({ product, onAddToCart, isUpdating }) => {
-//   const [quantity, setQuantity] = useState(1);
-
-//   const handleAddToCart = () => {
-//     onAddToCart(product.id, quantity);
-//   };
-
-//   const isOutOfStock = product.stock_quantity === 0;
-//   const isLowStock = product.stock_quantity <= 5 && product.stock_quantity > 0;
-
-//   return (
-//     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow group">
-//       {/* תמונת מוצר */}
-//       <div className="aspect-w-16 aspect-h-12 bg-gray-100 relative overflow-hidden">
-//         {isLowStock && (
-//           <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full z-10">
-//             נותרו {product.stock_quantity}
-//           </div>
-//         )}
-//         {isOutOfStock && (
-//           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-//             <span className="text-white font-bold text-lg">אזל מהמלאי</span>
-//           </div>
-//         )}
-//         {product.image_url ? (
-//           <img src={`http://localhost:3000${product.image_url}`} alt={product.name} className="h-48 object-cover mb-2 rounded" />
-//         ) : (
-//           <div className="h-48 bg-gray-200 flex items-center justify-center mb-2">No Image</div>
-//         )}
-//       </div>
-
-//       {/* פרטי מוצר */}
-//       <div className="p-4 space-y-3">
-//         <div>
-//           <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-//             {product.name}
-//           </h3>
-//           <p className="text-sm text-gray-500">{product.category_name}</p>
-//         </div>
-
-//         <div className="flex items-center justify-between">
-//           <span className="text-2xl font-bold text-blue-600">
-//             ₪{parseFloat(product.price).toFixed(2)}
-//           </span>
-//           <div className="flex items-center text-yellow-400">
-//             <Star className="h-4 w-4 fill-current" />
-//             <Star className="h-4 w-4 fill-current" />
-//             <Star className="h-4 w-4 fill-current" />
-//             <Star className="h-4 w-4 fill-current" />
-//             <Star className="h-4 w-4" />
-//           </div>
-//         </div>
-
-//         {!isOutOfStock && (
-//           <div className="space-y-3">
-//             {/* בקרת כמות */}
-//             <div className="flex items-center justify-center bg-gray-100 rounded-lg">
-//               <button
-//                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-//                 className="p-2 hover:bg-gray-200 rounded-lg"
-//               >
-//                 <Minus className="h-4 w-4" />
-//               </button>
-//               <span className="px-4 py-2 min-w-[3rem] text-center font-medium">{quantity}</span>
-//               <button
-//                 onClick={() => setQuantity(Math.min(product.stock_quantity, quantity + 1))}
-//                 className="p-2 hover:bg-gray-200 rounded-lg"
-//               >
-//                 <Plus className="h-4 w-4" />
-//               </button>
-//             </div>
-
-//             {/* כפתור הוספה לעגלה */}
-//             <button
-//               onClick={handleAddToCart}
-//               disabled={isUpdating}
-//               className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-//             >
-//               {isUpdating ? (
-//                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-//               ) : (
-//                 <>
-//                   <ShoppingCart className="h-4 w-4" />
-//                   הוסף לעגלה
-//                 </>
-//               )}
-//             </button>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Shop;
-
-
-// src/pages/Shop.jsx - עמוד חנות משופר
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, ShoppingCart, Plus, Minus, Star, X } from 'lucide-react';
 import { productsAPI, categoriesAPI, cartAPI } from '../../services/api';
@@ -373,6 +23,8 @@ const Shop = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cartUpdating, setCartUpdating] = useState({});
+  
+  // Filter and search state
   const [filters, setFilters] = useState({
     category: '',
     search: '',
@@ -391,6 +43,10 @@ const Shop = () => {
     applyFilters();
   }, [products, filters]);
 
+  /**
+   * Load initial shop data
+   * Fetches products and categories from API
+   */
   const loadData = async () => {
     try {
       setLoading(true);
@@ -409,37 +65,47 @@ const Shop = () => {
     }
   };
 
+  /**
+   * Apply all active filters and sorting to products list
+   * Filters by category, search term, price range, and applies sorting
+   */
   const applyFilters = () => {
     let filtered = [...products];
 
+    // Filter by category
     if (filters.category) {
       filtered = filtered.filter(product =>
         product.category_id === parseInt(filters.category)
       );
     }
 
+    // Filter by search term (case-insensitive)
     if (filters.search) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
+    // Filter by minimum price
     if (filters.minPrice) {
       filtered = filtered.filter(product =>
         parseFloat(product.price) >= parseFloat(filters.minPrice)
       );
     }
 
+    // Filter by maximum price
     if (filters.maxPrice) {
       filtered = filtered.filter(product =>
         parseFloat(product.price) <= parseFloat(filters.maxPrice)
       );
     }
 
+    // Apply sorting
     filtered.sort((a, b) => {
       let aValue = a[filters.sortBy];
       let bValue = b[filters.sortBy];
 
+      // Handle numeric sorting for price
       if (filters.sortBy === 'price') {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
@@ -455,10 +121,24 @@ const Shop = () => {
     setFilteredProducts(filtered);
   };
 
+  /**
+   * Handle filter changes
+   * Updates filter state and triggers re-filtering
+   * 
+   * @param {string} key - Filter key to update
+   * @param {string|number} value - New filter value
+   */
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  /**
+   * Add product to cart
+   * Provides visual feedback and handles API errors
+   * 
+   * @param {number} productId - Product ID to add
+   * @param {number} quantity - Quantity to add (default: 1)
+   */
   const addToCart = async (productId, quantity = 1) => {
     setCartUpdating(prev => ({ ...prev, [productId]: true }));
     try {
@@ -472,6 +152,10 @@ const Shop = () => {
     }
   };
 
+  /**
+   * Reset all filters to default values
+   * Clears all search and filter criteria
+   */
   const resetFilters = () => {
     setFilters({
       category: '',
@@ -483,6 +167,7 @@ const Shop = () => {
     });
   };
 
+  // Loading state component
   if (loading) {
     return (
       <div className="shop-loading">
@@ -495,7 +180,7 @@ const Shop = () => {
   return (
     <div className="shop-page">
       <div className="shop-container">
-        {/* כותרת החנות */}
+        {/* Shop Header */}
         <div className="shop-header">
           <div className="shop-header-content">
             <h1 className="shop-header-title">החנות שלנו</h1>
@@ -505,10 +190,10 @@ const Shop = () => {
           </div>
         </div>
 
-        {/* סרגל חיפוש ופילטרים */}
+        {/* Search and Filter Bar */}
         <div className="shop-filters">
           <div className="shop-filters-main">
-            {/* חיפוש */}
+            {/* Search Input */}
             <div className="shop-search-container">
               <input
                 type="text"
@@ -517,10 +202,9 @@ const Shop = () => {
                 onChange={(e) => handleFilterChange('search', e.target.value)}
                 className="shop-search-input"
               />
-              
             </div>
 
-            {/* קטגוריה */}
+            {/* Category Filter */}
             <select
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
@@ -534,7 +218,7 @@ const Shop = () => {
               ))}
             </select>
 
-            {/* מיון */}
+            {/* Sort Options */}
             <select
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
@@ -550,7 +234,7 @@ const Shop = () => {
               <option value="price-DESC">מחיר (גבוה-נמוך)</option>
             </select>
 
-            {/* כפתור פילטרים נוסף */}
+            {/* Advanced Filters Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`shop-filters-toggle ${showFilters ? 'active' : ''}`}
@@ -560,7 +244,7 @@ const Shop = () => {
             </button>
           </div>
 
-          {/* פילטרים מתקדמים */}
+          {/* Advanced Filters Panel */}
           {showFilters && (
             <div className="shop-advanced-filters">
               <div className="shop-advanced-filters-grid">
@@ -595,14 +279,14 @@ const Shop = () => {
           )}
         </div>
 
-        {/* תוצאות */}
+        {/* Results Header */}
         <div className="shop-results-header">
           <p className="shop-results-count">
             נמצאו {filteredProducts.length} מוצרים
           </p>
         </div>
 
-        {/* רשת מוצרים */}
+        {/* Products Grid */}
         {filteredProducts.length > 0 ? (
           <div className="shop-products-grid">
             {filteredProducts.map(product => (
@@ -615,6 +299,7 @@ const Shop = () => {
             ))}
           </div>
         ) : (
+          // Empty state
           <div className="shop-empty-state">
             <ShoppingCart className="shop-empty-icon" />
             <p className="shop-empty-title">לא נמצאו מוצרים המתאימים לחיפוש</p>
@@ -631,10 +316,21 @@ const Shop = () => {
   );
 };
 
-// רכיב כרטיס מוצר משופר
+/**
+ * Enhanced Product Card Component
+ * Displays individual product with interactive elements
+ * 
+ * @param {Object} product - Product object with details
+ * @param {Function} onAddToCart - Callback for adding to cart
+ * @param {boolean} isUpdating - Whether the product is being added to cart
+ */
 const ProductCard = ({ product, onAddToCart, isUpdating }) => {
   const [quantity, setQuantity] = useState(1);
 
+  /**
+   * Handle add to cart action
+   * Calls parent callback with current quantity
+   */
   const handleAddToCart = () => {
     onAddToCart(product.id, quantity);
   };
@@ -644,9 +340,9 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
 
   return (
     <div className="product-card">
-      {/* תמונת מוצר */}
+      {/* Product Image Container */}
       <div className="product-card-image-container">
-        {/* תגיות מוצר */}
+        {/* Stock Status Badges */}
         {isLowStock && (
           <div className="product-card-badge">
             נותרו {product.stock_quantity}
@@ -658,19 +354,20 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
           </div>
         )}
         
-        {/* שכבת כיסוי למוצרים שאזלו */}
+        {/* Out of Stock Overlay */}
         {isOutOfStock && (
           <div className="product-card-overlay">
             <span className="product-card-overlay-text">אזל מהמלאי</span>
           </div>
         )}
         
-        {/* תמונה */}
+        {/* Product Image */}
         {product.image_url ? (
           <img 
             src={`http://localhost:3000${product.image_url}`} 
             alt={product.name} 
             className="product-card-image"
+            loading="lazy"
           />
         ) : (
           <div className="product-card-no-image">
@@ -679,9 +376,9 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
         )}
       </div>
 
-      {/* פרטי מוצר */}
+      {/* Product Details */}
       <div className="product-card-content">
-        {/* כותרת ופרטים */}
+        {/* Product Header */}
         <div className="product-card-header">
           <h3 className="product-card-title">
             {product.name}
@@ -689,7 +386,7 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
           <p className="product-card-category">{product.category_name}</p>
         </div>
 
-        {/* מחיר ודירוג
+        {/* Price and Rating - Commented out as requested in original
         <div className="product-card-meta">
           <span className="product-card-price">
             ₪{parseFloat(product.price).toFixed(2)}
@@ -703,10 +400,10 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
           </div>
         </div> */}
 
-        {/* פעולות מוצר */}
+        {/* Product Actions - Only show if in stock */}
         {!isOutOfStock && (
           <div className="product-card-actions">
-            {/* בקרת כמות */}
+            {/* Quantity Control */}
             <div className="product-card-quantity">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -725,7 +422,7 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
               </button>
             </div>
 
-            {/* כפתור הוספה לעגלה */}
+            {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
               disabled={isUpdating}

@@ -1,4 +1,8 @@
-// src/components/Footer.jsx - Footer מקצועי ומעוצב
+/**
+ * Professional footer component for supermarket website
+ * Contains company info, quick links, services, and contact details
+ */
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -17,11 +21,15 @@ import {
     Users
 } from 'lucide-react';
 
+/**
+ * Footer Component
+ * Displays company information, services, and contact details
+ */
 const Footer = () => {
     return (
         <footer className="footer-container">
             <div className="footer-content">
-                {/* עמודה ראשונה - לוגו ותיאור (הכי מימין) */}
+                {/* First column - Logo and description */}
                 <div className="footer-section footer-logo-section">
                     <Link to="/dashboard" className="footer-logo">
                         מרקט פלוס
@@ -32,7 +40,7 @@ const Footer = () => {
                         מוצרים איכותיים, משלוח מהיר ושירות מעולה.
                     </p>
 
-                    {/* סטטיסטיקות קצרות */}
+                    {/* Company statistics */}
                     <div className="footer-stats">
                         <div className="footer-stat">
                             <span>10,000+ לקוחות</span>
@@ -45,18 +53,17 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* עמודה שנייה - קישורים מהירים */}
+                {/* Second column - Quick links */}
                 <div className="footer-section">
                     <h3 className="footer-section-title">קישורים מהירים</h3>
                     <div className="footer-links">
-
                         <Link to="/about" className="footer-link">אודותינו</Link>
                         <Link to="/support" className="footer-link">תמיכה</Link>
                         <Link to="/faq" className="footer-link">שאלות נפוצות</Link>
                     </div>
                 </div>
 
-                {/* עמודה שלישית - שירותים */}
+                {/* Third column - Services */}
                 <div className="footer-section">
                     <h3 className="footer-section-title">השירותים שלנו</h3>
                     <div className="footer-services">
@@ -79,7 +86,7 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* עמודה רביעית - צור קשר (הכי משמאל) */}
+                {/* Fourth column - Contact info */}
                 <div className="footer-section">
                     <h3 className="footer-section-title">צור קשר</h3>
                     <div className="footer-contact">
@@ -101,7 +108,7 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* רשתות חברתיות */}
+                    {/* Social media links */}
                     <div className="footer-social-section">
                         <h4 className="footer-social-title">עקבו אחרינו</h4>
                         <div className="footer-social">
@@ -122,7 +129,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* חלק תחתון - זכויות יוצרים ומידע משפטי */}
+            {/* Bottom section - Copyright and legal */}
             <div className="footer-bottom">
                 <div className="footer-bottom-content">
                     <div className="footer-copyright">
@@ -133,8 +140,6 @@ const Footer = () => {
                         <Link to="/privacy" className="footer-legal-link">מדיניות פרטיות</Link>
                         <Link to="/terms" className="footer-legal-link">תנאי שימוש</Link>
                     </div>
-
-
                 </div>
             </div>
         </footer>

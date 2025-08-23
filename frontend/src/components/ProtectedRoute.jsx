@@ -3,12 +3,16 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-// רכיב להגנה על נתיבים שדורשים אימות
+/**
+ * ProtectedRoute Component
+ * - Restricts access to routes based on authentication status.
+ * - Supports admin-only access when `requireAdmin` is true.
+ */
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { isAuthenticated, isAdmin, loading } = useAuth();
   const location = useLocation();
 
-  // אם עדיין טוען, הצג טעינה
+  // Show loader while authentication state is being checked
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -17,12 +21,12 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
     );
   }
 
-  // אם לא מחובר, הפנה להתחברות
+  // If user is not authenticated, redirect to login
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // אם דורש הרשאות מנהל אבל המשתמש לא מנהל
+  // If admin access is required but user is not an admin
   if (requireAdmin && !isAdmin()) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -42,10 +46,14 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   return children;
 };
 
-// רכיב להפנייה של משתמשים מחוברים מעמודי אימות
+/**
+ * AuthRedirect Component
+ * - Redirects already authenticated users away from auth pages (e.g., login/register).
+ */
 export const AuthRedirect = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
+  // Show loader while authentication state is being checked
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -54,7 +62,7 @@ export const AuthRedirect = ({ children }) => {
     );
   }
 
-  // אם כבר מחובר, הפנה לדאשבורד
+  // If already authenticated, redirect to dashboard
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -63,4 +71,3 @@ export const AuthRedirect = ({ children }) => {
 };
 
 export default ProtectedRoute;
-
