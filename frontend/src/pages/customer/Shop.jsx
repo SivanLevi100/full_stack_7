@@ -386,19 +386,19 @@ const ProductCard = ({ product, onAddToCart, isUpdating }) => {
           <p className="product-card-category">{product.category_name}</p>
         </div>
 
-        {/* Price and Rating - Commented out as requested in original
+        {/* Price and Rating - Commented out as requested in original*/}
         <div className="product-card-meta">
           <span className="product-card-price">
             ₪{parseFloat(product.price).toFixed(2)}
           </span>
-          <div className="product-card-rating">
+        {/*<div className="product-card-rating">
             <Star className="h-4 w-4 fill-current" />
             <Star className="h-4 w-4 fill-current" />
             <Star className="h-4 w-4 fill-current" />
             <Star className="h-4 w-4 fill-current" />
             <Star className="h-4 w-4" />
-          </div>
-        </div> */}
+          </div>*/}
+        </div> 
 
         {/* Product Actions - Only show if in stock */}
         {!isOutOfStock && (

@@ -142,7 +142,7 @@ const CustomerDashboard = () => {
               icon={<ShoppingCart className="h-7 w-7" />}
               iconColor="blue"
               link="/my-orders"
-              trend="+3 השבוע"
+              /*trend="+3 השבוע"*/
             />
             <CustomerStatCard
               title="הזמנות פעילות"
@@ -258,7 +258,7 @@ const CustomerDashboard = () => {
                   <span className="customer-dashboard-tips-badge">חדש</span>
                 </div>
                 <p className="customer-dashboard-tips-description">
-                  ידעת שחיסכון בנרגיה במקרר יכול להתחיל מסידור נכון של המוצרים? שמור את הירקות בתנאי טריות ואת המוצרים הקפואים יחד.
+                  ידעת שחיסכון באנרגיה במקרר יכול להתחיל מסידור נכון של המוצרים? שמור את הירקות בתנאי טריות ואת המוצרים הקפואים יחד.
                 </p>
                 <div className="customer-dashboard-tips-footer">
                   <div className="customer-dashboard-tips-footer-item">

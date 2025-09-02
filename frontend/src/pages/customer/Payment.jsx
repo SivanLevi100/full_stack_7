@@ -269,7 +269,7 @@ const Payment = () => {
                 {isEligibleForFreeShipping ? (
                   <div className="cart-delivery-info cart-delivery-success">
                     <Truck className="h-4 w-4" />
-                    🎉 זכאי למשלוח חינם!
+                     זכאי למשלוח חינם!
                   </div>
                 ) : (
                   <div className="cart-delivery-info cart-delivery-warning">

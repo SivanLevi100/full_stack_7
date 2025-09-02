@@ -68,7 +68,7 @@ const Footer = () => {
                     <h3 className="footer-section-title">השירותים שלנו</h3>
                     <div className="footer-services">
                         <div className="footer-service">
-                            <span>משלוח חינם מעל ₪200</span>
+                            <span>משלוח חינם מעל ₪50</span>
                             <Truck className="h-4 w-4" />
                         </div>
                         <div className="footer-service">
