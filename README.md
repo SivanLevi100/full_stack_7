@@ -240,29 +240,37 @@ MarketPlus/
 ## 📸 Screenshots
 ### LogIn Page 
 <p align="left">
-<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/Login_page.jpg" width="80%">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/login.png" width="80%">
 </p>
 
-### Register Page 
+### Admin Dashboard Page 
 <p align="left">
-<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/register_page.png" width="80%">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/AdminDashboard.png" width="80%">
 </p>
 
-### Books Page
+### Admin Products Page
 <p align="left">
-<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/books_page.png" width="80%">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/AdminProducts.png" width="80%">
 </p>
 
-### Add Book Page
+### Admin Orders Page
 <p align="left">
-<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/add_book_page.png" width="80%">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/AdminOrders.png" width="80%">
 </p>
 
-### History Page
+### Customer Dashboard Page
 <p align="left">
-<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/history_page.png" width="80%">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/customerDashboard.png" width="80%">
 </p>
 
+### Customer Shop Page
+<p align="left">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/customerShop.png" width="80%">
+</p>
 
+### Customer Cart Page
+<p align="left">
+<img src="https://github.com/SivanLevi100/full_stack_7/blob/main/Screenshots/customerCart.png" width="80%">
+</p>
 
 
