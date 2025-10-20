@@ -15,19 +15,70 @@ The system simulates a real-world supermarket experience with customer shopping 
 - File Uploads: Multer middleware
 - HTTP Client: Axios for external requests
 - Environment: dotenv for configuration
-
+### Frontend Architecture
+- Framework: React 18+ with Hooks
+- Routing: React Router v6
+- HTTP Client: Axios with interceptors
+- UI Components: Lucide React icons
+- Styling: Custom CSS with Tailwind utilities
+- Notifications: React Hot Toast
+- Charts: Recharts for data visualization
+- Package Manager: npm or yarn
+### Database Design
+- Relational MySQL schema with proper normalization
+- Connection pooling for performance optimization
+- Indexed columns for fast query execution
+- Foreign key constraints for data integrity
+- Transaction support for atomic operations
 
 ## ✨ Key Features
+### Customer Features
+#### Secure Authentication
+- User registration with email validation
+- Login with JWT token management
+- Password reset capability
+- Session persistence across page refreshes
+#### Product Management
+- Browse all supermarket products
+- Search products by name
+- Filter by category
+- Sort by price and availability
+- View detailed product information
+#### Shopping Cart
+- Add/remove products from cart
+- Update quantity for items
+- Real-time cart total calculation
+- Cart persistence (survives page refresh)
+- Clear entire cart functionality
+#### Order Processing
+- One-click order placement from cart
+- Automatic stock deduction on purchase
+- Order confirmation and details
+- View complete order history
+- Track order status in real-time
+#### User Dashboard
+- Personal information display
+- Quick access to recent orders
+- Order statistics and summary
+- Account settings and preferences
+#### Responsive Interface
+- Mobile-optimized design
+- Tablet-friendly layouts
+- Desktop full experience
+- Touch-friendly buttons and controls
+### Admin Features
+#### Comprehensive Dashboard
+- Real-time KPIs (Total Revenue, Orders, Users)
+- Recent orders with quick access
+- Low stock products alerts
+- Revenue trends and analytics
+- Pending orders count
 
-- **Single Page Application (SPA)** - Seamless navigation without page reloads
-- **Complete Authentication System** - Login and registration functionality
-- **Book Management** - Add, edit, delete, and search operations
-- **Advanced Filtering** - Filter books by multiple criteria
-- **Action History** - Track all changes to the library database
-- **User Activity Statistics** - Visual representation of library management actions
-- **Responsive Design** - Mobile-friendly interface
-- **Custom AJAX Simulation** - Client-server architecture within the browser
-- **RTL Support** - Full Hebrew language support
+
+
+
+
+
 
 ## 🔧 Technical Implementation
 
