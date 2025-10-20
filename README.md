@@ -8,24 +8,24 @@ The system simulates a real-world supermarket experience with customer shopping 
 
 ## 💻 Technologies & Stack
 ### Backend Architecture
-- Runtime: Node.js with Express.js framework
-- Database: MySQL 8.0+ with connection pooling
-- Authentication: JWT (JSON Web Tokens)
-- Password Security: Bcrypt hashing
-- File Uploads: Multer middleware
-- HTTP Client: Axios for external requests
-- Environment: dotenv for configuration
+- **Runtime:** Node.js with Express.js framework
+- **Database:** MySQL 8.0+ with connection pooling
+- **Authentication:** JWT (JSON Web Tokens)
+- **Password Security:** Bcrypt hashing
+- **File Uploads:** Multer middleware
+- **HTTP Client:** Axios for external requests
+- **Environment:** dotenv for configuration
 ### Frontend Architecture
-- Framework: React 18+ with Hooks
-- Routing: React Router v6
-- HTTP Client: Axios with interceptors
-- UI Components: Lucide React icons
-- Styling: Custom CSS with Tailwind utilities
-- Notifications: React Hot Toast
-- Charts: Recharts for data visualization
-- Package Manager: npm or yarn
+- **Framework:** React 18+ with Hooks
+- **Routing:** React Router v6
+- **HTTP Client:** Axios with interceptors
+- **UI Components:** Lucide React icons
+- **Styling:** Custom CSS with Tailwind utilities
+- **Notifications:** React Hot Toast
+- **Charts:** Recharts for data visualization
+- **Package Manager:** npm 
 ### Database Design
-- Relational MySQL schema with proper normalization
+- **Relational MySQL** schema with proper normalization
 - Connection pooling for performance optimization
 - Indexed columns for fast query execution
 - Foreign key constraints for data integrity
@@ -73,50 +73,168 @@ The system simulates a real-world supermarket experience with customer shopping 
 - Low stock products alerts
 - Revenue trends and analytics
 - Pending orders count
-
-
-
-
-
-
+#### Product Management
+- Add new products with details
+- Edit existing product information
+- Delete products with safety confirmation
+- Upload product images
+- Manage stock quantities
+- Track low-stock items
+#### Inventory Control
+- Monitor stock levels in real-time
+- Low stock alerts and notifications
+- Stock adjustment functionality
+- Inventory reports and analytics
+#### Category Management
+- Create product categories
+- Edit category information
+- Delete categories with constraint checking
+- Organize products by category
+#### Order Administration
+- View all customer orders
+- Update order status (pending → confirmed → delivered)
+- View detailed order items
+- Add/remove items from orders
+- Update order totals
+- Delete orders with stock restoration
+#### User Management
+- View all registered users
+- Create new user accounts
+- Edit user information
+- Assign admin/customer roles
+- Delete user accounts
+#### Business Analytics
+- Sales revenue tracking
+- Monthly sales charts
+- Order trends analysis
+- Customer statistics
+- Product performance reports
+- Exportable data summaries
 
 ## 🔧 Technical Implementation
 
-### Client-Server Architecture
-The application simulates a complete client-server architecture within the browser:
+### Security
+- JWT-based stateless authentication
+- Secure password hashing with bcrypt
+- Role-based access control (RBAC)
+- Protected API routes
+- CORS configuration
+- Input validation and sanitization
+### Data Management
+- Foreign key constraints enforcement
+- Transaction support for operations
+- Soft delete for categories
+- Stock synchronization
+- Data consistency checks
+  
+### User Experience
+- Toast notifications for all actions
+- Loading indicators on async operations
+- Error messages with helpful context
+- Form validation with inline feedback
+- Confirmation dialogs for destructive actions
+- Empty state handling
 
-- **FXMLHttpRequest** - Custom implementation mimicking XMLHttpRequest
-- **Network Simulation** - Artificial delays and message drops
-- **Separate Servers** - AuthServer and BooksServer for different functionality
-- **Database Classes** - UsersDB and BooksDB for data management
-
-### Single Page Application
-The app uses a custom router to handle navigation:
-- Hash-based routing
-- Dynamic template loading
-- Page transitions without reloads
+### Internationalization
+- Full Hebrew language support
+- Right-to-left (RTL) text direction
+- Localized date formatting
+- Hebrew error messages
 
 ## 📁 Project Structure
 
 ```
-/
-├── Client/
-│   ├── CSS/
-│   │   └── styles.css           # Main stylesheet
-│   └── JS/
-│       ├── app.js               # Main application logic
-│       ├── fajax.js             # AJAX simulation
-│       └── network.js           # Network simulation
+MarketPlus/
 │
-├── Database/
-│   ├── BooksDB.js               # Book database management
-│   └── UsersDB.js               # User database management
+├── frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   │   └── images/              # App images and logos
+│   │   │
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx           # Top navigation bar
+│   │   │   ├── Footer.jsx           # Footer with info
+│   │   │   ├── ProtectedRoute.jsx   # Route protection
+│   │   │   ├── ScrollToTop.jsx      # Auto-scroll handler
+│   │   │   └── ...
+│   │   │
+│   │   ├── contexts/
+│   │   │   └── AuthContext.jsx      # Global auth state
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Login.jsx            # Login page
+│   │   │   ├── Register.jsx         # Registration page
+│   │   │   ├── Dashboard.jsx        # Main dashboard (role-based)
+│   │   │   │
+│   │   │   ├── admin/
+│   │   │   │   ├── AdminDashboard.jsx
+│   │   │   │   ├── Products.jsx     # Product management
+│   │   │   │   ├── Categories.jsx   # Category management
+│   │   │   │   ├── Orders.jsx       # Order admin
+│   │   │   │   ├── OrderDetails.jsx # Order details & items
+│   │   │   │   ├── Users.jsx        # User management
+│   │   │   │   └── Reports.jsx      # Analytics & reports
+│   │   │   │
+│   │   │   └── customer/
+│   │   │       ├── CustomerDashboard.jsx
+│   │   │       ├── Shop.jsx         # Product browsing
+│   │   │       ├── MyCart.jsx       # Shopping cart
+│   │   │       ├── MyOrders.jsx     # Order history
+│   │   │       └── Payment.jsx      # Checkout
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js               # Axios API configuration
+│   │   │
+│   │   ├── styles/
+│   │   │   ├── index.css            # Global styles
+│   │   │   ├── auth.css
+│   │   │   ├── navbar.css
+│   │   │   ├── admin-dashboard.css
+│   │   │   ├── admin-products.css
+│   │   │   └── ...
+│   │   │
+│   │   ├── App.jsx                  # Main app component
+│   │   └── main.jsx                 # React DOM entry
+│   │
+│   ├── package.json
+│   ├── vite.config.js
+│   └── .env.example
 │
-├── Server/
-│   ├── auth_server.js           # Authentication server
-│   └── books_server.js          # Books management server
+├── backend/
+│   ├── config/
+│   │   └── database.js              # MySQL pool config
+│   │
+│   ├── middleware/
+│   │   ├── auth.js                  # JWT & role auth
+│   │   └── upload.js                # Multer file upload
+│   │
+│   ├── models/
+│   │   ├── User.js                  # User model
+│   │   ├── Product.js               # Product model
+│   │   ├── Category.js              # Category model
+│   │   ├── Order.js                 # Order model
+│   │   ├── OrderItem.js             # Order items model
+│   │   └── Cart.js                  # Shopping cart model
+│   │
+│   ├── routes/
+│   │   ├── auth.js                  # Auth routes
+│   │   ├── users.js                 # User routes
+│   │   ├── products.js              # Product routes
+│   │   ├── categories.js            # Category routes
+│   │   ├── orders.js                # Order routes
+│   │   ├── orderItems.js            # Order items routes
+│   │   └── cart.js                  # Cart routes
+│   │
+│   ├── uploads/                     # Product images directory
+│   ├── server.js                    # Express app setup
+│   ├── package.json
+│   └── .env.example
 │
-└── index.html                   # Main HTML file with templates
+├── database/
+│   ├── Create_Tables.sql            # Schema creation
+│   └── Insert_Tables.sql            # Sample data
+│
+└── README.md
 ```
 
 ## 📸 Screenshots
@@ -146,10 +264,5 @@ The app uses a custom router to handle navigation:
 </p>
 
 
-## 🔍 Application Flow
 
-1. **Authentication** - Users start at the login page and can either login or register.
-2. **Books Management** - After login, users can view, add, edit, or delete books.
-3. **Search & Filter** - Users can search by title/author and filter by location/status.
-4. **Action History** - Track all library management actions with detailed statistics.
 
